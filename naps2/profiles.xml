@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfScanProfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ScanProfile>
+    <Version>2</Version>
+    <Device>
+      <ID>airscan:w2:Brother MFC-L2740DW series</ID>
+      <Name>Brother MFC-L2740DW series (airscan:ip=192.168.5.37)</Name>
+      <IconUri xsi:nil="true" />
+      <ConnectionUri xsi:nil="true" />
+    </Device>
+    <Caps>
+      <PaperSources>Glass,Feeder,Duplex</PaperSources>
+      <FeederCheck>false</FeederCheck>
+      <Glass>
+        <ScanArea>215.90001x297.18 mm</ScanArea>
+        <Resolutions>100,200,300</Resolutions>
+      </Glass>
+      <Feeder>
+        <ScanArea>215.90001x355.6 mm</ScanArea>
+        <Resolutions>100,200,300</Resolutions>
+      </Feeder>
+      <Duplex>
+        <ScanArea>215.90001x355.6 mm</ScanArea>
+        <Resolutions>100,200,300</Resolutions>
+      </Duplex>
+    </Caps>
+    <DriverName>sane</DriverName>
+    <DisplayName>Brother MFC-L2740DW Glass BW</DisplayName>
+    <IconID>0</IconID>
+    <MaxQuality>false</MaxQuality>
+    <IsDefault>true</IsDefault>
+    <UseNativeUI>false</UseNativeUI>
+    <AfterScanScale>OneToOne</AfterScanScale>
+    <Brightness>0</Brightness>
+    <Contrast>0</Contrast>
+    <BitDepth>Grayscale</BitDepth>
+    <PageAlign>Right</PageAlign>
+    <PageSize>Letter</PageSize>
+    <CustomPageSizeName xsi:nil="true" />
+    <CustomPageSize xsi:nil="true" />
+    <Resolution>Dpi300</Resolution>
+    <PaperSource>Glass</PaperSource>
+    <EnableAutoSave>false</EnableAutoSave>
+    <AutoSaveSettings xsi:nil="true" />
+    <Quality>75</Quality>
+    <AutoDeskew>false</AutoDeskew>
+    <RotateDegrees>0</RotateDegrees>
+    <BrightnessContrastAfterScan>false</BrightnessContrastAfterScan>
+    <ForcePageSize>false</ForcePageSize>
+    <ForcePageSizeCrop>false</ForcePageSizeCrop>
+    <TwainImpl>Default</TwainImpl>
+    <TwainProgress>false</TwainProgress>
+    <ExcludeBlankPages>false</ExcludeBlankPages>
+    <BlankPageWhiteThreshold>70</BlankPageWhiteThreshold>
+    <BlankPageCoverageThreshold>25</BlankPageCoverageThreshold>
+    <WiaOffsetWidth>false</WiaOffsetWidth>
+    <WiaRetryOnFailure>false</WiaRetryOnFailure>
+    <WiaDelayBetweenScans>false</WiaDelayBetweenScans>
+    <WiaDelayBetweenScansSeconds>2</WiaDelayBetweenScansSeconds>
+    <WiaVersion>Default</WiaVersion>
+    <FlipDuplexedPages>false</FlipDuplexedPages>
+    <KeyValueOptions xsi:nil="true" />
+  </ScanProfile>
+</ArrayOfScanProfile>

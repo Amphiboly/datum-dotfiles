@@ -1,0 +1,45 @@
+0247f7f7-177e-4dcf-b03c-8b83bc60ff98:
+  type: branch
+  id: aa047a98-4423-4766-9fb3-20fe2aef6c48
+  direction: horizontal
+  sizes:
+    - 50
+    - 50
+  nodes:
+    - type: leaf
+      id: 4f077b3c-cbfb-4c46-82d5-c430404dbf60
+      openFiles:
+        - path: /home/rik/Documents/Zettlr Tutorial/welcome.md
+          pinned: false
+        - path: /home/rik/Projects/Quotations/pandoc version/book.txt
+          pinned: false
+        - path: /home/rik/Projects/Quotations/pandoc version/book.md
+          pinned: false
+        - path: /home/rik/Desktop/NixOS_on_old_Spectre/instructions_mango_noctalia.md
+          pinned: false
+      activeFile:
+        path: /home/rik/Desktop/NixOS_on_old_Spectre/instructions_mango_noctalia.md
+        pinned: false
+    - type: branch
+      id: 0c0fae8f-c453-471f-b841-b9149c104bd4
+      direction: vertical
+      sizes:
+        - 50
+        - 50
+      nodes:
+        - type: leaf
+          id: d9865fa1-5dca-4676-80b3-07da8446b41b
+          openFiles:
+            - path: /home/rik/Documents/Zettlr Tutorial/split-view-intro.md
+              pinned: false
+          activeFile:
+            path: /home/rik/Documents/Zettlr Tutorial/split-view-intro.md
+            pinned: false
+        - type: leaf
+          id: 607a5b66-b451-4206-9712-f39c5458b59c
+          openFiles:
+            - path: /home/rik/Documents/Zettlr Tutorial/helpful-links.md
+              pinned: false
+          activeFile:
+            path: /home/rik/Documents/Zettlr Tutorial/helpful-links.md
+            pinned: false

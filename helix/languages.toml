@@ -1,0 +1,78 @@
+
+# ==============================================================================
+# NIX LANGUAGE CONFIGURATION
+# ==============================================================================
+[[language]]
+  name = "nix"
+  auto-format = true
+  language-servers = [ "nixd" ] 
+  # Explicitly registers the binary so the health checker catches it
+  formatter = { command = "alejandra" } 
+
+[language-server.nixd]
+  command = "nixd"
+  args = [ "--semantic-tokens=true" ]
+
+[language-server.nixd.config.nixd]
+  # Dynamically imports the active flake inputs using the $root anchor
+  nixpkgs.expr = "import (builtins.getFlake \"$root\").inputs.nixpkgs { }"
+
+[language-server.nixd.config.nixd.options.nixos]
+  expr = "(builtins.getFlake \"$root\").nixosConfigurations.prod-machine.options"
+
+# Forces nixd to use alejandra for formatting
+[language-server.nixd.config.nixd.formatting]
+  command = [ "alejandra" ]
+
+# ==============================================================================
+# TYPST LANGUAGE CONFIGURATION
+# ==============================================================================
+
+[[language]]
+  name = "typst"
+  scope = "source.typst"
+  injection-regex = "typst"
+  file-types = ["typ", "typst"]
+  comment-token = "//"
+  auto-format = true
+  language-servers = ["tinymist"]
+  formatter = { command = "typstyle" }
+
+[language-server.tinymist]
+  command = "tinymist"
+
+[language-server.tinymist.config]
+  # Background-compiles your files relative to your project workspace root
+  exportPdf = "onSave"
+  outputPath = "$dir/$name"
+
+# ==============================================================================
+# MARKDOWN CONFIGURATION
+# ==============================================================================
+[[language]]
+  name = "markdown"
+  language-servers = [ "mdpls" ]
+  file-types = [ "md" ]
+  soft-wrap.enable = true
+
+[language-server.mdpls]
+  command = "mdpls"
+  config = { markdown.preview.auto = true }
+
+# ==============================================================================
+# CONTEXT CONFIGURATION
+# ==============================================================================
+[language-server.digestif]
+  command = "digestif"
+
+[[language]]
+  name = "context"
+  scope = "source.context"
+  file-types = [ "ctx", "mkxl", "mkvi", "mkiv" ]
+  language-servers = [ "digestif" ]
+  comment-tokens = [ "%" ]
+
+[[grammar]]
+  name = "context"
+  source = { git = "https://github.com/pmazaitis/tree-sitter-context", rev = "4522ee13d58373f79d163df2baef80ea66908a8e" }
+

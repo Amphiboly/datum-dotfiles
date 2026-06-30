@@ -1,0 +1,41 @@
+# stolen on 20260508 from:
+## https://github.com/dogeystamp/dots/blob/8299e0b2c0db4d287640e588d075985385fba81e/src/dot_config/zathura/zathurarc.tmpl
+## and modified a bit
+set statusbar-home-tilde true
+
+# make things fit better
+#set scroll-page-aware true
+#set adjust-open width
+
+#set font "JetBrains Mono 12"
+
+#set recolor-darkcolor "#dddddd"
+#set recolor-lightcolor rgba(0,0,0,{{ .opacity }})
+#set recolor false
+#set recolor-keephue true
+#set recolor-reverse-video true
+
+#set default-bg "#00000099"
+##set index-bg "#000000"
+##set index-active-bg "#111111"
+##set index-active-fg "#FFFFFF"
+#set inputbar-bg rgba(0,0,0,{{ .opacity }})
+#set inputbar-fg "#CCCCCC"
+#set statusbar-bg rgba(0,0,0,1)
+#set statusbar-fg "#CCCCCC"
+
+# disable statusbar, and enable vertical scrollbar
+# press ctrl-n to toggle status bar at runtime
+#set guioptions "v"
+
+set render-loading false
+
+set selection-clipboard clipboard
+
+set database sqlite
+
+map <C-l> exec copy_ref
+map <C-g> exec "copy_ref --section"
+map <C-k> exec "copy_ref --destination"
+
+map ,fr exec "open_typ.sh $FILE"

@@ -1,0 +1,8 @@
+{
+    "logo": {
+	"type": "file",
+        "source": "$HOME/.config/fastfetch/logos/Fedora.png"
+    },
+    "include": "$HOME/.config/fastfetch/config.jsonc"
+}
+

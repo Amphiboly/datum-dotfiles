@@ -1,0 +1,21 @@
+# Global exclusions
+*.log
+*.swp
+*.bak
+.DS_Store
+
+# Zsh submodules / local states
+zsh/.antidote/
+
+# Zettlr Electron runtime state (Ignore everything EXCEPT configurations)
+Zettlr/*
+!Zettlr/config.json
+!Zettlr/custom.css
+!Zettlr/user.dic
+!Zettlr/window_state.yml
+!Zettlr/tags.json
+!Zettlr/targets.json
+!Zettlr/stats.json
+!Zettlr/documents.yaml
+!Zettlr/defaults/
+!Zettlr/lua-filter/

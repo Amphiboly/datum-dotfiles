@@ -1,0 +1,50 @@
+# see also  https://ghostty.org/docs/config/reference
+
+# these dimensions are used for floating windows
+
+# --- Window ---
+window-height = 32
+window-width = 140
+window-padding-x = 4
+window-padding-y = 4
+window-decoration = true
+
+# --- Cursor ---
+copy-on-select = true
+cursor-style = block
+cursor-style-blink = false
+
+# --- Theme ---
+#theme = Selenized Black
+#theme = Terminal Basic Dark
+#theme = Aardvark Blue
+#theme = noctalia
+#theme = "Catpuccin Mocha"
+#theme = light:Rose Pine Dawn,dark:Rose Pine
+theme = light:"Ayu Light",dark:"Night Owl"
+theme = light:Tomorrow,dark:"Tomorrow Night Bright"
+
+# aesthetics
+#background-opacity = 0.9
+background-blur=true
+#background=#ffffff
+
+# --- Shell integration ---
+command = /bin/zsh --login
+shell-integration = zsh
+shell-integration-features = true
+
+# --- Font ---
+font-size = 13
+font-family = "Lilex"
+adjust-cell-height=10%
+#font-family = "JetBrainsMono Nerd Font"
+#font-family = Fira Code
+
+# --- Clipboard ---
+clipboard-read = allow
+clipboard-write = allow
+copy-on-select = clipboard
+
+# --- Mouse ---
+mouse-hide-while-typing = true

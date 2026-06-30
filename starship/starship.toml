@@ -1,0 +1,136 @@
+#~ # Disable the default multi-line format, incompatible with other stuff below
+#~ [line_break]
+#~ disabled = true
+
+#+ # --- Layout & Order ---
+#+ # Displays a clean, uncluttered prompt focused on directories and status
+#+ format = """
+#+ $username\
+#+ $hostname\
+#+ $directory\
+#+ $git_branch\
+#+ $git_status\
+#+ $custom\
+#+ $line_break\
+#+ $character"""
+#+ 
+#+ # --- Vi Mode Icons (Your Finger Anchors) ---
+#+ [character]
+#+ success_symbol = "[I](bold green) ❯"   # Insert mode
+#+ vicmd_symbol = "[N](bold yellow) ❯"    # Normal / Vi Command mode
+#+ error_symbol = "[X](bold red) ❯"       # Error indicator
+#+ 
+#+ # --- Smart Directory Display ---
+#+ [directory]
+#+ truncation_length = 3                  # Shows up to 3 parent directories
+#+ fish_style_pwd_dir_length = 1          # Shortens deep paths to keep room for text
+#+ style = "bold cyan"
+#+ 
+#+ # --- Lightweight Git Management ---
+#+ [git_branch]
+#+ symbol = " "
+#+ style = "bold purple"
+#+ format = "on [$symbol$branch]($style) "
+#+ 
+#+ [git_status]
+#+ style = "red"
+#+ format = "([$all_status$ahead_behind]($style))"
+#+ conflicted = "="
+#+ ahead = "⇡"
+#+ behind = "⇣"
+#+ diverged = "⇕"
+#+ untracked = "?"
+#+ modified = "!"
+#+ staged = "+"
+#+ renamed = "»"
+#+ deleted = "✘"
+#+ 
+#+ # --- Custom Workspace Tweaks for Authors ---
+#+ # 1. Detects Typst projects and adds a subtle indicator
+#+ [custom.typst]
+#+ detect_files = ['*.typ', 'typst.toml']
+#+ symbol = "✎ Typst "
+#+ style = "bold blue"
+#+ format = "[$symbol]($style)"
+#+ 
+#+ # 2. Alerts you if a PDF or asset file is getting dangerously large (>9MB)
+#+ [custom.heavy_assets]
+#+ detect_files = ['*.pdf', '*.png', '*.jpg']
+#+ command = "find . -maxdepth 1 -type f -size +5M -name '*.pdf' -o -name '*.png' | wc -l | tr -d ' '"
+#+ when = " [ \"$(find . -maxdepth 1 -type f -size +9M -name '*.pdf' -o -name '*.png' | wc -l)\" -gt 0 ] "
+#+ symbol = "⚠️ Large Assets "
+#+ style = "bold yellow"
+#+ format = "[$symbol]($style)"
+
+#| #[character]
+#| success_symbol = "[I](bold green) ❯" # Insert mode indicator
+#| error_symbol = "[X](bold red) ❯"     # Error indicator
+#| 
+#| # Customize the symbols for your Vi modes
+#| vimcmd_replace_one_symbol = "[❮](bold purple)"
+#| vimcmd_replace_symbol = "[❮](bold purple)"
+#| vimcmd_visual_symbol = "[❮](bold cyan)"
+#| vicmd_symbol = "[N](bold yellow) ❯"   # Normal/Command mode indicator
+#| 
+#| # Display the username
+#| [username]
+#| show_always = true
+#| style_user = "bold green"
+#| format = "[$user]($style) "
+#| 
+#| # Display the hostname
+#| [hostname]
+#| ssh_only = false
+#| style = "bold text"
+#| format = "at [$hostname]($style) "
+#| 
+# Don't add a blank line between prompt loops
+add_newline = false
+
+# Explicitly define the prompt layout order
+format = """
+$git_branch\
+$git_status\
+$directory\
+$character\
+"""
+
+[directory]
+truncation_length = 3      # Only show the last 3 directories if the path gets long
+truncate_to_repo = true    # If inside a Git repo, start the path at the repo folder root
+style = "bold cyan"
+
+# ---------------------------------------------------------
+#   Git Configuration
+# ---------------------------------------------------------
+[git_branch]
+symbol = "🌱 "
+style = "bold magenta"
+format = "on [$symbol$branch]($style) "
+
+[git_status]
+style = "bold red"
+# Clean text indicators instead of cryptic punctuation symbols
+conflicted = "🏳 "
+ahead = "⇡"
+behind = "⇣"
+diverged = "⇕"
+untracked = " +?"
+modified = " *~"
+staged = " +"
+renamed = " »"
+deleted = " -"
+format = "([$all_status$ahead_behind]($style) )"
+[character]
+# Text/Symbol shown when you are in INSERT mode (Default typing mode)
+success_symbol = "[ I ](bold green) ❯"
+error_symbol = "[ I ](bold red) ❯"
+
+# Text/Symbol shown when you hit Esc to go into NORMAL mode (Vi navigation)
+vimcmd_symbol = "[ N ](bold yellow) ❯"
+
+# Text/Symbol shown when you use replacement chords (Visual/Replace mode)
+vimcmd_replace_one_symbol = "[ R ](bold purple) ❯"
+vimcmd_replace_symbol = "[ R ](bold purple) ❯"
+vimcmd_visual_symbol = "[ V ](bold magenta) ❯"
+

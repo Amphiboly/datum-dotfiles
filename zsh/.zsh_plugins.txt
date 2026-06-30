@@ -1,0 +1,9 @@
+# Essential plugins
+zdharma-continuum/fast-syntax-highlighting
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-history-substring-search
+# ALSO CONSIDER
+#  michel-kraemer/zsh-patina
+#    to replace
+#  zdharma-continuum/fast-syntax-highlighting
+#    for more complex pipeline and array support

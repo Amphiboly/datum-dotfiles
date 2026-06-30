@@ -1,0 +1,70 @@
+  theme = "onelight"
+
+[editor]
+line-number = "relative"     # Relative line numbering for easy vim-jumps
+cursorline = true            # Highlights the exact text row your cursor is on
+bufferline = "multiple"      # Shows a tab-bar on top only if multiple files are open
+
+[editor.cursor-shape]
+normal = "block"             # Solid block cursor for normal vim mode
+insert = "bar"               # Traditional vertical I-beam for text injection
+select = "underline"         # Underlined layout when blocks are highlighted
+
+[editor.indent-guides]
+render = true                # Shows elegant vertical guidelines for code scoping
+character = "┋"              # Style of the structural line divider
+skip-levels = 1              # Hides the first baseline guide to reduce code clutter
+
+[editor.whitespace.characters]
+  space = " "
+  tab = "→"
+  newline = "⏎"
+
+[editor.file-picker]
+  hidden = false
+
+[editor.statusline]
+separator = "│" 
+left = ["mode", "spacer", "spinner", "version-control", "spacer", "file-name", "file-modification-indicator"]
+center = []
+right = ["diagnostics", "workspace-diagnostics", "selections", "position", "position-percentage", "file-type"]
+
+# Rewrite default mode shorthand to custom strings if desired
+[editor.statusline.mode]
+normal = "NORMAL"
+insert = "INSERT"
+select = "VISUAL"
+
+[editor.lsp]
+  display-inlay-hints = true
+# alternative to above if that is irksome
+#[editor.inline-diagnostics]
+#  cursor-line = "hint" # Shows errors/warnings cleanly on your current active row
+
+[keys.normal]
+#  space = {"x" = ":toggle whitespace 'none' 'all'"}
+  # Pressing Tab cycles forward through your open files; Shift+Tab cycles backward
+  "tab" = ":buffer-next"
+  "S-tab" = ":buffer-previous"
+  "C-p" = ':lsp-workspace-command tinymist.pinMain "%sh{realpath %{buffer_name}}"'
+  # Closes the active file buffer cleanly without quitting Helix entirely
+  "C-w" = ":buffer-close"
+  # Press 'backspace' to jump directly to the next LSP warning/error in the file
+  "backspace" = "goto_next_diag"
+  # Press 'X' to select the current line and immediately spawn a multi-cursor 
+  # on all matching words down the document
+  "X" = ["select_mode", "extend_line"]
+  C-y = [
+    ':sh rm -f /tmp/yazi-helix-picker',
+    ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/yazi-helix-picker',
+    ':sh printf "\\x1b[?1049h\\x1b[?2004h" > /dev/tty',
+    ':open %sh{cat /tmp/yazi-helix-picker}',
+    ':redraw',
+    ':set mouse false',
+    ':set mouse true',
+  ]
+
+[keys.normal.space]
+T = ":sh typst compile \"%{buffer_name}\""
+x = ":toggle whitespace.render all none"
+

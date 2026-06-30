@@ -1,0 +1,419 @@
+{
+  "version": "4.6.0",
+  "buildDate": "2026-06-14T10:04:20.731Z",
+  "app": {
+    "openFiles": [
+      "/home/rik/Desktop/NixOS_on_old_Spectre/instructions_mango_noctalia.md"
+    ],
+    "openWorkspaces": [
+      "/home/rik/Projects/Quotations/pandoc version",
+      "/home/rik/Documents/Zettlr Tutorial"
+    ]
+  },
+  "openDirectory": "/home/rik/Desktop/NixOS_on_old_Spectre",
+  "dialogPaths": {
+    "askFileDialog": "/home/rik/Downloads",
+    "askDirDialog": "/home/rik/Projects/Quotations/pandoc version",
+    "askLangFileDialog": ""
+  },
+  "window": {
+    "nativeAppearance": false,
+    "vibrancy": false,
+    "fileManagerVisible": true,
+    "sidebarVisible": false,
+    "currentSidebarTab": "relatedFiles",
+    "recentGlobalSearches": []
+  },
+  "ui": {
+    "fileManagerSplitSize": [
+      20,
+      80
+    ],
+    "editorSidebarSplitSize": [
+      80,
+      20
+    ]
+  },
+  "attachmentExtensions": [],
+  "darkMode": false,
+  "alwaysReloadFiles": true,
+  "autoDarkMode": "off",
+  "autoDarkModeStart": "21:00",
+  "autoDarkModeEnd": "06:00",
+  "fileMeta": true,
+  "fileMetaTime": "modtime",
+  "sorting": "natural",
+  "sortFoldersFirst": true,
+  "muteLines": true,
+  "fileManagerMode": "combined",
+  "fileManagerShowFiles": false,
+  "fileManagerShowWorkspaces": true,
+  "fileNameDisplay": "title+heading",
+  "fileManager": {
+    "twoStepCollapseWorkspaces": false,
+    "sortWorkspacesManually": false
+  },
+  "newFileNamePattern": "%id.md",
+  "newFileDontPrompt": false,
+  "export": {
+    "dir": "temp",
+    "stripTags": false,
+    "autoOpenExportedFiles": true,
+    "enforceMarkSupport": true,
+    "stripLinks": "full",
+    "cslLibrary": "",
+    "cslStyle": "",
+    "useBundledPandoc": true,
+    "exportQmdWithQuarto": false,
+    "customCommands": [],
+    "selectedProfiles": [],
+    "lastUsedProfile": "HTML.yaml"
+  },
+  "zkn": {
+    "idRE": "(\\d{14})",
+    "idGen": "%Y%M%D%h%m%s",
+    "linkAddFileTitle": true,
+    "linkWithIDIfPossible": false,
+    "linkFormat": "link|title",
+    "autoSearch": true,
+    "customDirectory": ""
+  },
+  "editor": {
+    "autoSave": "off",
+    "autocompleteSuggestEmojis": true,
+    "snippetAutocompleteTriggerCharacter": ":",
+    "autoCloseBrackets": true,
+    "showLinkPreviews": true,
+    "showWhitespace": false,
+    "showMarkdownLineNumbers": false,
+    "defaultSaveImagePath": "",
+    "citeStyle": "regular",
+    "enableTableHelper": true,
+    "indentUnit": 4,
+    "indentWithTabs": false,
+    "alwaysIndentLineOnTab": false,
+    "fontSize": 18,
+    "countChars": false,
+    "inputMode": "default",
+    "boldFormatting": "**",
+    "italicFormatting": "_",
+    "highlightFormatting": "==",
+    "readabilityAlgorithm": "dale-chall",
+    "showStatusbar": true,
+    "showFormattingToolbar": true,
+    "lint": {
+      "markdown": true,
+      "languageTool": {
+        "active": true,
+        "level": "default",
+        "motherTongue": "",
+        "variants": {
+          "en": "en-US",
+          "de": "de-DE",
+          "pt": "pt-PT",
+          "ca": "ca-ES"
+        },
+        "ignoredRules": [],
+        "provider": "official",
+        "customServer": "",
+        "username": "",
+        "apiKey": ""
+      }
+    },
+    "autoCorrect": {
+      "active": true,
+      "magicQuotes": {
+        "primary": "\"…\"",
+        "secondary": "'…'"
+      },
+      "replacements": [
+        {
+          "key": "-->",
+          "value": "→"
+        },
+        {
+          "key": "–>",
+          "value": "→"
+        },
+        {
+          "key": "<--",
+          "value": "←"
+        },
+        {
+          "key": "<->",
+          "value": "↔"
+        },
+        {
+          "key": "<-->",
+          "value": "↔"
+        },
+        {
+          "key": "==>",
+          "value": "⇒"
+        },
+        {
+          "key": "<==",
+          "value": "⇐"
+        },
+        {
+          "key": "<=>",
+          "value": "⇔"
+        },
+        {
+          "key": "<==>",
+          "value": "⇔"
+        },
+        {
+          "key": "!=",
+          "value": "≠"
+        },
+        {
+          "key": "<>",
+          "value": "≠"
+        },
+        {
+          "key": "+-",
+          "value": "±"
+        },
+        {
+          "key": ":time:",
+          "value": "×"
+        },
+        {
+          "key": ":division:",
+          "value": "÷"
+        },
+        {
+          "key": "<=",
+          "value": "≤"
+        },
+        {
+          "key": ">=",
+          "value": "≥"
+        },
+        {
+          "key": "1/2",
+          "value": "½"
+        },
+        {
+          "key": "1/3",
+          "value": "⅓"
+        },
+        {
+          "key": "2/3",
+          "value": "⅔"
+        },
+        {
+          "key": "1/4",
+          "value": "¼"
+        },
+        {
+          "key": "3/4",
+          "value": "¾"
+        },
+        {
+          "key": "1/8",
+          "value": "⅛"
+        },
+        {
+          "key": "3/8",
+          "value": "⅜"
+        },
+        {
+          "key": "5/8",
+          "value": "⅝"
+        },
+        {
+          "key": "7/8",
+          "value": "⅞"
+        },
+        {
+          "key": "mm2",
+          "value": "mm²"
+        },
+        {
+          "key": "cm2",
+          "value": "cm²"
+        },
+        {
+          "key": "m2",
+          "value": "m²"
+        },
+        {
+          "key": "km2",
+          "value": "km²"
+        },
+        {
+          "key": "mm3",
+          "value": "mm³"
+        },
+        {
+          "key": "cm3",
+          "value": "cm³"
+        },
+        {
+          "key": "ccm",
+          "value": "cm³"
+        },
+        {
+          "key": "m3",
+          "value": "m³"
+        },
+        {
+          "key": "km3",
+          "value": "km³"
+        },
+        {
+          "key": ":sup2:",
+          "value": "²"
+        },
+        {
+          "key": ":sup3:",
+          "value": "³"
+        },
+        {
+          "key": ":deg:",
+          "value": "°"
+        },
+        {
+          "key": ":eur",
+          "value": "€"
+        },
+        {
+          "key": ":gbp",
+          "value": "£"
+        },
+        {
+          "key": ":yen",
+          "value": "¥"
+        },
+        {
+          "key": ":cent",
+          "value": "¢"
+        },
+        {
+          "key": ":inr:",
+          "value": "₹"
+        },
+        {
+          "key": "(c)",
+          "value": "©"
+        },
+        {
+          "key": "(tm)",
+          "value": "™"
+        },
+        {
+          "key": "(r)",
+          "value": "®"
+        },
+        {
+          "key": "...",
+          "value": "…"
+        },
+        {
+          "key": "--",
+          "value": "–"
+        },
+        {
+          "key": "---",
+          "value": "—"
+        }
+      ],
+      "matchWholeWords": false
+    }
+  },
+  "display": {
+    "theme": "berlin",
+    "hideToolbarInDistractionFree": false,
+    "markdownFileExtensions": false,
+    "previewModeShowSyntaxWhenCursorIsAdjacent": true,
+    "imageWidth": 100,
+    "imageHeight": 50,
+    "renderingMode": "raw",
+    "renderCitations": true,
+    "renderIframes": true,
+    "renderImages": true,
+    "renderLinks": true,
+    "renderMath": true,
+    "renderTasks": true,
+    "renderHTags": true,
+    "renderEmphasis": true,
+    "renderPandoc": true,
+    "renderHorizontalRules": true
+  },
+  "files": {
+    "builtin": {
+      "showInFilemanager": true,
+      "showInSidebar": false,
+      "openWith": "zettlr"
+    },
+    "images": {
+      "showInFilemanager": true,
+      "showInSidebar": false,
+      "openWith": "zettlr"
+    },
+    "pdf": {
+      "showInFilemanager": true,
+      "showInSidebar": false,
+      "openWith": "zettlr"
+    },
+    "msoffice": {
+      "showInFilemanager": false,
+      "showInSidebar": true,
+      "openWith": "system"
+    },
+    "openOffice": {
+      "showInFilemanager": false,
+      "showInSidebar": true,
+      "openWith": "system"
+    },
+    "dataFiles": {
+      "showInFilemanager": false,
+      "showInSidebar": true,
+      "openWith": "system"
+    },
+    "dotFiles": {
+      "showInFilemanager": false,
+      "showInSidebar": false,
+      "openWith": "system"
+    }
+  },
+  "selectedDicts": [
+    "en-US"
+  ],
+  "appLang": "en-US",
+  "debug": false,
+  "watchdog": {
+    "activatePolling": false,
+    "stabilityThreshold": 1000
+  },
+  "system": {
+    "deleteOnFail": false,
+    "leaveAppRunning": false,
+    "avoidNewTabs": false,
+    "iframeWhitelist": [
+      "www.youtube.com",
+      "player.vimeo.com"
+    ],
+    "checkForUpdates": true,
+    "zoomBehavior": "gui"
+  },
+  "checkForBeta": true,
+  "displayToolbarButtons": {
+    "showOpenPreferencesButton": true,
+    "showNewFileButton": true,
+    "showPreviousFileButton": true,
+    "showNextFileButton": true,
+    "showPandocDivSpanButton": true,
+    "showMarkdownCommentButton": true,
+    "showMarkdownLinkButton": true,
+    "showMarkdownImageButton": true,
+    "showMarkdownMakeTaskListButton": true,
+    "showInsertTableButton": true,
+    "showInsertFootnoteButton": true,
+    "showDocumentInfoText": true,
+    "showPomodoroButton": true
+  },
+  "uuid": "a132002f-5190-4deb-bdef-ab20677ced0f"
+}

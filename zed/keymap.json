@@ -1,0 +1,22 @@
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // Cleanly closes the whole workspace window using standard Linux keys
+      "ctrl-w": "workspace::CloseWindow",
+    },
+  },
+  {
+    "context": "VimControl",
+    "bindings": {
+      // Triggers Zed's command palette to force a write and close action sequence
+      ": q": "workspace::CloseWindow",
+      ": w q": ["workspace::SendKeystrokes", ": w enter : q enter"],
+      ": x": ["workspace::SendKeystrokes", ": w enter : q enter"],
+
+      // Traditional Vim uppercase shortcuts using the keystroke simulator
+      "Z Z": ["workspace::SendKeystrokes", ": w enter : q enter"],
+      "Z Q": "workspace::CloseWindow",
+    },
+  },
+]
