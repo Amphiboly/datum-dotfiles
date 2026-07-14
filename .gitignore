@@ -1,0 +1,20 @@
+ --- Nix / NixOS Build Output Tracks ---
+result
+result-*
+.direnv/
+.vda.qcow2
+*.qcow2
+
+# --- Temporary Editor Buffers and Swap Tracks ---
+*.swp
+*~
+.DS_Store
+
+--- Volatile Local Cache Keys ---
+keys.txt
+
+--- Encoded Secrets ---
+secrets.yaml
+
+--- Other stuff as needed ---
+
