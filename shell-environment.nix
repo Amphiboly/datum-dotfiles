@@ -156,7 +156,8 @@
           fi
       }
 
-      # FIX: Removed the legacy 'ghx()' block entirely to keep paths pristine
+      # 3. Inject zoxide shell initialization
+      eval "$(zoxide init zsh)"
 
       # 4. Fastfetch environment detection logo engine
       fastfetch_dynamic() {

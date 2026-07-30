@@ -105,6 +105,7 @@
   nix.settings.auto-optimise-store = true;
 
   environment.systemPackages = with pkgs; [
+    home-manager
     git
     wl-clipboard # native wayland clipboard manager used by niri/ghostty
     cifs-utils # mount helper binaries required by your windows smb share
@@ -118,7 +119,7 @@
     # 5CD-RACK TAILSCALE SMB/CIFS NETWORK SHARES MATRIX
     "/mnt/5CDbackup" = {
       # Natively links to your static, secure Tailscale network rack share endpoint
-      device = "//100.75.108.83/n/datum";
+      device = "//100.76.108.83/n/datum";
       fsType = "cifs";
       options = [
         # --- Core Automation & Network Startup Syncing Hooks ---
@@ -135,7 +136,7 @@
         "dir_mode=0777" # Permissive directory clearance matched from host string
 
         # --- Cryptographic Security Keys Pipeline Link ---
-        "credentials=/run/secrets/w11-cifs-credentials"
+        "credentials=/run/secrets/w11-cifs-password"
 
         # --- High-Performance Network Driver Options ---
         "vers=3.1.1" # Forces your host's crisp SMB 3.1.1 security protocol
@@ -166,11 +167,15 @@
     alsa.support32Bit = true;
   };
 
+  # =========================================================================
   # 12. MESH NETWORKING VIA TAILSCALE
+  # =========================================================================
   services.tailscale.enable = true;
   networking.firewall.trustedInterfaces = ["tailscale0"];
 
+  # =========================================================================
   # 13. Declarative Fonts System Configuration Mappings
+  # =========================================================================
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
@@ -182,7 +187,9 @@
     ];
   };
 
+  # =========================================================================
   # 14. CORE CUPS WEB SERVICE PRINTING LAYOUT
+  # =========================================================================
   services.printing = {
     enable = true;
 
@@ -204,12 +211,33 @@
     extraBackends = [pkgs.sane-airscan]; # Enables driverless network scanning profiles
   };
 
+## # =========================================================================
+## # 15. NATIVE BIOMETRIC HARDWARE MATRIX: WINDOWS HELLO (HOWDY) ENGINE
+## # =========================================================================
+## services.howdy = {
+##   enable = true;
+##   control = "sufficient";
+##   settings.core = {
+##     device_path = "/dev/video1";
+##     video_profile = "high";
+##     certainty = 3.5;
+##     dark_threshold = 50;
+##     recording_plugin = "opencv";
+##   };
+## };
+## security.pam.services.sudo.text = pkgs.lib.mkBefore ''
+##   auth sufficient pam_howdy.so
+## '';
+
+  # =========================================================================
   # MORE
+  # =========================================================================
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = false;
   };
   programs.kdeconnect.enable = true;
+
 
   # 99. Deployment Target Generation Cycle API Anchor
   system.stateVersion = "26.05";

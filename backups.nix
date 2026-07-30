@@ -30,7 +30,7 @@
     daily-backup = {
       initialize = true;
       paths = ["/home/rik"];
-      exclude = ["/home/rik/Downloads" "/home/rik/.cache" "/home/rik/Dropbox"];
+      exclude = ["/home/rik/Downloads" "/home/rik/.cache" "/home/rik/Dropbox" "/home/rik/DropboxData"];
 
       repository = "/mnt/5CDbackup";
       passwordFile = config.sops.secrets."restic-vault-password".path;

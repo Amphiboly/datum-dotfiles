@@ -4,35 +4,42 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixgl.url = "github:guibou/nixGL";
-    noctalia.url = "github:noctalia-dev/noctalia";
-    ghostty.url = "github:ghostty-org/ghostty";
-    home-manager.url = "github:nix-community/home-manager";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    nur.url = "github:nix-community/NUR";
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     disko.url = "github:nix-community/disko";
-    sops-nix.url = "github:Mic92/sops-nix";
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-    lanzaboote.url = "github:nix-community/lanzaboote/master";
-    lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
+    nur.url = "github:nix-community/NUR";
+    home-manager = {
+      url = "github:nix-community/home-manager"; 
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     noctalia-greeter = {
       url = "github:noctalia-dev/noctalia-greeter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    noctalia.url = "github:noctalia-dev/noctalia";
+    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs = {
     self,
     nixpkgs,
     nixgl,
-    noctalia,
-    ghostty,
-    home-manager,
-    nur,
+    nixos-hardware,
     disko,
+    nur,
+    home-manager,
     sops-nix,
     lanzaboote,
-    nixos-hardware,
+    noctalia-greeter,
+    noctalia,
+    ghostty,
     ...
   } @ inputs: let
     # =========================================================================
@@ -63,6 +70,9 @@
       pkgs,
       ...
     }: {
+      # =========================================================================
+      #  FLAKE OVERLAYS MATRIX
+      # =========================================================================
       nixpkgs.overlays = [
         nixgl.overlay
         nur.overlays.default
@@ -70,6 +80,23 @@
         (final: prev: {
           cantarell-fonts = final.emptyDirectory;
         })
+##    # --- Biometric Fix Layer ---
+##    (final: prev: {
+##      # 1 Patch OpenCV globally to drop the broken geo-spatial compilation layers
+##      opencf = prev.opencv.override {
+##        enableGdal = false;
+##        enablePdal = false;
+##      };
+##      # 2 python face recognition test bypass
+##      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+##        (python-final: python-prev: {
+##          face-recognition = python-prev.face-recognition.overrideAttrs (oldAttrs: {
+##            doCheck = false;
+##            doInstallCheck = false;
+##          });
+##        })
+##      ];
+##    })
       ];
       nixpkgs.config.allowUnfree = true;
 
@@ -77,7 +104,9 @@
         defaultSopsFile = ./secrets.yaml;
         validateSopsFiles = false;
         secrets = {
-          "w11-cifs-password" = {};
+          "w11-cifs-password" = {
+            key = "w11-cifs-credentials";
+          };
           "rik-password-hash" = {neededForUsers = true;};
         };
       };
@@ -108,6 +137,7 @@
 
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      home-manager.backupFileExtension = "backup";
       home-manager.sharedModules = [
         {systemd.user.startServices = "sd-switch";}
       ];

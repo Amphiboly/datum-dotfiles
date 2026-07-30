@@ -17,110 +17,238 @@ in {
     # Main terminal
     ghostty
 
+    # Nix utilities
+    nvd
+    
+    # Foundational Unix Utility Layer left out by NixOS:
+    e2fsprogs
+    file
+    tree
+    unzip
+    wget
+    which
+
+    # Just for fun (or the animal names)
+    cowsay
+    tealdeer
+    
     # Daily Productivity Suites
+    dropbox
+    glow
     libreoffice-fresh
-    thunderbird
-    zotero
+#   thunderbird
     zettlr
+    zotero
 
     # Cloud storage and security
     _1password-cli
     _1password-gui
-    dropbox-cli
   ];
+ 
+  # =========================================================================
+  # 1. CLEAN THUNDERBIRD MAIN SYSTEM BLOCK
+  # =========================================================================
+  programs.thunderbird = {
+    enable = true;
+    profiles.default = {
+      isDefault = true;
+    };
+  };
+          
+  # =========================================================================
+  # 2. THE EMAIL ACCOUNTS MODULE
+  # =========================================================================
+  accounts.email.accounts = {
+    "panix-mail" = {
+      primary = true;
+      realName = "Rik Kabel";
+      address = "rik@panix.com";
+      userName = "rik@panix.com";
+      flavor = "plain";
+      imap = { host = "mail.panix.com"; port = 993; tls.enable = true; };
+      smtp = { host = "mail.panix.com"; port = 587; tls = { enable = true; useStartTls = true; }; };
+      thunderbird = { enable = true; profiles = [ "default" ]; };
+    };
 
+    "spectrum-mail" = {
+      realName = "Richard Kabel";
+      address = "kabel5cd@charter.net";
+      userName = "kabel5cd@charter.net";
+      flavor = "plain";
+      imap = { host = "mobile.charter.net"; port = 993; tls = { enable = true; useStartTls = false; }; };  
+      smtp = { host = "mobile.charter.net"; port = 587; tls = { enable = true; useStartTls = true; }; };
+      thunderbird = {
+         enable = true;
+         profiles = [ "default" ];
+         settings = id: {
+           "mail.server.server_${id}.socketType" = 3;
+           "mail.smtpserver.smtp_${id}.socketType" = 2;
+         };
+      };
+    };
+
+    "gmail-personal" = {
+      realName = "Rik Kabel";
+      address = "amphiboly@gmail.com";
+      userName = "amphiboly@gmail.com";
+      flavor = "gmail.com";
+      thunderbird = {
+        enable = true; profiles = [ "default" ];
+        settings = id: { "mail.server.server_${id}.authMethod" = 10; "mail.smtpserver.smtp_${id}.authMethod" = 10; }; #
+      };
+    };
+
+    "gmail-backup" = {
+      realName = "Rik Kabel";
+      address = "amphiboly.backup@gmail.com";
+      userName = "amphiboly.backup@gmail.com";
+      flavor = "gmail.com";
+      thunderbird = {
+        enable = true; profiles = [ "default" ];
+        settings = id: { "mail.server.server_${id}.authMethod" = 10; "mail.smtpserver.smtp_${id}.authMethod" = 10; }; #
+      };
+    };
+
+    "gmail-HOA" = {
+      realName = "Cornwall Association";
+      address = "Cornwall.HOA@gmail.com";
+      userName = "Cornwall.HOA@gmail.com";
+      flavor = "gmail.com";
+      thunderbird = {
+        enable = true; profiles = [ "default" ];
+        settings = id: { "mail.server.server_${id}.authMethod" = 10; "mail.smtpserver.smtp_${id}.authMethod" = 10; }; #
+      };
+    };
+  };
+ 
+  # =========================================================================
+  # NATIVE INFRASTRUCTURE DEPLOYMENT: REMMINA WITH COUPLING PLUGINS
+  # =========================================================================
+  services.remmina = {
+    enable = true;
+    addRdpMimeTypeAssoc = true;
+  };
+ 
+  # =========================================================================
+  # NIXOS WIKI SPECIFICATION: DIRECT DROPBOX DAEMON DEPLOYMENT
+  # =========================================================================
+# systemd.user.services.dropbox-wiki = {
+#   Unit = {
+#     Description = "Dropbox service";
+#   };
+#   Install = {
+#     WantedBy = [ "default.target" ];
+#   };
+#   Service = {
+#     # Runs the native patched binary directly outside broken sandbox wrappers
+#     ExecStart = "${pkgs.dropbox}/bin/dropbox";
+#     Restart = "on-failure";
+#   };
+# };
+
+  # =========================================================================
   # IDIOMATIC GHOSTTY THEME CONFIGURATION
-  xdg.configFile."ghostty/config".text = ''
-    theme = light:"Ayu Light",dark:"Night Owl"
-    font-size = 8
-    shell-integration = zsh
-    shell-integration-features = sudo
-  '';
+  # =========================================================================
+  xdg.configFile."ghostty/config"= {
+    text = ''
+      theme = light:"Ayu Light",dark:"Night Owl"
+      font-size = 8
+      shell-integration = zsh
+      shell-integration-features = sudo
+    '';
+    force = true;
+  };
 
+  # =========================================================================
   # NOCTALIA Setup
+  # =========================================================================
   # A mutable text file asset rather than a read-only store path symlink
   home.file.".config/noctalia/noctalia.toml" = {
     source = noctaliaConfigFile;
     force = true;
   };
 
+  # ========================================================================
   # IDIOMATIC WALLPAPER ASSET DEPLOYMENT
+  # =========================================================================
   home.file = {
     "Pictures/wallpapers/rose_pine.png".source = ./assets/rose_pine.png;
     "Pictures/wallpapers/flexoki.png".source = ./assets/flexoki.png;
   };
 
+  # =========================================================================
   # IDIOMATIC NIRI WINDOW MANAGER CONFIGURATION (Owned perfectly by user rik)
+  # =========================================================================
+  home.pointerCursor = {
+    enable = true;
+    gtk.enable=true;
+    x11.enable=true;
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 24;
+  };
   xdg.configFile."niri/config.kdl".text = ''
-        input {
-            keyboard {
-                xkb {
-                    layout "us"
-                }
-                repeat-delay 250
-                repeat-rate 35
-            }
-            touchpad {
-                tap
-                natural-scroll
-            }
-        }
-
-        layout {
-            gaps 10
-            default-column-width { proportion 0.5; }
-            focus-ring {
-                width 4
-                active-color "#7aa2f7"
-                inactive-color "#414868"
-            }
-        }
-
-        binds {
-            // --- Core Responsive Terminal Trigger ---
-            Mod+T { spawn "ghostty"; }
-
-            // --- Web Browser Bind ---
-            Mod+B { spawn "firefox"; }
-
-            // --- Window & Layout Actions ---
-            Mod+Shift+Q { close-window; }
-            Mod+Left    { focus-column-left; }
-            Mod+Right   { focus-column-right; }
-            Mod+Up      { focus-window-or-workspace-up; }
-            Mod+Down    { focus-window-or-workspace-down; }
-
-            // --- View Manipulation ---
-            Mod+O       { toggle-overview; }
-
-            // --- System Controls ---
-            Mod+Shift+Slash { show-hotkey-overlay; }
-            Mod+Shift+E     { quit; }
-    //      Mod+Shift+R     { spawn "niri" "msg" "action" "reload-config"; }
-            Mod+Shift+R     { spawn "sh" "-c" "niri msg action load-config-file && niri msg action reload-config-noctalia || pkill -USR1 noctalia"; }
-
-            // --- Column & Workspace Positioning Layout Controls ---
-            Mod+Shift+Left  { move-column-left; }
-            Mod+Shift+Right { move-column-right; }
-            Mod+R           { switch-preset-column-width; }
-            Mod+F           { maximize-column; }
-            Mod+Shift+F     { fullscreen-window; }
-
-            Mod+V           { toggle-window-floating; }
-            Mod+Shift+V     { switch-focus-between-floating-and-tiling; }
-
-            // --- Launcher & Hardware Mechanics ---
-            Mod+D       { spawn "sh" "-c" "noctalia || launcher"; }
-            Mod+P       { spawn "fuzzel"; }
-        }
-
-        output "eDP-1" {
-          background-color "#1a1b26"
-        }
-
-        spawn-at-startup "sh" "-c" "sleep 1 && noctalia"
+       input {
+           keyboard {
+               xkb {
+                   layout "us"
+               }
+               repeat-delay 250
+               repeat-rate 35
+           }
+           touchpad {
+               tap
+               natural-scroll
+           }
+       }
+       layout {
+           gaps 10
+           default-column-width { proportion 0.5; }
+           focus-ring {
+               width 4
+               active-color "#7aa2f7"
+               inactive-color "#414868"
+           }
+       }
+       binds {
+           // --- Core Responsive Terminal Trigger ---
+           Mod+T { spawn "ghostty"; }
+           // --- Web Browser Bind ---
+           Mod+B { spawn "firefox"; }
+           // --- Window & Layout Actions ---
+           Mod+Shift+Q { close-window; }
+           Mod+Left    { focus-column-left; }
+           Mod+Right   { focus-column-right; }
+           Mod+Up      { focus-window-or-workspace-up; }
+           Mod+Down    { focus-window-or-workspace-down; }
+           // --- View Manipulation ---
+           Mod+O       { toggle-overview; }
+           // --- System Controls ---
+           Mod+Shift+Slash { show-hotkey-overlay; }
+           Mod+Shift+E     { quit; }
+   //      Mod+Shift+R     { spawn "niri" "msg" "action" "reload-config"; }
+           Mod+Shift+R     { spawn "sh" "-c" "niri msg action load-config-file && niri msg action reload-config-noctalia || pkill -USR1 noctalia"; }
+           // --- Column & Workspace Positioning Layout Controls ---
+           Mod+Shift+Left  { move-column-left; }
+           Mod+Shift+Right { move-column-right; }
+           Mod+R           { switch-preset-column-width; }
+           Mod+F           { maximize-column; }
+           Mod+Shift+F     { fullscreen-window; }
+           Mod+V           { toggle-window-floating; }
+           Mod+Shift+V     { switch-focus-between-floating-and-tiling; }
+           // --- Launcher & Hardware Mechanics ---
+           Mod+D       { spawn "sh" "-c" "noctalia || launcher"; }
+           Mod+P       { spawn "fuzzel"; }
+       }
+       output "eDP-1" {
+         background-color "#1a1b26"
+       }
+       spawn-at-startup "sh" "-c" "sleep 1 && noctalia"
   '';
+
+  # =========================================================================
   # FIREFOX SETUP
+  # =========================================================================
   programs.firefox = {
     enable = true;
     profiles.default = {
@@ -184,7 +312,9 @@ in {
     };
   };
 
+  # =========================================================================
   # DECLARATIVE VIM & GVIM CUSTOMIZATION LAYER
+  # =========================================================================
   programs.vim = {
     enable = true;
 
@@ -231,13 +361,10 @@ in {
      execOnce="sh -c 'sleep 2 && firefox'"
      execOnce="sh -c 'sleep 4 && ghostty'"
 
-     # ---------------------------------------------------------
-     # Core Global Layout Parameters
-     # ---------------------------------------------------------
-     scroller_structs=100
+    scroller_structs=100
      scroller_default_proportion=0.55
+     trackpad_natural_scrolling=1
 
-    # Overview Setting
     hotarea_size=10
     enable_hotarea=0
     ov_tab_mode=1
@@ -245,8 +372,6 @@ in {
     overviewgappi=5
     overviewgappo=30
 
-    # --- VIEW ACTIONS (Switching Views) ---
-    # Press Super + [1-9] to switch directly to that specific tag view
     bind = Super, 1, view, 1
     bind = Super, 2, view, 2
     bind = Super, 3, view, 3
@@ -257,8 +382,6 @@ in {
     bind = Super, 8, view, 8
     bind = Super, 9, view, 9
 
-    # --- COMBO VIEWS (Toggle Multiple Tags Simultaneously) ---
-    # Press Super + Ctrl + [1-9] to pull additional tags into your current view
     bind = Super+Ctrl, 1, toggleview, 1
     bind = Super+Ctrl, 2, toggleview, 2
     bind = Super+Ctrl, 3, toggleview, 3
@@ -269,8 +392,6 @@ in {
     bind = Super+Ctrl, 8, toggleview, 8
     bind = Super+Ctrl, 9, toggleview, 9
 
-    # --- TAG MANAGEMENT (Moving Windows to Tags) ---
-    # Press Super + Shift + [1-9] to tag the active window
     bind = Super+Shift, 1, tag, 1
     bind = Super+Shift, 2, tag, 2
     bind = Super+Shift, 3, tag, 3
@@ -281,8 +402,6 @@ in {
     bind = Super+Shift, 8, tag, 8
     bind = Super+Shift, 9, tag, 9
 
-    # --- TOGGLE WINDOW MULTI-TAGS ---
-    # Press Super + Alt + [1-9] to assign a window to an extra tag
     bind = Super+Alt, 1, toggletag, 1
     bind = Super+Alt, 2, toggletag, 2
     bind = Super+Alt, 3, toggletag, 3
@@ -293,34 +412,22 @@ in {
     bind = Super+Alt, 8, toggletag, 8
     bind = Super+Alt, 9, toggletag, 9
 
-    # --- VIEW ALL TAGS ---
-    # Press Super + 0 to look at all windows across all tags
     bind = Super, 0, view, all
 
-     # ---------------------------------------------------------
-     # GLOBAL COMMON ENVIRONMENT ACTIONS
-     #   Binds declared under 'common' evaluate identically across all modes
-     # ---------------------------------------------------------
-     keymode=common
-     bind=SUPER,R,reload_config
+    keymode=common
+    bind=SUPER,R,reload_config
 
-     # ---------------------------------------------------------
-     # DEFAULT COMPOSITOR OPERATIONAL MODE BINDINGS
-     # ---------------------------------------------------------
-     keymode=default
+    keymode=default
 
-     # Core Application Launchers (Lowercase key triggers for single-tap usage)
      bind=SUPER,Return,spawn,ghostty
      bind=SUPER,t,spawn,ghostty
      bind=SUPER,p,spawn,fuzzel
      bind=SUPER,b,spawn,firefox
      bind=SUPER,z,spawn,zed
 
-     # Help and overview
      bind=ALT,Tab,toggleoverview,
      bind=SUPER,o,toggleoverlay,
 
-     # Layout Tiling Mode Toggles
      bind=SUPER,space,setlayout,scroller
      bind=SUPER,m,setlayout,monocle
      bind=SUPER,f,setlayout,center_tile
@@ -328,35 +435,23 @@ in {
      bind=SUPER,v,togglefloating
      bind=SUPER+SHIFT,v,togglefullscreen
 
-     # Core Window & Session Management Commands
      bind=SUPER,q,killclient,
      bind=SUPER+SHIFT,e,quit,
 
-     # Mode Shifts jumping into your resize submap block
      bind=SUPER,F,setkeymode,resize
 
-     # ---------------------------------------------------------
-     # ACTIVE INTERACTIVE RESIZE/MOVE WINDOWS MODE BINDINGS
-     # ---------------------------------------------------------
      keymode=resize
-     # Arrow manipulation maps processing window scaling directions
      bind=NONE,Left,resizewin,-10,+0
      bind=NONE,Right,resizewin,+10,+0
      bind=NONE,Up,resizewin,+0,-10
      bind=NONE,Down,resizewin,+0,+10
-     # Shift arrow moves windows
      bind=NONE+SHIFT,Left,movewin,-50,+0
      bind=NONE+SHIFT,Right,movewin,+50,+0
      bind=NONE+SHIFT,Up,movewin,+0,-50
      bind=NONE+SHIFT,Down,movewin,+0,+50
-     # Safety breakout return loop resetting keymaps back to default space
      bind=NONE,Escape,setkeymode,default
      bind=NONE,Return,setkeymode,default
 
-     # ---------------------------------------------------------
-     # Experimental
-     # ---------------------------------------------------------
-     # Window effect
      blur=0
      blur_layer=0
      blur_optimized=1
@@ -381,8 +476,6 @@ in {
      focused_opacity=1.0
      unfocused_opacity=1.0
 
-     # Animation Configuration(support type:zoom,slide)
-     # tag_animation_direction: 1-horizontal,0-vertical
      animations=1
      layer_animations=1
      animation_type_open=slide
@@ -407,12 +500,10 @@ in {
      animation_curve_opafadeout=0.5,0.5,0.5,0.5
      animation_curve_opafadein=0.46,1.0,0.29,1
 
-     # --- Noctalia v5 Core Core Interface Keys ---
      bind=SUPER, space, spawn, noctalia msg panel-toggle launcher
      bind=SUPER, s,     spawn, noctalia msg panel-toggle control-center
      bind=SUPER, comma, spawn, noctalia msg settings-toggle
 
-     # --- Hardware Media Key Mapping ---
      bind=NONE, XF86AudioRaiseVolume,   spawn, noctalia msg volume-up
      bind=NONE, XF86AudioLowerVolume,   spawn, noctalia msg volume-down
      bind=NONE, XF86AudioMute,          spawn, noctalia msg volume-mute
@@ -472,4 +563,22 @@ in {
       "application/x-shellscript" = ["zed.desktop"];
     };
   };
+  # =========================================================================
+  #  TERMINAL NAVIGATION & SHELL HOOKS
+  # =========================================================================
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+  # =========================================================================
+  # DESKTOP ENTRY COMPOSITOR ALIGNMENT
+  # =========================================================================
+  xdg.desktopEntries.yazi = {
+    name = "Yazi";
+    exec = "ghostty -e yazi %u";
+    terminal = false;
+    icon = "yazi";
+    categories = [ "System" "FileTransfer" ];
+  };
+
 }
