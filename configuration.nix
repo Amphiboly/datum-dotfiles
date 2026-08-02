@@ -31,47 +31,29 @@
   };
 
   # =========================================================================
-  # 6. GRAPHICAL NOCTALIA V5 INTERACTIVE GREETER MATRIX
+  #  6. COSMIC DESKTOP ENVIRONMENT CONFIGURATION MATRIX
   # =========================================================================
-  imports = [
-    inputs.noctalia-greeter.nixosModules.default
-  ];
-  services.displayManager = {
-    enable = true;
-    sessionPackages = [
-      (pkgs.runCommandLocal "mangowc-session" {
-          passthru.providedSessions = ["mango"];
-        } ''
-          mkdir -p $out/share/wayland-sessions
-          cat << 'EOF' > $out/share/wayland-sessions/mango.desktop
-          [Desktop Entry]
-          Name=Mango
-          Comment=MangoWC - High Performance Modal Wayland Tiling Compositor
-          Exec=${pkgs.mango}/bin/mangowc
-          Type=Application
-          EOF
-        '')
-      pkgs.niri
-    ];
-  };
-  environment.etc = {
-    "mango/config.conf".text = config.home-manager.users.rik.xdg.configFile."mango/config.conf".text;
-  };
-  programs.noctalia-greeter = {
-    enable = true;
-    settings = {
-      cursor = {
-        theme = "Bibata-Modern-Ice";
-        size = 24;
-        path = "${pkgs.bibata-cursors}/share/icons";
-      };
-      keyboard = {
-        layout = "us";
-      };
-    };
-  };
+  services.desktopManager.cosmic.enable = true;
+  services.displayManager.cosmic-greeter.enable = true;
+  services.system76-scheduler.enable = true;
   services.accounts-daemon.enable = true;
 
+  # =========================================================================
+  #  HARDWARE BATTERY OPTIMIZATION VIA TLP
+  # =========================================================================
+  services.power-profiles-daemon.enable = lib.mkForce false;
+  services.upower.enable = true;
+
+  services.tlp = {
+    enable = true;
+    settings = {
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+    };
+  };
+ 
   # =========================================================================
   # 7. System User Management & Security Profiles
   # =========================================================================
@@ -101,8 +83,10 @@
     dates = "weekly"; # Wakes up automatically every week to clear dead packages [a]
     options = "--delete-older-than 7d"; # Safely preserves your last 7 days of rollbacks [a]
   };
-  # Automatically hardlink duplicate files in the background on a continuous loop [a]
-  nix.settings.auto-optimise-store = true;
+  nix.settings = {
+    auto-optimise-store = true;
+    experimental-features = [ "nix-command" "flakes" ];
+  };
 
   environment.systemPackages = with pkgs; [
     home-manager
@@ -112,9 +96,12 @@
     tailscale # client cli companion for your mesh vpn daemon
     remmina
     freerdp
+    rustic
   ];
 
+  # =========================================================================
   #  # 10. Filesystems
+  # =========================================================================
   fileSystems = {
     # 5CD-RACK TAILSCALE SMB/CIFS NETWORK SHARES MATRIX
     "/mnt/5CDbackup" = {
@@ -146,6 +133,11 @@
         "iocharset=utf8"
       ];
     };
+    "/mnt/btrfs-root" = {
+      device = "/dev/nvme0n1p3";
+      fsType = "btrfs";
+      options = [ "subvolid=5" "noatime" ];
+    };
   };
 
   # =========================================================================
@@ -157,9 +149,14 @@
     # 'h' forces systemd to apply the strict +C (NOCOW/No-Compression) flag atomically [a]
     "d /home/rik/Dropbox 0700 rik users - -"
     "h /home/rik/Dropbox - - - - +C"
+    # Automatically ensures /mnt/btrfs-root/.snapshots/home exists with 
+    # secure root-only permissions (0700) on every single boot sequence [a].
+    "d /mnt/btrfs-root/.snapshots/home 0700 root root - -"
   ];
 
+  # =========================================================================
   # 11. Enable built-in native PipeWire audio server
+  # =========================================================================
   security.rtkit.enable = true; # Required for high-priority audio threads
   services.pipewire = {
     enable = true;
@@ -179,11 +176,25 @@
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
-      nerd-fonts.jetbrains-mono # Native 26.11 structure for JetBrainsMono Nerd Font
+      nerd-fonts.jetbrains-mono
       cascadia-code
       noto-fonts
       noto-fonts-cjk-sans
       dejavu_fonts
+      (stdenv.mkDerivation {
+        pname = "unifrakturmaguntia";
+        version = "2017-03-19";
+        src = fetchurl {
+          url = "mirror://sourceforge/unifraktur/fonts/UnifrakturMaguntia.2017-03-19.zip";
+          hash = "sha256-+j0JOeGYwP/FkhizdagYog7Kra9fw9OaIyKglavwz5o=";
+        };
+        nativeBuildInputs = [ unzip ];
+        unpackPhase = "unzip $src";
+        installPhase = ''
+          mkdir -p $out/share/fonts/truetype
+          find . -name "*.ttf" -exec install -Dm644 {} $out/share/fonts/truetype/ \;
+        '';
+      })
     ];
   };
 
@@ -210,24 +221,92 @@
     enable = true;
     extraBackends = [pkgs.sane-airscan]; # Enables driverless network scanning profiles
   };
+  
+  # =========================================================================
+  # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
+  # =========================================================================
+  services.howdy = {
+    enable = true;
+    control = "sufficient";
 
-## # =========================================================================
-## # 15. NATIVE BIOMETRIC HARDWARE MATRIX: WINDOWS HELLO (HOWDY) ENGINE
-## # =========================================================================
-## services.howdy = {
-##   enable = true;
-##   control = "sufficient";
-##   settings.core = {
-##     device_path = "/dev/video1";
-##     video_profile = "high";
-##     certainty = 3.5;
-##     dark_threshold = 50;
-##     recording_plugin = "opencv";
-##   };
-## };
-## security.pam.services.sudo.text = pkgs.lib.mkBefore ''
-##   auth sufficient pam_howdy.so
-## '';
+    settings = {
+      core = {
+        detection_notice = true;
+        dark_threshold = 60;
+      };
+      video = {
+        device_path = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:5:1.0-video-index0";
+        frame_width = 640;
+        frame_height = 480;
+      };
+    };
+  };
+
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+        if (action.id == "org.freedesktop.policykit.exec") {
+            return polkit.Result.YES;
+        }
+    });
+  '';
+
+##  # =========================================================================
+##  #  15.BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (GAZE ENGINE)
+##  # =========================================================================
+##  # 1. Compiles the custom gaze package from source since it's missing from stable channel attributes
+##  security.pam.services = {
+##    sudo.text = "auth sufficient pam_gaze.so";
+##    login.text = "auth sufficient pam_gaze.so";
+##    cosmic-lock.text = "auth sufficient pam_gaze.so";
+##  };
+##  # 2. Provisions the underlying systemd background service using a custom local builder block
+##  systemd.services.gaze-daemon = let
+##    # Inline packaging definition to fetch the missing gaze package attributes natively
+##    gazePkg = pkgs.rustPlatform.buildRustPackage rec {
+##      pname = "gaze";
+##      version = "0.2.6";
+##      src = pkgs.fetchFromGitHub {
+##        owner = "GunduLabs";
+##        repo = "gaze";
+##        rev = "v${version}";
+##        hash = "sha256-1k2/sbWEy1HBoNdtAoBjamnfXozZYKkhxCkrjaAE5Z0=";
+##      };
+##      cargoHash = "sha256-/VdUbKUTQvXC09FqHt97nlHRHp1P9v1xg/PNcN0vci0=";
+##      nativeBuildInputs = with pkgs; [ pkg-config llvm ];
+##      buildInputs = with pkgs; [
+##        glib
+##        pam
+##        opencv
+##        openssl
+##        libclang
+##        pango
+##        cairo
+##        gdk-pixbuf
+##        gtk4
+##        onnxruntime
+##        gst_all_1.gstreamer
+##        gst_all_1.gst-plugins-base
+##      ];
+##      LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
+##      ORT_STRATEGY = "system";
+##      ORT_USE_SYSTEM = "1";
+##      ORT_LIB_DIR = "${pkgs.onnxruntime}/lib";
+##      C_INCLUDE_PATH = "${pkgs.onnxruntime.dev}/include";
+##      CPLUS_INCLUDE_PATH = "${pkgs.onnxruntime.dev}/include";
+##    };
+##  in {
+##    description = "Gaze Biometric Facial Recognition Daemon";
+##    wantedBy = [ "multi-user.target" ];
+##    after = [ "systemd-modules-load.service" ];
+##    path = [ gazePkg ];
+##    
+##    serviceConfig = {
+##      ExecStart = "${gazePkg}/bin/gazed";
+##      Type = "simple";
+##      Restart = "always";
+##      RestartSec = "2s";
+##    };
+##  };
 
   # =========================================================================
   # MORE

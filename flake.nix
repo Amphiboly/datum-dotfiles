@@ -19,12 +19,8 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    noctalia-greeter = {
-      url = "github:noctalia-dev/noctalia-greeter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    noctalia.url = "github:noctalia-dev/noctalia";
     ghostty.url = "github:ghostty-org/ghostty";
+    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
   };
 
   outputs = {
@@ -37,25 +33,30 @@
     home-manager,
     sops-nix,
     lanzaboote,
-    noctalia-greeter,
-    noctalia,
     ghostty,
+    nixos-cosmic,
     ...
   } @ inputs: let
-    # =========================================================================
-    # REUSABLE SHARED MODULE VARIABLES (DRY: Don't Repeat Yourself)
-    # =========================================================================
-    # 1. Shared core modules array common to both local targets
     sharedModules = [
-      ##?? nixos-hardware.nixosModules.common-cpu-intel-kaby-lake-cpu-only
       nixos-hardware.nixosModules.common-cpu-intel
       nixos-hardware.nixosModules.common-pc-laptop
       nixos-hardware.nixosModules.common-pc-ssd
       disko.nixosModules.disko
       ./disko-config.nix
       sops-nix.nixosModules.sops
+      {
+        nix.settings = {
+          substituters = [
+            "https://cache.nixos.org"
+            "https://cosmic.cachix.org"
+          ];
+          trusted-public-keys = [
+            "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+            "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
+          ];
+        };
+      }
       ./shell-environment.nix
-      ./noctalia-module.nix
       ./configuration.nix
       ./users.nix
       ./desktop.nix
@@ -64,15 +65,11 @@
       ./networking.nix
     ];
 
-    # 2. Shared inline software environment module attributes configuration set
     sharedEnvModule = {
       config,
       pkgs,
       ...
     }: {
-      # =========================================================================
-      #  FLAKE OVERLAYS MATRIX
-      # =========================================================================
       nixpkgs.overlays = [
         nixgl.overlay
         nur.overlays.default
@@ -80,23 +77,6 @@
         (final: prev: {
           cantarell-fonts = final.emptyDirectory;
         })
-##    # --- Biometric Fix Layer ---
-##    (final: prev: {
-##      # 1 Patch OpenCV globally to drop the broken geo-spatial compilation layers
-##      opencf = prev.opencv.override {
-##        enableGdal = false;
-##        enablePdal = false;
-##      };
-##      # 2 python face recognition test bypass
-##      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-##        (python-final: python-prev: {
-##          face-recognition = python-prev.face-recognition.overrideAttrs (oldAttrs: {
-##            doCheck = false;
-##            doInstallCheck = false;
-##          });
-##        })
-##      ];
-##    })
       ];
       nixpkgs.config.allowUnfree = true;
 
@@ -111,30 +91,17 @@
         };
       };
 
-      environment.systemPackages = [pkgs.fuzzel];
-
-      programs.mangowc.enable = true;
-      programs.mangowc.package = pkgs.mango;
-
       services.displayManager = {
         enable = true;
-        #        autoLogin = {
-        #          enable = true;
-        #          user = "rik";
-        #        };
-        defaultSession = "mango";
-        sessionPackages = [pkgs.mango pkgs.niri];
       };
     };
 
-    # 3. Shared User-Space Home Manager module configuration block
     sharedHomeManagerModule = {
       config,
       pkgs,
       ...
     }: {
       imports = [home-manager.nixosModules.home-manager];
-
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
       home-manager.backupFileExtension = "backup";
@@ -145,9 +112,6 @@
     };
   in {
     nixosConfigurations = {
-      # =========================================================================
-      # TARGET 2: High-Performance Bare-Metal Physical Laptop Target Configuration
-      # =========================================================================
       datum-laptop = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs;};
         modules =
@@ -159,20 +123,16 @@
             ./hardware-configuration.nix # Real laptop hardware component device scan files
             sharedEnvModule
             sharedHomeManagerModule
-
-            # Physical Hardware Unique Overrides Configuration Block
             ({
               config,
               pkgs,
               ...
             }: {
               sops.age.keyFile = "/var/lib/sops/age/keys.txt";
-
               environment.sessionVariables = {
                 ZED_ALLOW_EMULATED_GPU = "1";
               };
-
-              services.displayManager.sessionPackages = [pkgs.mango pkgs.niri];
+              services.displayManager.sessionPackages = [ pkgs.niri ];
             })
           ];
       };

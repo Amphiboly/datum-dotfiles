@@ -4,13 +4,7 @@
   lib,
   pkgs,
   ...
-}: let
-  # Dynamically reads your exported configuration directly into the compilation engine
-  productionNoctaliaSettings = lib.importTOML ./noctalia-production.toml;
-
-  tomlFormat = pkgs.formats.toml {};
-  noctaliaConfigFile = tomlFormat.generate "noctalia.toml" productionNoctaliaSettings;
-in {
+}: {
   home.stateVersion = "26.05";
 
   home.packages = with pkgs; [
@@ -19,6 +13,8 @@ in {
 
     # Nix utilities
     nvd
+    nil
+    alejandra
     
     # Foundational Unix Utility Layer left out by NixOS:
     e2fsprogs
@@ -33,10 +29,8 @@ in {
     tealdeer
     
     # Daily Productivity Suites
-    dropbox
     glow
     libreoffice-fresh
-#   thunderbird
     zettlr
     zotero
 
@@ -127,45 +121,6 @@ in {
   services.remmina = {
     enable = true;
     addRdpMimeTypeAssoc = true;
-  };
- 
-  # =========================================================================
-  # NIXOS WIKI SPECIFICATION: DIRECT DROPBOX DAEMON DEPLOYMENT
-  # =========================================================================
-# systemd.user.services.dropbox-wiki = {
-#   Unit = {
-#     Description = "Dropbox service";
-#   };
-#   Install = {
-#     WantedBy = [ "default.target" ];
-#   };
-#   Service = {
-#     # Runs the native patched binary directly outside broken sandbox wrappers
-#     ExecStart = "${pkgs.dropbox}/bin/dropbox";
-#     Restart = "on-failure";
-#   };
-# };
-
-  # =========================================================================
-  # IDIOMATIC GHOSTTY THEME CONFIGURATION
-  # =========================================================================
-  xdg.configFile."ghostty/config"= {
-    text = ''
-      theme = light:"Ayu Light",dark:"Night Owl"
-      font-size = 8
-      shell-integration = zsh
-      shell-integration-features = sudo
-    '';
-    force = true;
-  };
-
-  # =========================================================================
-  # NOCTALIA Setup
-  # =========================================================================
-  # A mutable text file asset rather than a read-only store path symlink
-  home.file.".config/noctalia/noctalia.toml" = {
-    source = noctaliaConfigFile;
-    force = true;
   };
 
   # ========================================================================
@@ -283,31 +238,64 @@ in {
   };
 
   # =========================================================================
-  # DECLARATIVE FUZZEL LAUNCHER INTEGRATION
+  # DECLARATIVE GHOSTTY INTEGRATION
   # =========================================================================
-  programs.fuzzel = {
+  programs.ghostty.enable = false; # it generates config, not config.ghostty
+  xdg.configFile."ghostty/config.ghostty".text = ''
+    font-family = JetBrainsMono Nerd Font
+    font-size = 10
+    theme = light:"Ayu Light",dark:"Night Owl"
+    window-decoration = none
+    command = "${pkgs.zsh}/bin/zsh"
+    clipboard-read = allow
+    clipboard-write = allow
+    copy-on-select = clipboard
+    shell-integration = zsh
+    shell-integration-features = sudo
+  '';
+
+  # =========================================================================
+  # IDIOMATIC GHOSTTY THEME CONFIGURATION
+  # =========================================================================
+  xdg.configFile."ghostty/config"= {
+    text = ''
+      font-size = 8
+      shell-integration = zsh
+      shell-integration-features = sudo
+    '';
+    force = true;
+  };
+
+  # =========================================================================
+  # DECLARATIVE HELIX INTEGRATION
+  # =========================================================================
+  programs.helix = {
     enable = true;
     settings = {
-      main = {
-        terminal = "ghostty";
-        font = "JetBrainsMono Nerd Font:size=10";
-        prompt = "❯   ";
-        width = 40;
-        lines = 10;
-        tabs = 4;
+      theme = "catppuccin_mocha";
+      editor = {
+        clipboard-provider = "termcode";
+        line-number = "relative";
+        file-picker.max-depth = 5;
+        statusline = {
+          left = [ "mode" "spinner" "version-control" "file-name" "file-modification-indicator" ];
+          center = [ ];
+          right = [ "diagnostics" "selections" "register" "file-type" "position" "position-percentage" ];
+          separator = "│";
+        };
       };
-      colors = {
-        # Sleek, minimal dark-blend aesthetic to match your terminal layers
-        background = "1a1b26ef";
-        text = "a9b1d6ff";
-        match = "f7768eff";
-        selection = "33467cff";
-        selection-text = "c0caf5ff";
-        border = "7aa2f7ff";
-      };
-      border = {
-        width = 2;
-        radius = 6;
+    };
+    languages = {
+      language = [
+        {
+          name = "nix";
+          auto-format = true;
+          language-servers = [ "nil" ];
+        }
+      ];
+      language-server.nil = {
+        command = "nil";
+        config.nil.formatting.command = [ "nixpkgs-fmt" ];
       };
     };
   };
@@ -353,166 +341,6 @@ in {
   };
 
   # =========================================================================
-  # DECLARATIVE MANGOWC CORE USER CONFIGURATION FILE
-  # =========================================================================
-  # Natively writes your precise app mappings directly into ~/.config/mango/config.conf
-  xdg.configFile."mango/config.conf".text = ''
-     exec-once=noctalia
-     execOnce="sh -c 'sleep 2 && firefox'"
-     execOnce="sh -c 'sleep 4 && ghostty'"
-
-    scroller_structs=100
-     scroller_default_proportion=0.55
-     trackpad_natural_scrolling=1
-
-    hotarea_size=10
-    enable_hotarea=0
-    ov_tab_mode=1
-    ov_no_resize=1
-    overviewgappi=5
-    overviewgappo=30
-
-    bind = Super, 1, view, 1
-    bind = Super, 2, view, 2
-    bind = Super, 3, view, 3
-    bind = Super, 4, view, 4
-    bind = Super, 5, view, 5
-    bind = Super, 6, view, 6
-    bind = Super, 7, view, 7
-    bind = Super, 8, view, 8
-    bind = Super, 9, view, 9
-
-    bind = Super+Ctrl, 1, toggleview, 1
-    bind = Super+Ctrl, 2, toggleview, 2
-    bind = Super+Ctrl, 3, toggleview, 3
-    bind = Super+Ctrl, 4, toggleview, 4
-    bind = Super+Ctrl, 5, toggleview, 5
-    bind = Super+Ctrl, 6, toggleview, 6
-    bind = Super+Ctrl, 7, toggleview, 7
-    bind = Super+Ctrl, 8, toggleview, 8
-    bind = Super+Ctrl, 9, toggleview, 9
-
-    bind = Super+Shift, 1, tag, 1
-    bind = Super+Shift, 2, tag, 2
-    bind = Super+Shift, 3, tag, 3
-    bind = Super+Shift, 4, tag, 4
-    bind = Super+Shift, 5, tag, 5
-    bind = Super+Shift, 6, tag, 6
-    bind = Super+Shift, 7, tag, 7
-    bind = Super+Shift, 8, tag, 8
-    bind = Super+Shift, 9, tag, 9
-
-    bind = Super+Alt, 1, toggletag, 1
-    bind = Super+Alt, 2, toggletag, 2
-    bind = Super+Alt, 3, toggletag, 3
-    bind = Super+Alt, 4, toggletag, 4
-    bind = Super+Alt, 5, toggletag, 5
-    bind = Super+Alt, 6, toggletag, 6
-    bind = Super+Alt, 7, toggletag, 7
-    bind = Super+Alt, 8, toggletag, 8
-    bind = Super+Alt, 9, toggletag, 9
-
-    bind = Super, 0, view, all
-
-    keymode=common
-    bind=SUPER,R,reload_config
-
-    keymode=default
-
-     bind=SUPER,Return,spawn,ghostty
-     bind=SUPER,t,spawn,ghostty
-     bind=SUPER,p,spawn,fuzzel
-     bind=SUPER,b,spawn,firefox
-     bind=SUPER,z,spawn,zed
-
-     bind=ALT,Tab,toggleoverview,
-     bind=SUPER,o,toggleoverlay,
-
-     bind=SUPER,space,setlayout,scroller
-     bind=SUPER,m,setlayout,monocle
-     bind=SUPER,f,setlayout,center_tile
-     bind=SUPER+SHIFT,space,switch_layout
-     bind=SUPER,v,togglefloating
-     bind=SUPER+SHIFT,v,togglefullscreen
-
-     bind=SUPER,q,killclient,
-     bind=SUPER+SHIFT,e,quit,
-
-     bind=SUPER,F,setkeymode,resize
-
-     keymode=resize
-     bind=NONE,Left,resizewin,-10,+0
-     bind=NONE,Right,resizewin,+10,+0
-     bind=NONE,Up,resizewin,+0,-10
-     bind=NONE,Down,resizewin,+0,+10
-     bind=NONE+SHIFT,Left,movewin,-50,+0
-     bind=NONE+SHIFT,Right,movewin,+50,+0
-     bind=NONE+SHIFT,Up,movewin,+0,-50
-     bind=NONE+SHIFT,Down,movewin,+0,+50
-     bind=NONE,Escape,setkeymode,default
-     bind=NONE,Return,setkeymode,default
-
-     blur=0
-     blur_layer=0
-     blur_optimized=1
-     blur_params_num_passes = 2
-     blur_params_radius = 5
-     blur_params_noise = 0.02
-     blur_params_brightness = 0.9
-     blur_params_contrast = 0.9
-     blur_params_saturation = 1.2
-
-     shadows = 0
-     layer_shadows = 0
-     shadow_only_floating = 1
-     shadows_size = 10
-     shadows_blur = 15
-     shadows_position_x = 0
-     shadows_position_y = 0
-     shadowscolor= 0x000000ff
-
-     border_radius=6
-     no_radius_when_single=0
-     focused_opacity=1.0
-     unfocused_opacity=1.0
-
-     animations=1
-     layer_animations=1
-     animation_type_open=slide
-     animation_type_close=slide
-     animation_fade_in=1
-     animation_fade_out=1
-     tag_animation_direction=1
-     zoom_initial_ratio=0.4
-     zoom_end_ratio=0.8
-     fadein_begin_opacity=0.5
-     fadeout_begin_opacity=0.8
-     animation_duration_move=500
-     animation_duration_open=400
-     animation_duration_tag=350
-     animation_duration_close=800
-     animation_duration_focus=0
-     animation_curve_open=0.46,1.0,0.29,1
-     animation_curve_move=0.46,1.0,0.29,1
-     animation_curve_tag=0.46,1.0,0.29,1
-     animation_curve_close=0.08,0.92,0,1
-     animation_curve_focus=0.46,1.0,0.29,1
-     animation_curve_opafadeout=0.5,0.5,0.5,0.5
-     animation_curve_opafadein=0.46,1.0,0.29,1
-
-     bind=SUPER, space, spawn, noctalia msg panel-toggle launcher
-     bind=SUPER, s,     spawn, noctalia msg panel-toggle control-center
-     bind=SUPER, comma, spawn, noctalia msg settings-toggle
-
-     bind=NONE, XF86AudioRaiseVolume,   spawn, noctalia msg volume-up
-     bind=NONE, XF86AudioLowerVolume,   spawn, noctalia msg volume-down
-     bind=NONE, XF86AudioMute,          spawn, noctalia msg volume-mute
-     bind=NONE, XF86MonBrightnessUp,    spawn, noctalia msg brightness-up
-     bind=NONE, XF86MonBrightnessDown,  spawn, noctalia msg brightness-down
-
-  '';
-
-  # =========================================================================
   # HIGH-PERFORMANCE ZED INTEGRATION MATRIX
   # =========================================================================
   programs.zed-editor = {
@@ -551,18 +379,7 @@ in {
       };
     };
   };
-
-  # =========================================================================
-  # GRAPHICAL ENVIRONMENT GLOBAL DEFAULT EDITOR ASSOCIATIONS
-  # =========================================================================
-  xdg.mimeApps = {
-    enable = true;
-    defaultApplications = {
-      "text/plain" = ["zed.desktop"];
-      "text/markdown" = ["zed.desktop"];
-      "application/x-shellscript" = ["zed.desktop"];
-    };
-  };
+ 
   # =========================================================================
   #  TERMINAL NAVIGATION & SHELL HOOKS
   # =========================================================================
@@ -570,6 +387,7 @@ in {
     enable = true;
     enableZshIntegration = true;
   };
+
   # =========================================================================
   # DESKTOP ENTRY COMPOSITOR ALIGNMENT
   # =========================================================================
@@ -580,5 +398,4 @@ in {
     icon = "yazi";
     categories = [ "System" "FileTransfer" ];
   };
-
-}
+ }

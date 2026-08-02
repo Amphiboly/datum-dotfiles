@@ -1,16 +1,20 @@
-# ~/Projects/datum-config/shell.nix
+# /Projects/datum-config/shell-environment.nix
 {
   config,
   pkgs,
   ...
 }: {
+  # =======================================================================
   # 1. Native FZF Configuration (Corrected for NixOS System Scope)
+  # =======================================================================
   programs.fzf = {
     keybindings = true; # Instantly binds Ctrl+R, Alt+C, etc.
     fuzzyCompletion = true; # Enables native tab-completions
   };
 
+  # =======================================================================
   # 2. Global Core Interactive Packages
+  # =======================================================================
   environment.systemPackages = with pkgs; [
     # Compile local mksecrets.sh file into a native global system command binary
     (writeScriptBin "mksecrets" (builtins.readFile ./mksecrets.sh))
@@ -34,18 +38,23 @@
     zoxide
     fzf
     zathura # High-performance lightweight PDF reader matching text toolchains
+    maestral
 
     # --- Structural Editors & IDE Environments ---
     nixd
     tinymist
     vim-full
     zed-editor
-    # Generate a permanent global binary link so 'spawn,zed' works natively []
+    # Generate a permanent global binary link so 'spawn,zed' works natively
     (runCommand "zed-cli-link" {} "mkdir -p $out/bin && ln -s ${zed-editor}/bin/zeditor $out/bin/zed")
 
     # --- Advanced Document & Compiling Engines ---
-    # Injects the specific targeted ConTeXt layout without downloading 7GB of math books
-    texlive.combined.scheme-context
+    (texlive.withPackages (ps: with ps; [
+      scheme-infraonly
+      context
+      collection-luatex
+    ]))
+
     typst
     pandoc
     mdbook
@@ -56,9 +65,46 @@
     zsh-autosuggestions
     zsh-syntax-highlighting
     zsh-history-substring-search
-  ];
+ ];
 
+  # =======================================================================
+  # GLOBAL GRAPHICAL APP ASSOCIATIONS
+  # =======================================================================
+  xdg.mime.defaultApplications = {
+    "text/plain" = [ "com.system76.CosmicEdit.desktop" ];
+    "text/markdown" = [ "com.system76.CosmicEdit.desktop" ];
+    "application/x-shellscript" = [ "com.system76.CosmicEdit.desktop" ];
+  };
+
+  # =======================================================================
+  # TELL COSMIC APP LAUNCHER TO USE GHOSTTY AS DEFAULT TERMINAL
+  # =======================================================================
+  xdg.terminal-exec = {
+    enable = true;
+    settings.default = [ "com.mitchellh.ghostty.desktop" ];
+  };
+
+  # =========================================================================
+  # NATIVE SYSTEMD USER SERVICE DEPLOYMENT (MAESTRAL DAEMON)
+  # =========================================================================
+  # Natively initializes the open-source Dropbox tracking pipeline inside your
+  # graphical COSMIC session without legacy X11/GTK package dependencies.
+  systemd.user.services.maestral = {
+    description = "Maestral Dropbox Synchronization Daemon";
+    wantedBy = [ "graphical-session.target" ]; # Spawns right as your desktop session wakes up
+
+    serviceConfig = {
+      # Forces the daemon to run in foreground mode (-f) so systemd can log and track it cleanly
+      ExecStart = "${pkgs.maestral}/bin/maestral start -f";
+      ExecStop = "${pkgs.maestral}/bin/maestral stop";
+      Restart = "on-failure";
+      Nice = 10; # Prevents file-indexing from impacting your laptop compiler speeds
+    };
+  };
+
+  # =======================================================================
   # 3. Main Zsh Declarative Module
+  # =======================================================================
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -119,14 +165,11 @@
       export _FZF_PREVIEW_CMD='bat --color=always --style=plain,numbers --line-range=:500 {}'
 
       # DYNAMIC ENVIRONMENT VARIABLES ROUTING MATRIX
+      export EDITOR="hx"
       if [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; then
-          # FIX: Smoothly hands graphical workspace edits over to your true Zed framework []
-          export VISUAL="zed"
-          export EDITOR="hx"
+          export VISUAL="cosmic-edit"
       else
-          # Fallback to console-native Helix if working over remote headless text terminals
           export VISUAL="hx"
-          export EDITOR="hx"
       fi
 
       # 1. Custom Yazi traversal function (Escaped for Nix)
@@ -166,7 +209,7 @@
               export FF_OS_COLOR="blue"
               export FF_LOGO="$HOME/.config/fastfetch/logos/Fedora.png"
           elif ${pkgs.gnugrep}/bin/grep -q "NixOS" /etc/os-release 2>/dev/null; then
-              export FF_LOGO="${./assets/NixOS.png}"
+             export FF_LOGO="${./assets/NixOS.png}"
           else
               export FF_OS_ICON=""
               export FF_OS_COLOR="green"
