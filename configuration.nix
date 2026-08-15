@@ -6,54 +6,110 @@
   inputs,
   ...
 }: {
-  # 1. System Bootloader Configurations (Preserved for standard installations)
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = ["btrfs" "cifs"];
+  # =========================================================================
+  # 1. GLOBAL SECRETS LEDGER NATIVE PERMISSIONS
+  # =========================================================================
+  sops.secrets = {
+    "rik-password-hash" = {neededForUsers = true;};
+    "w11-cifs-credentials" = {};
 
-  # 2. Virtual Hardware Graphics Acceleration Modules (Added for QEMU/Niri stability)
-  boot.initrd.kernelModules = ["virtio_gpu"];
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
+    # Required by rustic-atomic-backup.service EnvironmentFile
+    "restic-vault-password" = {owner = "root";};
+
+    # Required by msmtp outbound alerts transit pipeline
+    "panix-smtp-password" = {owner = "root";};
+
+    # Kept active for other system/backup targets if needed
+    "spectrum-smtp-password" = {};
+    "gmail-amphiboly-password" = {};
+    "gmail-amphibolybackup-password" = {};
+    "gmail-cornwall-password" = {};
   };
 
-  # 3. Base Networking Profiles
+  # =========================================================================
+  # 2. HARDWARE BOOTLOADER ENGINE & KERNEL PACKAGE UPDATES
+  # =========================================================================
+  #
+  # =========================================================================
+  # 1. System Bootloader Configurations (Preserved for standard installations)
+  #
+  boot = {
+    # Forces your architecture to compile and track the absolute latest
+    # stable upstream Linux release branch instead of standard LTS lines.
+    kernelPackages = pkgs.linuxKernel.packages.linux_7_1;
+
+    # Alternative option if you just want to track whatever the absolute
+    # latest stable release is in nixpkgs automatically:
+    # kernelPackages = pkgs.linuxPackages_latest;
+
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    supportedFilesystems = ["btrfs" "cifs"];
+  };
+
   networking.hostName = "datum";
   networking.networkmanager.enable = true;
 
-  # 4. Regional Settings
   time.timeZone = "America/New_York";
 
-  # 5. Core Native Wayland Compositor (Niri)
-  programs.niri = {
-    enable = true;
-  };
+  # =========================================================================
+  #  3. DESKTOP ENVIRONMENT CONFIGURATION MATRIX
+  # =========================================================================
 
-  # =========================================================================
-  #  6. COSMIC DESKTOP ENVIRONMENT CONFIGURATION MATRIX
-  # =========================================================================
-  services.desktopManager.cosmic.enable = true;
-  services.displayManager.cosmic-greeter.enable = true;
+  # Optimization tier for smooth interactive window scaling
   services.system76-scheduler.enable = true;
+  # Required user context tracking backend for modern greeters and multi-user configurations
   services.accounts-daemon.enable = true;
+  # TEMPORARY UNTIL COSMIC IS MORE STABLE
+  services.xserver.enable = true;
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+
+  services.desktopManager.cosmic.enable = false;
+  services.displayManager.cosmic-greeter.enable = false;
+
+  environment.cosmic.excludePackages = with pkgs; [];
+
+  #  # Deploy greetd with tuigreet to handle login security safely
+  #  services.greetd = {
+  #    enable = true;
+  #    settings = {
+  #      default_session = {
+  #        # Launches the lightweight tuigreet screen on virtual terminal 7
+  #        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd gnome-session";
+  #        user = "greeter";
+  #      };
+  #    };
+  #  };
+
+  # Stop systemd from clearing the console buffer so tuigreet prints cleanly
+  #  systemd.services.greetd.serviceConfig.Type = "idle";
 
   # =========================================================================
-  #  HARDWARE BATTERY OPTIMIZATION VIA TLP
+  # LAPTOP BATTERY AND POWER MANAGEMENT DEAMON (TLP + COSMIC PLATFORM FIXED)
   # =========================================================================
-  services.power-profiles-daemon.enable = lib.mkForce false;
-  services.upower.enable = true;
 
+  # Block the default desktop power module to clear system locks
+  services.power-profiles-daemon.enable = false;
+
+  # Enable the core TLP configuration profile
   services.tlp = {
     enable = true;
+
+    pd.enable = true;
+
     settings = {
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
       CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
       CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      START_CHARGE_THRESH_BAT0 = 75;
+      STOP_CHARGE_THRESH_BAT0 = 80;
     };
   };
- 
+
   # =========================================================================
   # 7. System User Management & Security Profiles
   # =========================================================================
@@ -64,6 +120,18 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILtSxcpUnDPA5EfZ0KmlDAjg7RzgqNoujzqOoQtQGuK4 rik@ambiguous"
     ];
+  };
+  users.users.guest = {
+    isNormalUser = true;
+    description = "Guest User";
+    # Essential desktop groups without administrative access:
+    extraGroups = [
+      "networkmanager"
+      "video"
+      "audio"
+    ];
+    # Sets an initial default password (e.g. "guest") so they can log in
+    initialPassword = "guest";
   };
 
   # =========================================================================
@@ -78,25 +146,38 @@
   # 9. Core system plumbing daemons and file utilities
   # =========================================================================
   # AUTOMATED SYSTEM SYSTEM MAINTENANCE LAYER
-  nix.gc = {
-    automatic = true;
-    dates = "weekly"; # Wakes up automatically every week to clear dead packages [a]
-    options = "--delete-older-than 7d"; # Safely preserves your last 7 days of rollbacks [a]
+
+  # Disable native GC to avoid conflicts with nh
+  nix.gc.automatic = false;
+
+  # Enable nh helper
+  programs.nh = {
+    enable = true;
+    flake = "/home/rik/Projects/datum/datum-config";
+
+    # Optional: Automated periodic garbage collection
+    clean = {
+      enable = true;
+      extraArgs = "--keep-since 4d --keep 3";
+    };
   };
+
   nix.settings = {
     auto-optimise-store = true;
-    experimental-features = [ "nix-command" "flakes" ];
+    experimental-features = ["nix-command" "flakes"];
   };
 
   environment.systemPackages = with pkgs; [
     home-manager
     git
-    wl-clipboard # native wayland clipboard manager used by niri/ghostty
+    wl-clipboard # native wayland clipboard manager
     cifs-utils # mount helper binaries required by your windows smb share
     tailscale # client cli companion for your mesh vpn daemon
     remmina
     freerdp
     rustic
+    comma
+    howdy
   ];
 
   # =========================================================================
@@ -112,7 +193,9 @@
         # --- Core Automation & Network Startup Syncing Hooks ---
         "x-systemd.automount"
         "noauto"
+        "nofail"
         "x-systemd.mount-timeout=30"
+        "x-systemd.after=sops-nix.service"
         "x-systemd.idle-timeout=60" # Saves battery by dropping active connections when idle
         "_netdev"
 
@@ -123,7 +206,7 @@
         "dir_mode=0777" # Permissive directory clearance matched from host string
 
         # --- Cryptographic Security Keys Pipeline Link ---
-        "credentials=/run/secrets/w11-cifs-password"
+        "credentials=/run/secrets/w11-cifs-credentials"
 
         # --- High-Performance Network Driver Options ---
         "vers=3.1.1" # Forces your host's crisp SMB 3.1.1 security protocol
@@ -136,7 +219,7 @@
     "/mnt/btrfs-root" = {
       device = "/dev/nvme0n1p3";
       fsType = "btrfs";
-      options = [ "subvolid=5" "noatime" ];
+      options = ["subvolid=5" "noatime"];
     };
   };
 
@@ -149,7 +232,7 @@
     # 'h' forces systemd to apply the strict +C (NOCOW/No-Compression) flag atomically [a]
     "d /home/rik/Dropbox 0700 rik users - -"
     "h /home/rik/Dropbox - - - - +C"
-    # Automatically ensures /mnt/btrfs-root/.snapshots/home exists with 
+    # Automatically ensures /mnt/btrfs-root/.snapshots/home exists with
     # secure root-only permissions (0700) on every single boot sequence [a].
     "d /mnt/btrfs-root/.snapshots/home 0700 root root - -"
   ];
@@ -188,7 +271,7 @@
           url = "mirror://sourceforge/unifraktur/fonts/UnifrakturMaguntia.2017-03-19.zip";
           hash = "sha256-+j0JOeGYwP/FkhizdagYog7Kra9fw9OaIyKglavwz5o=";
         };
-        nativeBuildInputs = [ unzip ];
+        nativeBuildInputs = [unzip];
         unpackPhase = "unzip $src";
         installPhase = ''
           mkdir -p $out/share/fonts/truetype
@@ -221,92 +304,71 @@
     enable = true;
     extraBackends = [pkgs.sane-airscan]; # Enables driverless network scanning profiles
   };
-  
+
   # =========================================================================
   # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
   # =========================================================================
-  services.howdy = {
-    enable = true;
-    control = "sufficient";
 
-    settings = {
-      core = {
-        detection_notice = true;
-        dark_threshold = 60;
-      };
-      video = {
-        device_path = "/dev/v4l/by-path/pci-0000:00:14.0-usb-0:5:1.0-video-index0";
-        frame_width = 640;
-        frame_height = 480;
-      };
-    };
-  };
+  # 1. Automatically apply your calibrated hardware parameters on boot
+  services.linux-enable-ir-emitter.enable = true;
 
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-        if (action.id == "org.freedesktop.policykit.exec") {
-            return polkit.Result.YES;
-        }
-    });
+  # 2. CRITICAL FIX: Turn off the global module to banish howdy from GDM/Logins!
+  services.howdy.enable = false;
+
+  # 3. Natively construct the exact configuration file the CLI expects to see
+  environment.etc."howdy/config.ini".text = ''
+    [core]
+    detection_notice = true
+    dark_threshold = 55
+    certainty = 3.5
+
+    [video]
+    device_path = /dev/video1
+    mjpeg_format = false
+    frame_width = 640
+    frame_height = 480
+    recording_frames = 5
   '';
 
-##  # =========================================================================
-##  #  15.BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (GAZE ENGINE)
-##  # =========================================================================
-##  # 1. Compiles the custom gaze package from source since it's missing from stable channel attributes
-##  security.pam.services = {
-##    sudo.text = "auth sufficient pam_gaze.so";
-##    login.text = "auth sufficient pam_gaze.so";
-##    cosmic-lock.text = "auth sufficient pam_gaze.so";
-##  };
-##  # 2. Provisions the underlying systemd background service using a custom local builder block
-##  systemd.services.gaze-daemon = let
-##    # Inline packaging definition to fetch the missing gaze package attributes natively
-##    gazePkg = pkgs.rustPlatform.buildRustPackage rec {
-##      pname = "gaze";
-##      version = "0.2.6";
-##      src = pkgs.fetchFromGitHub {
-##        owner = "GunduLabs";
-##        repo = "gaze";
-##        rev = "v${version}";
-##        hash = "sha256-1k2/sbWEy1HBoNdtAoBjamnfXozZYKkhxCkrjaAE5Z0=";
-##      };
-##      cargoHash = "sha256-/VdUbKUTQvXC09FqHt97nlHRHp1P9v1xg/PNcN0vci0=";
-##      nativeBuildInputs = with pkgs; [ pkg-config llvm ];
-##      buildInputs = with pkgs; [
-##        glib
-##        pam
-##        opencv
-##        openssl
-##        libclang
-##        pango
-##        cairo
-##        gdk-pixbuf
-##        gtk4
-##        onnxruntime
-##        gst_all_1.gstreamer
-##        gst_all_1.gst-plugins-base
-##      ];
-##      LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
-##      ORT_STRATEGY = "system";
-##      ORT_USE_SYSTEM = "1";
-##      ORT_LIB_DIR = "${pkgs.onnxruntime}/lib";
-##      C_INCLUDE_PATH = "${pkgs.onnxruntime.dev}/include";
-##      CPLUS_INCLUDE_PATH = "${pkgs.onnxruntime.dev}/include";
-##    };
-##  in {
-##    description = "Gaze Biometric Facial Recognition Daemon";
-##    wantedBy = [ "multi-user.target" ];
-##    after = [ "systemd-modules-load.service" ];
-##    path = [ gazePkg ];
-##    
-##    serviceConfig = {
-##      ExecStart = "${gazePkg}/bin/gazed";
-##      Type = "simple";
-##      Restart = "always";
-##      RestartSec = "2s";
-##    };
-##  };
+  # 4. Fail-safe PAM interceptor scoped STRICTLY to administrative sudo tasks
+  # Because 'services.howdy.enable' is false, this is the only entry point live.
+  security.pam.services.sudo.text = ''
+    auth sufficient pam_howdy.so
+    auth include system-auth
+  '';
+
+  # =========================================================================
+  # 16. HARDENED LOCAL SYSTEM FIREWALL INFRASTRUCTURE (configuration.nix)
+  # =========================================================================
+  networking.firewall = {
+    enable = true;
+    allowPing = true; # Retained safely for local network diagnostics
+
+    # -------------------------------------------------------------------------
+    # CONDITIONAL OPEN PORTS (Active Across All Networks)
+    # -------------------------------------------------------------------------
+    # Whitelists your inbound connections universally, but relies on your local
+    # authentication profiles to keep unauthorized public scans dropped.
+    allowedTCPPorts = [
+      22 # SSH Remote Login Daemon
+    ];
+
+    allowedUDPPorts = [
+      5353 # mDNS (Avahi/Bonjour Local Service Device Discovery)
+    ];
+
+    # -------------------------------------------------------------------------
+    # SECURITY LOCAL NETWORK OPTIMIZATION ALTERNATIVE:
+    # -------------------------------------------------------------------------
+    # If you want SSH and mDNS to drop instantly when you connect to public Wi-Fi,
+    # comment out the global ports blocks above, uncomment your local home network
+    # adapter interface string here, and let the system handle the context shift:
+    #
+    # interfaces."wlan0" = {
+    #   allowedTCPPorts = [ 22 ];
+    #   allowedUDPPorts = [ 5353 ];
+    # };
+  };
 
   # =========================================================================
   # MORE
@@ -315,8 +377,8 @@
     enable = true;
     settings.PasswordAuthentication = false;
   };
-  programs.kdeconnect.enable = true;
 
+  programs.kdeconnect.enable = true;
 
   # 99. Deployment Target Generation Cycle API Anchor
   system.stateVersion = "26.05";

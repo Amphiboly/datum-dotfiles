@@ -1,21 +1,42 @@
 # ~/Projects/datum-config/home.nix
 {
   config,
+  osConfig,
   lib,
   pkgs,
+  inputs,
   ...
 }: {
   home.stateVersion = "26.05";
 
+  # =========================================================================
+  # 1. Applications
+  # =========================================================================
   home.packages = with pkgs; [
-    # Main terminal
-    ghostty
+    # Custom Script Compilations
+    (writeScriptBin "mksecrets" (builtins.readFile ./mksecrets.sh))
+
+    # Main terminal and editors
+    kitty
+    helix
+    zed-editor
+    nixd
+    tinymist
+    #    vim-full  # vim is declared below
+
+    # Shell integrations
+    antidote
+    zsh-completions
+    zsh-autosuggestions
+    zsh-syntax-highlighting
+    zsh-history-substring-search
 
     # Nix utilities
+    comma
     nvd
     nil
     alejandra
-    
+
     # Foundational Unix Utility Layer left out by NixOS:
     e2fsprogs
     file
@@ -27,18 +48,223 @@
     # Just for fun (or the animal names)
     cowsay
     tealdeer
-    
+
     # Daily Productivity Suites
     glow
     libreoffice-fresh
+    mdbook
+    naps2
+    pandoc
+    (texlive.withPackages (ps:
+      with ps; [
+        scheme-infraonly
+        context
+        collection-luatex
+      ]))
     zettlr
     zotero
 
     # Cloud storage and security
     _1password-cli
     _1password-gui
+    maestral
+
+    # Permanent user binary link so 'spawn,zed' works natively
+    (runCommand "zed-cli-link" {} "mkdir -p $out/bin && ln -s ${zed-editor}/bin/zeditor $out/bin/zed")
   ];
- 
+
+  # =========================================================================
+  # 2. Shell context and environmental mappings
+  # =========================================================================
+  home.sessionVariables = {
+    EDITOR = "helix";
+    VISUAL = "zed";
+    TERMINAL = "kitty";
+    _ZO_DATA_DIR = "$HOME/.local/share/zoxide";
+    _FZF_PREVIEW_CMD = "bat --color=always --style=plain,numbers --line-range=:500 {}";
+  };
+
+  # =========================================================================
+  # 3. Graphical associations
+  # =========================================================================
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/plain" = ["dev.zed.Zed.desktop"];
+      "text/markdown" = ["dev.zed.Zed.desktop"];
+      "application/x-shellscript" = ["dev.zed.Zed.desktop"];
+    };
+  };
+  xdg.terminal-exec = {
+    enable = true;
+    settings.default = ["kitty.desktop"]; # Swift transition to Kitty
+  };
+
+  # =======================================================================
+  # 4. Declarative Starship Customizations
+  # =======================================================================
+  programs.starship = {
+    enable = true;
+    enableZshIntegration = true;
+    settings = {
+      add_newline = false;
+      format = "$git_branch $git_status $directory $character";
+      directory = {
+        truncation_length = 3;
+        truncate_to_repo = true;
+        style = "bold cyan";
+      };
+      git_branch = {
+        symbol = "🌱 ";
+        style = "bold magenta";
+        format = "on [$symbol$branch]($style) ";
+      };
+      git_status = {
+        style = "bold red";
+        conflicted = "🏳 ";
+        ahead = "⇡";
+        behind = "⇣";
+        diverged = "⇕";
+        untracked = " +?";
+        modified = " *~";
+        staged = " +";
+        renamed = " »";
+        deleted = " -";
+        format = "([$all_status$ahead_behind]($style) )";
+      };
+      character = {
+        success_symbol = "[ I ](bold green) ❯";
+        error_symbol = "[ I ](bold red) ❯";
+        vimcmd_symbol = "[ N ](bold yellow) ❯";
+        vimcmd_replace_one_symbol = "[ R ](bold purple) ❯";
+        vimcmd_replace_symbol = "[ R ](bold purple) ❯";
+        vimcmd_visual_symbol = "[ V ](bold magenta) ❯";
+      };
+    };
+  };
+
+  # =======================================================================
+  # 5. Maestral Dropbox Tracking Pipeline
+  # =======================================================================
+  systemd.user.services.maestral = {
+    Unit = {Description = "Maestral Dropbox Synchronization Daemon";};
+    Install = {WantedBy = ["graphical-session.target"];};
+    Service = {
+      ExecStart = "${pkgs.maestral}/bin/maestral start -f";
+      ExecStop = "${pkgs.maestral}/bin/maestral stop";
+      Restart = "on-failure";
+      Nice = 10;
+    };
+  };
+
+  # =======================================================================
+  # 6. Zsh Shell Configurations
+  # =======================================================================
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    history = {
+      size = 50000;
+      path = "$HOME/.zsh_history";
+      share = true;
+      ignoreDups = true;
+      ignoreSpace = true;
+      expireDuplicatesFirst = true;
+    };
+    shellAliases = {
+      cat = "bat";
+      ls = "eza --icons --color=auto --color-scale=all --icons=auto";
+      la = "eza --icons --color=auto --color-scale=all --icons=auto -la";
+      ll = "eza --icons --color=auto --color-scale=all --icons=auto -ll";
+      lm = "eza --icons --color=auto --color-scale=all --icons=auto -ll -s modified";
+      tree = "eza --icons --tree";
+      ffetch = "fastfetch -c all.jsonc";
+      grep = "rg --color=auto";
+      diff = "diff --color=auto";
+      ollama = "OLLAMA_NUM_PARALLEL=1 ollama";
+    };
+    initContent = ''
+      export FZF_DEFAULT_COMMAND="${pkgs.fd}/bin/fd --type f --hidden --strip-cwd-prefix"
+      export FZF_DEFAULT_OPTS="--height=60% --layout=reverse --border=rounded --prompt=\"  \" --pointer=\"  \" --preview-window=right:65%:wrap:border-left"
+
+      source ${pkgs.zsh-autosuggestions}/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+      source ${pkgs.zsh-syntax-highlighting}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+      source ${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+
+      bindkey -v
+      export KEYTIMEOUT=1
+      bindkey '^?' backward-delete-char
+      bindkey '^H' backward-delete-char
+      bindkey '^w' backward-kill-word
+      bindkey '^r' history-incremental-search-backward
+      bindkey '^[[A' history-substring-search-up
+      bindkey '^[[B' history-substring-search-down
+
+      # ---------------------------------------------------------
+      #   Custom Shell Functions & Initializations
+      # ---------------------------------------------------------
+
+      # 1. Custom Yazi traversal function
+      y() {
+         local tmp
+         tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+         command yazi "$@" --cwd-file="$tmp"
+         if [ -f "$tmp" ]; then
+             cwd="$(cat "$tmp")"
+             if [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [ -d "$cwd" ]; then
+                 builtin cd -- "$cwd"
+             fi
+             rm -f -- "$tmp"
+         fi
+      }
+
+      # 2. Workspace Project Aware Helix launch
+      hx() {
+          local project_root
+          project_root=$(git rev-parse --show-toplevel 2>/dev/null || \
+                         find . -maxdepth 5 -name "flake.nix" -exec dirname {} \; 2>/dev/null | head -n 1)
+
+          if [ -n "$project_root" ] && [ $# -eq 0 ]; then
+              (cd "$project_root" && command hx .)
+          else
+              command hx "$@"
+          fi
+      }
+
+      # 3. Inject zoxide shell initialization
+      eval "$(${pkgs.zoxide}/bin/zoxide init zsh)"
+
+      # 4. Fastfetch environment detection logo engine
+      fastfetch_dynamic() {
+          if [ -f /etc/fedora-release ]; then
+              export FF_OS_ICON=""
+              export FF_OS_COLOR="blue"
+              export FF_LOGO="$HOME/.config/fastfetch/logos/Fedora.png"
+          elif ${pkgs.gnugrep}/bin/grep -q "NixOS" /etc/os-release 2>/dev/null; then
+             export FF_LOGO="${./assets/NixOS.png}"
+          else
+              export FF_OS_ICON=""
+              export FF_OS_COLOR="green"
+              export FF_LOGO=""
+          fi
+          command fastfetch --logo "$FF_LOGO" --logo-type kitty --logo-width 28 --logo-height 12 "$@"
+      }
+
+      if [[ -o interactive ]]; then
+          alias fastfetch="fastfetch_dynamic"
+          fastfetch_dynamic
+      fi
+
+      # Silence the new user configuration prompt for empty home directories
+      [[ -f ~/.zshrc || -f ~/.zprofile ]] || export ZDOTDIR="/etc"
+    '';
+  };
+
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   # =========================================================================
   # 1. CLEAN THUNDERBIRD MAIN SYSTEM BLOCK
   # =========================================================================
@@ -48,9 +274,9 @@
       isDefault = true;
     };
   };
-          
+
   # =========================================================================
-  # 2. THE EMAIL ACCOUNTS MODULE
+  # THE EMAIL ACCOUNTS MODULE
   # =========================================================================
   accounts.email.accounts = {
     "panix-mail" = {
@@ -59,9 +285,26 @@
       address = "rik@panix.com";
       userName = "rik@panix.com";
       flavor = "plain";
-      imap = { host = "mail.panix.com"; port = 993; tls.enable = true; };
-      smtp = { host = "mail.panix.com"; port = 587; tls = { enable = true; useStartTls = true; }; };
-      thunderbird = { enable = true; profiles = [ "default" ]; };
+      imap = {
+        host = "mail.panix.com";
+        port = 993;
+        tls = {
+          enable = true;
+          useStartTls = false;
+        };
+      };
+      smtp = {
+        host = "mail.panix.com";
+        port = 587;
+        tls = {
+          enable = true;
+          useStartTls = true;
+        };
+      };
+      thunderbird = {
+        enable = true;
+        profiles = ["default"];
+      };
     };
 
     "spectrum-mail" = {
@@ -69,15 +312,25 @@
       address = "kabel5cd@charter.net";
       userName = "kabel5cd@charter.net";
       flavor = "plain";
-      imap = { host = "mobile.charter.net"; port = 993; tls = { enable = true; useStartTls = false; }; };  
-      smtp = { host = "mobile.charter.net"; port = 587; tls = { enable = true; useStartTls = true; }; };
+      imap = {
+        host = "mobile.charter.net";
+        port = 993;
+        tls = {
+          enable = true;
+          useStartTls = false;
+        };
+      };
+      smtp = {
+        host = "mobile.charter.net";
+        port = 587;
+        tls = {
+          enable = true;
+          useStartTls = true;
+        };
+      };
       thunderbird = {
-         enable = true;
-         profiles = [ "default" ];
-         settings = id: {
-           "mail.server.server_${id}.socketType" = 3;
-           "mail.smtpserver.smtp_${id}.socketType" = 2;
-         };
+        enable = true;
+        profiles = ["default"];
       };
     };
 
@@ -87,8 +340,12 @@
       userName = "amphiboly@gmail.com";
       flavor = "gmail.com";
       thunderbird = {
-        enable = true; profiles = [ "default" ];
-        settings = id: { "mail.server.server_${id}.authMethod" = 10; "mail.smtpserver.smtp_${id}.authMethod" = 10; }; #
+        enable = true;
+        profiles = ["default"];
+        settings = id: {
+          "mail.server.server_${id}.authMethod" = 10;
+          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+        };
       };
     };
 
@@ -98,8 +355,12 @@
       userName = "amphiboly.backup@gmail.com";
       flavor = "gmail.com";
       thunderbird = {
-        enable = true; profiles = [ "default" ];
-        settings = id: { "mail.server.server_${id}.authMethod" = 10; "mail.smtpserver.smtp_${id}.authMethod" = 10; }; #
+        enable = true;
+        profiles = ["default"];
+        settings = id: {
+          "mail.server.server_${id}.authMethod" = 10;
+          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+        };
       };
     };
 
@@ -109,12 +370,88 @@
       userName = "Cornwall.HOA@gmail.com";
       flavor = "gmail.com";
       thunderbird = {
-        enable = true; profiles = [ "default" ];
-        settings = id: { "mail.server.server_${id}.authMethod" = 10; "mail.smtpserver.smtp_${id}.authMethod" = 10; }; #
+        enable = true;
+        profiles = ["default"];
+        settings = id: {
+          "mail.server.server_${id}.authMethod" = 10;
+          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+        };
       };
     };
   };
- 
+
+  # =========================================================================
+  # 2. THE NEWSBOAT RSS FEED MODULE
+  # =========================================================================
+  programs.newsboat = {
+    enable = true;
+    autoReload = true;
+    reloadTime = 30;
+    extraConfig = ''
+      show-keymap-hint yes
+      browser "${pkgs.w3m}/bin/w3m"
+    '';
+  };
+
+  # Generate a cleanly formatted plain-text urls file from your XML asset
+  home.file.".config/newsboat/urls".text = let
+    rawXml = builtins.readFile ./assets/feeds.opml;
+    # Extract strings matched inside standard xml xmlUrl="..." properties
+    lines = builtins.filter (builtins.isString) (builtins.split "xmlUrl=\"([^\"]+)\"" rawXml);
+    # Extract structural tags if present, or fallback to an empty string line mapping
+    cleanUrls = builtins.concatStringsSep "\n" (builtins.map (match: builtins.head match) (builtins.filter builtins.isList (builtins.split "xmlUrl=\"([^\"]+)\"" rawXml)));
+  in
+    if cleanUrls != ""
+    then cleanUrls
+    else ''
+      # Fallback defaults if parsing fails
+      http://sesquiotic.wordpress.com/feed/
+    '';
+
+  # =========================================================================
+  # DECLARATIVE COSMIC DE KEYBOARD INTERCEPT OVERRIDES
+  # =========================================================================
+  # This targets COSMIC's native configuration engine, forcing the Wayland
+  # compositor to instantly bind Right Alt as the Compose multi-key on boot.
+  home.file.".config/cosmic/com.system76.CosmicInput/v1/keys".text = ''
+    (
+        caps_lock: None,
+        num_lock: true,
+        scroll_lock: false,
+        xkb_options: Some("compose:ralt"),
+    )
+  '';
+
+  # =========================================================================
+  # DECLARATIVE VIM DIGRAPH REPOSITORY INTEGRATION
+  # =========================================================================
+  # Directly map the complete file, locally stored
+  home.file.".XCompose".source = ./assets/xcompose-vim;
+
+  # =========================================================================
+  # KITTY TERMINAL INTEGRATION (home.nix)
+  # =========================================================================
+  programs.kitty = {
+    enable = true;
+    autoThemeFiles = {
+      light = "ayu_light";
+      dark = "Catppuccin-Mocha";
+      noPreference = "Catppuccin-Mocha";
+    };
+    font = {
+      name = "JetBrainsMono Nerd Font";
+      size = 12;
+    };
+    settings = {
+      scrollback_lines = 10000;
+      close_on_child_death = "yes";
+      update_check_interval = 0; # Disables redundant background update checks
+      background_opacity = "0.95";
+
+      "wayland_enable_ime" = "no";
+    };
+  };
+
   # =========================================================================
   # NATIVE INFRASTRUCTURE DEPLOYMENT: REMMINA WITH COUPLING PLUGINS
   # =========================================================================
@@ -130,76 +467,6 @@
     "Pictures/wallpapers/rose_pine.png".source = ./assets/rose_pine.png;
     "Pictures/wallpapers/flexoki.png".source = ./assets/flexoki.png;
   };
-
-  # =========================================================================
-  # IDIOMATIC NIRI WINDOW MANAGER CONFIGURATION (Owned perfectly by user rik)
-  # =========================================================================
-  home.pointerCursor = {
-    enable = true;
-    gtk.enable=true;
-    x11.enable=true;
-    package = pkgs.bibata-cursors;
-    name = "Bibata-Modern-Classic";
-    size = 24;
-  };
-  xdg.configFile."niri/config.kdl".text = ''
-       input {
-           keyboard {
-               xkb {
-                   layout "us"
-               }
-               repeat-delay 250
-               repeat-rate 35
-           }
-           touchpad {
-               tap
-               natural-scroll
-           }
-       }
-       layout {
-           gaps 10
-           default-column-width { proportion 0.5; }
-           focus-ring {
-               width 4
-               active-color "#7aa2f7"
-               inactive-color "#414868"
-           }
-       }
-       binds {
-           // --- Core Responsive Terminal Trigger ---
-           Mod+T { spawn "ghostty"; }
-           // --- Web Browser Bind ---
-           Mod+B { spawn "firefox"; }
-           // --- Window & Layout Actions ---
-           Mod+Shift+Q { close-window; }
-           Mod+Left    { focus-column-left; }
-           Mod+Right   { focus-column-right; }
-           Mod+Up      { focus-window-or-workspace-up; }
-           Mod+Down    { focus-window-or-workspace-down; }
-           // --- View Manipulation ---
-           Mod+O       { toggle-overview; }
-           // --- System Controls ---
-           Mod+Shift+Slash { show-hotkey-overlay; }
-           Mod+Shift+E     { quit; }
-   //      Mod+Shift+R     { spawn "niri" "msg" "action" "reload-config"; }
-           Mod+Shift+R     { spawn "sh" "-c" "niri msg action load-config-file && niri msg action reload-config-noctalia || pkill -USR1 noctalia"; }
-           // --- Column & Workspace Positioning Layout Controls ---
-           Mod+Shift+Left  { move-column-left; }
-           Mod+Shift+Right { move-column-right; }
-           Mod+R           { switch-preset-column-width; }
-           Mod+F           { maximize-column; }
-           Mod+Shift+F     { fullscreen-window; }
-           Mod+V           { toggle-window-floating; }
-           Mod+Shift+V     { switch-focus-between-floating-and-tiling; }
-           // --- Launcher & Hardware Mechanics ---
-           Mod+D       { spawn "sh" "-c" "noctalia || launcher"; }
-           Mod+P       { spawn "fuzzel"; }
-       }
-       output "eDP-1" {
-         background-color "#1a1b26"
-       }
-       spawn-at-startup "sh" "-c" "sleep 1 && noctalia"
-  '';
 
   # =========================================================================
   # FIREFOX SETUP
@@ -221,13 +488,13 @@
       };
 
       bookmarks = {
-        force = true; # Overrides browser database constraints to push Nix bookmarks
+        force = true;
         settings = import ./bookmarks.nix;
       };
 
-      # See github nix-community/nur-combined for available packages
+      # Nested extensions block with local scoped variables
       extensions = {
-        force = true; # Permits Home Manager to write extension states to the disk
+        force = true;
         packages = with pkgs.nur.repos.rycee.firefox-addons; [
           ghostery
           sidebery
@@ -238,64 +505,133 @@
   };
 
   # =========================================================================
-  # DECLARATIVE GHOSTTY INTEGRATION
-  # =========================================================================
-  programs.ghostty.enable = false; # it generates config, not config.ghostty
-  xdg.configFile."ghostty/config.ghostty".text = ''
-    font-family = JetBrainsMono Nerd Font
-    font-size = 10
-    theme = light:"Ayu Light",dark:"Night Owl"
-    window-decoration = none
-    command = "${pkgs.zsh}/bin/zsh"
-    clipboard-read = allow
-    clipboard-write = allow
-    copy-on-select = clipboard
-    shell-integration = zsh
-    shell-integration-features = sudo
-  '';
-
-  # =========================================================================
-  # IDIOMATIC GHOSTTY THEME CONFIGURATION
-  # =========================================================================
-  xdg.configFile."ghostty/config"= {
-    text = ''
-      font-size = 8
-      shell-integration = zsh
-      shell-integration-features = sudo
-    '';
-    force = true;
-  };
-
-  # =========================================================================
-  # DECLARATIVE HELIX INTEGRATION
+  # DECLARATIVE HELIX INTEGRATION (home.nix)
   # =========================================================================
   programs.helix = {
     enable = true;
+
+    # 1. CORE EDITOR & KEYBOARD LAYOUT TRACKS (Generates config.toml)
     settings = {
-      theme = "catppuccin_mocha";
+      theme = "onelight";
+
       editor = {
-        clipboard-provider = "termcode";
         line-number = "relative";
-        file-picker.max-depth = 5;
+        cursorline = true;
+        bufferline = "multiple";
+
+        cursor-shape = {
+          normal = "block";
+          insert = "bar";
+          select = "underline";
+        };
+
+        search = {
+          smart-case = false;
+        };
+
+        indent-guides = {
+          render = true;
+          character = "┋";
+          skip-levels = 1;
+        };
+
+        whitespace.characters = {
+          space = " ";
+          tab = "→";
+          newline = "⏎";
+        };
+
+        file-picker = {
+          hidden = false;
+        };
+
         statusline = {
-          left = [ "mode" "spinner" "version-control" "file-name" "file-modification-indicator" ];
-          center = [ ];
-          right = [ "diagnostics" "selections" "register" "file-type" "position" "position-percentage" ];
           separator = "│";
+          left = ["mode" "spacer" "spinner" "version-control" "spacer" "file-name" "file-modification-indicator"];
+          center = [];
+          right = ["diagnostics" "workspace-diagnostics" "selections" "position" "position-percentage" "file-type"];
+
+          mode = {
+            normal = "NORMAL";
+            insert = "INSERT";
+            select = "VISUAL";
+          };
+        };
+
+        lsp = {
+          display-inlay-hints = true;
+        };
+      };
+
+      keys.normal = {
+        "tab" = ":buffer-next";
+        "S-tab" = ":buffer-previous";
+        "C-p" = ":lsp-workspace-command tinymist.pinMain \"%sh{realpath %{buffer_name}}\"";
+        "C-w" = ":buffer-close";
+        "backspace" = "goto_next_diag";
+        "X" = ["select_mode" "extend_line"];
+
+        # Interactive TTY yazi picker link
+        C-y = ":sh yazi \"%{buffer_name}\" --chooser-file=/tmp/yazi-helix-picker; if [ -f /tmp/yazi-helix-picker ]; then hx_open=$(cat /tmp/yazi-helix-picker); rm -f /tmp/yazi-helix-picker; helix -c \":open '$hx_open'\"; fi";
+
+        space = {
+          T = ":sh typst compile \"%{buffer_name}\"";
+          x = ":toggle whitespace.render all none";
+
+          # Space + n opens the menu, then tap 'd' (day) or 'n' (night)
+          n = {
+            d = ":theme onelight";
+            n = ":theme catppuccin_mocha";
+          };
         };
       };
     };
+    # 2. LANGUAGES STANZA: Placed parallel to settings, compiling natively into languages.toml
     languages = {
       language = [
         {
           name = "nix";
           auto-format = true;
-          language-servers = [ "nil" ];
+          language-servers = ["nixd"];
+          formatter = {command = "${pkgs.alejandra}/bin/alejandra";};
+        }
+        {
+          name = "typst";
+          auto-format = true;
+          language-servers = ["tinymist"];
+        }
+        {
+          name = "markdown";
+          auto-format = true;
+          language-servers = ["marksman"];
+          formatter = {
+            command = "${pkgs.prettier}/bin/prettier";
+            args = ["--parser" "markdown"];
+          };
         }
       ];
-      language-server.nil = {
-        command = "nil";
-        config.nil.formatting.command = [ "nixpkgs-fmt" ];
+
+      language-server = {
+        # Advanced Nixd Engine with Deep Flake Evaluation Integration
+        nixd = {
+          command = "${pkgs.nixd}/bin/nixd";
+          args = ["--semantic-tokens=true"];
+
+          # Use Nix multiline string symbols (''...) to protect the internal quotes
+          config.nixd = {
+            nixpkgs.expr = ''import (builtins.getFlake "$root").inputs.nixpkgs { }'';
+            options = {
+              nixos.expr = ''(builtins.getFlake "$root").nixosConfigurations."datum-laptop".options'';
+            };
+          };
+        };
+
+        tinymist = {
+          command = "${pkgs.tinymist}/bin/tinymist";
+        };
+        marksman = {
+          command = "${pkgs.marksman}/bin/marksman";
+        };
       };
     };
   };
@@ -379,7 +715,7 @@
       };
     };
   };
- 
+
   # =========================================================================
   #  TERMINAL NAVIGATION & SHELL HOOKS
   # =========================================================================
@@ -393,9 +729,9 @@
   # =========================================================================
   xdg.desktopEntries.yazi = {
     name = "Yazi";
-    exec = "ghostty -e yazi %u";
+    exec = "kitty -- yazi %u";
     terminal = false;
     icon = "yazi";
-    categories = [ "System" "FileTransfer" ];
+    categories = ["System" "FileTransfer"];
   };
- }
+}
