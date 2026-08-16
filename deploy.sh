@@ -48,7 +48,7 @@ fi
 # 5. Switch Live System Generations Natively via nh
 echo "🚀 Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
-nh os switch . -- --profile-name "$build_label"
+nh os switch . --profile-name "$build_label"
 
 # 6. Storage Profile Management
 echo -e "\n🧹 STORAGE CLEANUP SUITE"
