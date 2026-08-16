@@ -163,9 +163,6 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    initContent = ''
-      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi
-    '';
     history = {
       size = 50000;
       path = "$HOME/.zsh_history";
@@ -187,6 +184,7 @@
       ollama = "OLLAMA_NUM_PARALLEL=1 ollama";
     };
     initContent = ''
+      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi
       export FZF_DEFAULT_COMMAND="${pkgs.fd}/bin/fd --type f --hidden --strip-cwd-prefix"
       export FZF_DEFAULT_OPTS="--height=60% --layout=reverse --border=rounded --prompt=\"  \" --pointer=\"  \" --preview-window=right:65%:wrap:border-left"
 
