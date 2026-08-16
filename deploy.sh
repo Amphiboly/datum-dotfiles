@@ -46,6 +46,12 @@ if command -v nvd &> /dev/null; then
     echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
     echo "--------------------------------------------------"
     nvd diff /run/current-system ./result
+    
+    # Compares user home packages (checks for existing active generation link)
+    if [ -d "$HOME/.nix-profile" ]; then
+        echo -e "\n👤 USER HOME PACKAGE SHIFTS:"
+        nvd diff "$HOME/.nix-profile" ./result-home || true
+    fi
     echo -e "--------------------------------------------------\n"
 else
     echo "⚠️ Warning: 'nvd' package not found in paths. Skipping diff tables."
@@ -68,8 +74,13 @@ echo "🚀 Switching live system tracks to new generation..."
 # nh pipes the switch natively, using your boot label for the generational profile
 nh os switch . -- --profile "$build_label"
 
+echo "👤 Deploying user environment profile layouts via Home Manager..."
+# This instructs nh to look for your flake's homeConfigurations outputs block, 
+# compile your package array, and write your managed ~/.zshrc file template instantly
+nh home switch .
+
 # Clean up the local profile symlinks (still in /run)
-rm -f ./"$build_label" *
+rm -f ./"$build_label"*
 
 # 5. Handle old generation storage management via nh clean
 echo -e "\n🧹 STORAGE CLEANUP SUITE"
