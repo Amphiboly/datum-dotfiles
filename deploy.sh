@@ -10,7 +10,7 @@ set -euo pipefail
 NOSTRUM_IP="192.168.5.58"
 USERS=("rik" "home_guest")
 
-cho "🎨 NixOS Workstation Deployment Engine Triggered..."
+echo "🎨 NixOS Workstation Deployment Engine Triggered..."
 echo "=================================================="
 
 # 1. Update the flake locks if requested
