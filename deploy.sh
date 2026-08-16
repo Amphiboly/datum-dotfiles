@@ -8,8 +8,9 @@ set -euo pipefail
 
 # Define network endpoints
 NOSTRUM_IP="192.168.5.58"
-
-echo "🎨 NixOS Workstation Deployment Engine Triggered..."
+USERS=("rik" "home_guest")
+e
+cho "🎨 NixOS Workstation Deployment Engine Triggered..."
 echo "=================================================="
 
 # 1. Update the flake locks if requested
@@ -18,47 +19,43 @@ if [[ "$check_updates" =~ ^[Yy]$ ]]; then
     echo "⚡ Refreshing upstream flake input hashes..."
     nix flake update --extra-experimental-features "nix-command flakes"
 fi
+
 # =========================================================================
-# 2. Build a dry-run local link to generate the nvd visual difference table
+# 2. Build dry-run local links to generate the nvd visual difference table
 # =========================================================================
-echo "📦 Generating dry-run environment preview mapping..."
-# Simply tell nh to build the current directory layout into a clean local link
+echo "📦 Generating dry-run system environment preview mapping..."
 nh os build .
 
-if command -v nvd &> /dev/null; then
-    echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
-    echo "--------------------------------------------------"
-    nvd diff /run/current-system ./result
-    echo -e "--------------------------------------------------\n"
-else
-    echo "⚠️ Warning: 'nvd' package not found in paths. Skipping diff tables."
-fi
-
-# INSTANT CLEANUP: Safely delete the temporary build result symlink links
-rm -f ./result
-
-# 2. Build a dry-run local link to generate the nvd visual difference table
-echo "📦 Generating dry-run environment preview mapping..."
-# nh automatically manages your flake parameters and caching targets
-nh os build .
+for user in "${USERS[@]}"; do
+    echo "👤 Generating dry-run user environment preview mapping for '$user'..."
+    # Passes the user configuration attribute string dynamically to the builder
+    nh home build . -c "$user"
+done
 
 if command -v nvd &> /dev/null; then
     echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
     echo "--------------------------------------------------"
     nvd diff /run/current-system ./result
     
-    # Compares user home packages (checks for existing active generation link)
-    if [ -d "$HOME/.nix-profile" ]; then
-        echo -e "\n👤 USER HOME PACKAGE SHIFTS:"
-        nvd diff "$HOME/.nix-profile" ./result-home || true
-    fi
+    # Check for active active profile link context for each user if directories exist
+    for user in "${USERS[@]}"; do
+        # Checks standard location handles for individual users
+        USER_HOME="/home/$user"
+        if [ "$user" = "rik" ]; then USER_HOME="/home/rik"; fi # Adjust if guest path differs
+        
+        if [ -d "$USER_HOME/.nix-profile" ]; then
+            echo -e "\n👤 USER HOME PACKAGE SHIFTS ($user):"
+            # Appends suffix hooks to read individual result configurations cleanly
+            nvd diff "$USER_HOME/.nix-profile" "./result-home-$user" || true
+        fi
+    done
     echo -e "--------------------------------------------------\n"
 else
     echo "⚠️ Warning: 'nvd' package not found in paths. Skipping diff tables."
 fi
 
-# Clean up the temporary dry-run result symlink
-rm -f ./result
+# Clean up all temporary local dry-run symlinks safely right after the diff
+rm -f ./result ./result-home-*
 
 # 3. Prompt for the bootloader label notes
 CURRENT_TS=$(date +"%m%dT%H%M")
@@ -69,18 +66,17 @@ if [[ -z "$build_label" ]]; then
     build_label="$CURRENT_TS"
 fi
 
+# =========================================================================
 # 4. Trigger the native hardware compilation pass via nh
+# =========================================================================
 echo "🚀 Switching live system tracks to new generation..."
-# nh pipes the switch natively, using your boot label for the generational profile
-nh os switch . -- --profile "$build_label"
+nh os switch . -- --profile-name "$build_label"
 
-echo "👤 Deploying user environment profile layouts via Home Manager..."
-# This instructs nh to look for your flake's homeConfigurations outputs block, 
-# compile your package array, and write your managed ~/.zshrc file template instantly
-nh home switch .
-
-# Clean up the local profile symlinks (still in /run)
-rm -f ./"$build_label"*
+for user in "${USERS[@]}"; do
+    echo "👤 Deploying user environment profile layouts for '$user' via Home Manager..."
+    # Switches every user configuration concurrently using their native profile keys
+    nh home switch . -c "$user"
+done
 
 # 5. Handle old generation storage management via nh clean
 echo -e "\n🧹 STORAGE CLEANUP SUITE"
