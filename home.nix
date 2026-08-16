@@ -28,7 +28,7 @@
     bat
     eza
     fastfetch
-    rg
+    ripgrep
 
     # Shell integrations
     antidote
