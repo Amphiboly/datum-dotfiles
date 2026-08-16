@@ -18,6 +18,24 @@ if [[ "$check_updates" =~ ^[Yy]$ ]]; then
     echo "⚡ Refreshing upstream flake input hashes..."
     nix flake update --extra-experimental-features "nix-command flakes"
 fi
+# =========================================================================
+# 2. Build a dry-run local link to generate the nvd visual difference table
+# =========================================================================
+echo "📦 Generating dry-run environment preview mapping..."
+# Simply tell nh to build the current directory layout into a clean local link
+nh os build .
+
+if command -v nvd &> /dev/null; then
+    echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
+    echo "--------------------------------------------------"
+    nvd diff /run/current-system ./result
+    echo -e "--------------------------------------------------\n"
+else
+    echo "⚠️ Warning: 'nvd' package not found in paths. Skipping diff tables."
+fi
+
+# INSTANT CLEANUP: Safely delete the temporary build result symlink links
+rm -f ./result
 
 # 2. Build a dry-run local link to generate the nvd visual difference table
 echo "📦 Generating dry-run environment preview mapping..."
@@ -49,6 +67,9 @@ fi
 echo "🚀 Switching live system tracks to new generation..."
 # nh pipes the switch natively, using your boot label for the generational profile
 nh os switch . -- --profile "$build_label"
+
+# Clean up the local profile symlinks (still in /run)
+rm -f ./"$build_label" *
 
 # 5. Handle old generation storage management via nh clean
 echo -e "\n🧹 STORAGE CLEANUP SUITE"

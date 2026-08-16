@@ -330,12 +330,15 @@
     recording_frames = 5
   '';
 
-  # 4. Fail-safe PAM interceptor scoped STRICTLY to administrative sudo tasks
-  # Because 'services.howdy.enable' is false, this is the only entry point live.
-  security.pam.services.sudo.text = ''
-    auth sufficient pam_howdy.so
-    auth include system-auth
-  '';
+  # =========================================================================
+  # 4. FAIL-SAFE PAM SECURITY INTERCEPTOR (SUDO ONLY)
+  # =========================================================================
+  # Using an attribute set wrapper satisfies the type validation engine.
+  security.pam.services.sudo.rules.auth.howdy-auth = {
+    control = "sufficient";
+    modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
+    order = 10; # Places it at the very beginning of the auth stack
+  };
 
   # =========================================================================
   # 16. HARDENED LOCAL SYSTEM FIREWALL INFRASTRUCTURE (configuration.nix)

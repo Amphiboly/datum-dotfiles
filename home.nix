@@ -163,6 +163,9 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    initExtra = ''
+      if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi
+    '';
     history = {
       size = 50000;
       path = "$HOME/.zsh_history";
