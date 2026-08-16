@@ -9,7 +9,7 @@ set -euo pipefail
 # Define network endpoints
 NOSTRUM_IP="192.168.5.58"
 USERS=("rik" "home_guest")
-e
+
 cho "🎨 NixOS Workstation Deployment Engine Triggered..."
 echo "=================================================="
 
