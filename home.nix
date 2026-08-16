@@ -24,6 +24,12 @@
     tinymist
     #    vim-full  # vim is declared below
 
+    # Shell tools
+    bat
+    eza
+    fastfetch
+    rg
+
     # Shell integrations
     antidote
     zsh-completions
