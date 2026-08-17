@@ -62,15 +62,12 @@
   services.system76-scheduler.enable = true;
   # Required user context tracking backend for modern greeters and multi-user configurations
   services.accounts-daemon.enable = true;
-  # TEMPORARY UNTIL COSMIC IS MORE STABLE
-  services.xserver.enable = true;
-  services.desktopManager.gnome.enable = true;
-  services.displayManager.gdm.enable = true;
 
-  services.desktopManager.cosmic.enable = false;
-  services.displayManager.cosmic-greeter.enable = false;
-
-  environment.cosmic.excludePackages = with pkgs; [];
+  # =========================================================================
+  # ACTIVE DESKTOP ENVIRONMENT TOGGLE SWITCH
+  # =========================================================================
+    ./desktop-gnome.nix   # <- Comment this out and uncomment cosmic to swap!
+    # ./desktop-cosmic.nix
 
   #  # Deploy greetd with tuigreet to handle login security safely
   #  services.greetd = {
