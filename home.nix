@@ -278,184 +278,165 @@
   };
 
   # =========================================================================
-  # DECLARATIVE CLAWS-MAIL REPRODUCIBLE APPLICATION BLUEPRINTS
+  # PURE UN-LINKED PLAIN WRITEABLE CLAWS-MAIL CONFIGURATIONS
   # =========================================================================
-  xdg.configFile = {
-    # 1. Accounts Configuration Matrix Template
-    "claws-mail-blueprints/accountrc".text = ''
-      [Account: 1]
-      account_name=Panix Mail
-      real_name=Rik Kabel
-      address=rik@panix.com
-      protocol=2
-      recv_server=://panix.com
-      userid=rik@panix.com
-      smtp_server=://panix.com
-      ssl_imap=2
-      ssl_smtp=2
-      set_smtpport=1
-      smtpport=587
+  home.file = {
+    # 1. Accounts Configuration Matrix
+    ".claws-mail/accountrc" = {
+      text = ''
+        [Account: 1]
+        account_name=Panix Mail
+        real_name=Rik Kabel
+        address=rik@panix.com
+        protocol=2
+        recv_server=://panix.com
+        userid=rik@panix.com
+        smtp_server=://panix.com
+        ssl_imap=2
+        ssl_smtp=2
+        set_smtpport=1
+        smtpport=587
 
-      [Account: 2]
-      account_name=Spectrum Mail
-      real_name=Richard Kabel
-      address=kabel5cd@charter.net
-      protocol=2
-      recv_server=mobile.charter.net
-      userid=kabel5cd@charter.net
-      smtp_server=mobile.charter.net
-      ssl_imap=1
-      ssl_smtp=2
-      set_smtpport=1
-      smtpport=587
+        [Account: 2]
+        account_name=Spectrum Mail
+        real_name=Richard Kabel
+        address=kabel5cd@charter.net
+        protocol=2
+        recv_server=mobile.charter.net
+        userid=kabel5cd@charter.net
+        smtp_server=mobile.charter.net
+        ssl_imap=1
+        ssl_smtp=2
+        set_smtpport=1
+        smtpport=587
 
-      [Account: 3]
-      account_name=Amphiboly Gmail
-      real_name=Rik Kabel
-      address=amphiboly@gmail.com
-      protocol=2
-      recv_server=://gmail.com
-      userid=amphiboly@gmail.com
-      smtp_server=://gmail.com
-      ssl_imap=1
-      ssl_smtp=1
-      set_smtpport=1
-      smtpport=465
+        [Account: 3]
+        account_name=Amphiboly Gmail
+        real_name=Rik Kabel
+        address=amphiboly@gmail.com
+        protocol=2
+        recv_server=://gmail.com
+        userid=amphiboly@gmail.com
+        smtp_server=://gmail.com
+        ssl_imap=1
+        ssl_smtp=1
+        set_smtpport=1
+        smtpport=465
 
-      [Account: 4]
-      account_name=Amphiboly Backup Gmail
-      real_name=Rik Kabel
-      address=amphiboly.backup@gmail.com
-      protocol=2
-      recv_server=://gmail.com
-      userid=amphiboly.backup@gmail.com
-      smtp_server=://gmail.com
-      ssl_imap=1
-      ssl_smtp=1
-      set_smtpport=1
-      smtpport=465
+        [Account: 4]
+        account_name=Amphiboly Backup Gmail
+        real_name=Rik Kabel
+        address=amphiboly.backup@gmail.com
+        protocol=2
+        recv_server=://gmail.com
+        userid=amphiboly.backup@gmail.com
+        smtp_server=://gmail.com
+        ssl_imap=1
+        ssl_smtp=1
+        set_smtpport=1
+        smtpport=465
 
-      [Account: 5]
-      account_name=Cornwall HOA Gmail
-      real_name=Cornwall Association
-      address=Cornwall.HOA@gmail.com
-      protocol=2
-      recv_server=://gmail.com
-      userid=Cornwall.HOA@gmail.com
-      smtp_server=://gmail.com
-      ssl_imap=1
-      ssl_smtp=1
-      set_smtpport=1
-      smtpport=465
+        [Account: 5]
+        account_name=Cornwall HOA Gmail
+        real_name=Cornwall Association
+        address=Cornwall.HOA@gmail.com
+        protocol=2
+        recv_server=://gmail.com
+        userid=Cornwall.HOA@gmail.com
+        smtp_server=://gmail.com
+        ssl_imap=1
+        ssl_smtp=1
+        set_smtpport=1
+        smtpport=465
 
-      [Account: 6]
-      account_name=Gmane/Gwene Newsgroups
-      real_name=Amphiboly
-      address=amphiboly@gmail.com
-      protocol=3
-      recv_server=news.gmane.io
-      userid=Amphiboly
-      ssl_nntp=1
-      set_nntpport=1
-      nntpport=563
+        [Account: 6]
+        account_name=Gmane/Gwene Newsgroups
+        real_name=Amphiboly
+        address=amphiboly@gmail.com
+        protocol=3
+        recv_server=news.gmane.io
+        userid=Amphiboly
+        ssl_nntp=1
+        set_nntpport=1
+        nntpport=563
 
-      [Account: 7]
-      account_name=Panix Newsgroups
-      real_name=Rik Kabel
-      address=rik@panix.com
-      protocol=3
-      recv_server=://panix.com
-      userid=rik
-      ssl_nntp=1
-      set_nntpport=1
-      nntpport=563
-    '';
+        [Account: 7]
+        account_name=Panix Newsgroups
+        real_name=Rik Kabel
+        address=rik@panix.com
+        protocol=3
+        recv_server=://panix.com
+        userid=rik
+        ssl_nntp=1
+        set_nntpport=1
+        nntpport=563
+      '';
+    };
 
-    # 2. Comprehensive RSS Subscription Feed Feeds List Template
-    "claws-mail-blueprints/rssylrc".text = ''
-      [Feed: 1]
-      official_name=NixOS Security Disclosures
-      url=https://nixos.org
-      refresh_interval=60
+    # 2. Comprehensive RSS Subscription Feeds List
+    ".claws-mail/rssylrc" = {
+      text = ''
+        [Feed: 1]
+        official_name=NixOS Security Disclosures
+        url=https://nixos.org
+        refresh_interval=60
 
-      [Feed: 2]
-      official_name=Linux Kernel Archive
-      url=https://kernel.org
-      refresh_interval=60
+        [Feed: 2]
+        official_name=Linux Kernel Archive
+        url=https://kernel.org
+        refresh_interval=60
 
-      [Feed: 3]
-      official_name=Lowering the Bar
-      url=http://feedblitz.com
-      refresh_interval=60
+        [Feed: 3]
+        official_name=Lowering the Bar
+        url=http://feedblitz.com
+        refresh_interval=60
 
-      [Feed: 4]
-      official_name=Sesquiotica
-      url=https://wordpress.com
-      refresh_interval=60
+        [Feed: 4]
+        official_name=Sesquiotica
+        url=https://wordpress.com
+        refresh_interval=60
 
-      [Feed: 5]
-      official_name=Strong Language
-      url=https://wordpress.com
-      refresh_interval=60
+        [Feed: 5]
+        official_name=Strong Language
+        url=https://wordpress.com
+        refresh_interval=60
 
-      [Feed: 6]
-      official_name=You Don't Say
-      url=https://blogspot.com
-      refresh_interval=60
+        [Feed: 6]
+        official_name=You Don't Say
+        url=https://blogspot.com
+        refresh_interval=60
 
-      [Feed: 7]
-      official_name=Grammarphobia » Blog
-      url=https://grammarphobia.com
-      refresh_interval=60
+        [Feed: 7]
+        official_name=Grammarphobia » Blog
+        url=https://grammarphobia.com
+        refresh_interval=60
 
-      [Feed: 8]
-      official_name=Crooked Timber
-      url=https://crookedtimber.org
-      refresh_interval=60
-    '';
+        [Feed: 8]
+        official_name=Crooked Timber
+        url=https://crookedtimber.org
+        refresh_interval=60
+      '';
+    };
 
-    # 3. Base Application Preference Settings File Template
-    "claws-mail-blueprints/clawsrc".text = ''
-      [Common]
-      layout_type=0
-      toolbar_style=3
-      next_on_delete=1
-    '';
+    # 3. Base Preference Initializers
+    ".claws-mail/clawsrc" = {
+      text = ''
+        [Common]
+        layout_type=0
+        toolbar_style=3
+        next_on_delete=1
+      '';
+    };
 
-    # 4. Multi-Account Structure Storage Schema Index Template
-    "claws-mail-blueprints/folderlist.xml".text = ''
-      <?xml version="1.0" encoding="US-ASCII"?>
-      <folderlist>
-        <folder type="mh" name="Mailbox" path="Mailbox"/>
-      </folderlist>
-    '';
-  };
-
-  # =========================================================================
-  # NATIVE NIX USER-SPACE ACTIVATION INFRASTRUCTURE (home.nix)
-  # =========================================================================
-  home.activation = {
-    syncClawsWorkspace = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
-      echo "📥 Executing native user-space Claws Mail template sync..."
-
-      # Establish a standard fully writeable directory footprint
-      mkdir -p "$HOME/.claws-mail"
-
-      # FIXED IMPLEMENTATION: Explicitly query file availability cleanly
-      # without tripping Zsh/Bash strict exit code traps!
-      SRC_DIR="$HOME/.config/claws-mail-blueprints"
-      if [ -f "$SRC_DIR/accountrc" ]; then
-          cp -f "$SRC_DIR/accountrc" "$HOME/.claws-mail/accountrc"
-          cp -f "$SRC_DIR/rssylrc" "$HOME/.claws-mail/rssylrc"
-          cp -f "$SRC_DIR/clawsrc" "$HOME/.claws-mail/clawsrc"
-          cp -f "$SRC_DIR/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
-
-          # Force active user read/write file access permissions
-          chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml"
-      else
-          echo "⏭️ Blueprints folder not written to filesystem yet. Skipping sync pass."
-      fi
-    '';
+    # 4. Multi-Account Mailbox Storage Schema Index
+    ".claws-mail/folderlist.xml" = {
+      text = ''
+        <?xml version="1.0" encoding="US-ASCII"?>
+        <folderlist>
+          <folder type="mh" name="Mailbox" path="Mailbox"/>
+        </folderlist>
+      '';
+    };
   };
 
   #  # =========================================================================
