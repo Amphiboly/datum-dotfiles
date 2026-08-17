@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # File: deploy.sh
-# 2026-08-17: Added claws tweaks
 # 2026-08-13: Converted to use nh
 # 2026-08-07: Added rsync of secrets.dec.yaml
 # 2026-08-07: Removed z option from first rsync
@@ -60,24 +59,6 @@ rm -f ./result
 echo "🚀 Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
 nh os switch . # -- --profile "$build_label"
-
-# =========================================================================
-# 5b. UNIFIED CLAWS-MAIL SYNCHRONIZATION HOOK
-#     Ensures 100% writeable files to stop core dumps while keeping Git clean!
-# =========================================================================
-echo "📥 Syncing declarative workspace configurations to writeable workspace files..."
-mkdir -p "$HOME/.claws-mail"
-
-# Copy text contents cleanly without retaining restrictive read-only store links
-if [ -d "$HOME/.config/claws-mail-blueprints" ]; then
-    cp -f "$HOME/.config/claws-mail-blueprints/accountrc" "$HOME/.claws-mail/accountrc"
-    cp -f "$HOME/.config/claws-mail-blueprints/rssylrc" "$HOME/.claws-mail/rssylrc"
-    cp -f "$HOME/.config/claws-mail-blueprints/clawsrc" "$HOME/.claws-mail/clawsrc"
-    cp -f "$HOME/.config/claws-mail-blueprints/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
-    
-    # Enforce standard read/write user permissions over your local files
-    chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml"
-fi
 
 # =========================================================================
 # 6. Storage Profile Management
