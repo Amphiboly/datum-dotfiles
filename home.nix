@@ -418,19 +418,6 @@
     '';
   };
 
-  # 3. Secure User-Space Activation Sync Hooks
-  home.activation = {
-    syncClawsWorkspace = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
-      mkdir -p "$HOME/.claws-mail"
-      BLUEPRINTS_DIR="$HOME/.config/claws-mail-blueprints"
-      if [ -f "$BLUEPRINTS_DIR/accountrc" ]; then
-          cp --remove-destination -f "$BLUEPRINTS_DIR/accountrc" "$HOME/.claws-mail/accountrc"
-          cp --remove-destination -f "$BLUEPRINTS_DIR/rssylrc" "$HOME/.claws-mail/rssylrc"
-          chmod 644 "$HOME/.claws-mail/"*rc
-      fi
-    '';
-  };
-
   # -------------------------------------------------------------------------
   # THE STANDALONE HOME.ACTIVATION TOP-LEVEL COMPLIANCE ENGINE MODULE
   # -------------------------------------------------------------------------
