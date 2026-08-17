@@ -273,119 +273,257 @@
   };
 
   # =========================================================================
-  # 1. CLEAN THUNDERBIRD MAIN SYSTEM BLOCK
+  # ACTIVE LIVE CLAWS-MAIL CONFIGURATION INJECTORS
   # =========================================================================
-  programs.thunderbird = {
-    enable = true;
-    profiles.default = {
-      isDefault = true;
-    };
+  home.file = {
+    # 1. Declaratively pre-seed your IMAP Mail and NNTP Usenet Server Links
+    ".claws-mail/accountrc".text = ''
+      [Account: 1]
+      account_name=Panix Mail
+      real_name=Rik Kabel
+      address=rik@panix.com
+      protocol=2
+      recv_server=mail.panix.com
+      userid=rik@panix.com
+      smtp_server=mail.panix.com
+      ssl_imap=2
+      ssl_smtp=2
+      set_smtpport=1
+      smtpport=587
+
+      [Account: 2]
+      account_name=Spectrum Mail
+      real_name=Richard Kabel
+      address=kabel5cd@charter.net
+      protocol=2
+      recv_server=mobile.charter.net
+      userid=kabel5cd@charter.net
+      smtp_server=mobile.charter.net
+      ssl_imap=1
+      ssl_smtp=2
+      set_smtpport=1
+      smtpport=587
+
+      [Account: 3]
+      account_name=Amphiboly Gmail
+      real_name=Rik Kabel
+      address=amphiboly@gmail.com
+      protocol=2
+      recv_server=imap.gmail.com
+      userid=amphiboly@gmail.com
+      smtp_server=smtp.gmail.com
+      ssl_imap=1
+      ssl_smtp=1
+      set_smtpport=1
+      smtpport=465
+
+      [Account: 4]
+      account_name=Amphiboly Backup Gmail
+      real_name=Rik Kabel
+      address=amphiboly.backup@gmail.com
+      protocol=2
+      recv_server=imap.gmail.com
+      userid=amphiboly.backup@gmail.com
+      smtp_server=smtp.gmail.com
+      ssl_imap=1
+      ssl_smtp=1
+      set_smtpport=1
+      smtpport=465
+
+      [Account: 5]
+      account_name=Cornwall HOA Gmail
+      real_name=Cornwall Association
+      address=Cornwall.HOA@gmail.com
+      protocol=2
+      recv_server=imap.gmail.com
+      userid=Cornwall.HOA@gmail.com
+      smtp_server=smtp.gmail.com
+      ssl_imap=1
+      ssl_smtp=1
+      set_smtpport=1
+      smtpport=465
+
+      [Account: 6]
+      account_name=Gmane/Gwene Newsgroups
+      real_name=Amphiboly
+      address=amphiboly@gmail.com
+      protocol=3
+      recv_server=news.gmane.io
+      userid=Amphiboly
+      ssl_nntp=1
+      set_nntpport=1
+      nntpport=563
+
+      [Account: 7]
+      account_name=Panix Newsgroups
+      real_name=Rik Kabel
+      address=rik@panix.com
+      protocol=3
+      recv_server=news.panix.com
+      userid=rik
+      ssl_nntp=1
+      set_nntpport=1
+      nntpport=563
+    '';
+
+    # 2. Declaratively drop your initial live RSS Feed feed tracking parameters
+    ".claws-mail/rssylrc".text = ''
+      [Feed: 1]
+      official_name=NixOS Security Disclosures
+      url=https://nixos.org
+      refresh_interval=60
+
+      [Feed: 2]
+      official_name=Linux Kernel Archive
+      url=https://kernel.org
+      refresh_interval=60
+
+      [Feed: 3]
+      official_name=Lowering the Bar
+      url=http://feeds.feedblitz.com/loweringthebar&amp;x=1
+      refresh_interval=60
+
+      [Feed: 4]
+      official_name=Sesquiotica
+      url=https://sesquiotic.wordpress.com/feed/
+      refresh_interval=60
+
+      [Feed: 5]
+      official_name=Strong Language
+      url=https://stronglang.wordpress.com/feed/
+      refresh_interval=60
+
+      [Feed: 6]
+      official_name=You Don't Say
+      url=https://johnemcintyre.blogspot.com/feeds/posts/default
+      refresh_interval=60
+
+      [Feed: 7]
+      official_name=Grammarphobia » Blog
+      url=https://grammarphobia.com
+      refresh_interval=60
+
+      [Feed: 8]
+      official_name=Crooked Timber
+      url=https://crookedtimber.org
+      refresh_interval=60
+    '';
   };
 
-  # =========================================================================
-  # THE EMAIL ACCOUNTS MODULE
-  # =========================================================================
-  accounts.email.accounts = {
-    "panix-mail" = {
-      primary = true;
-      realName = "Rik Kabel";
-      address = "rik@panix.com";
-      userName = "rik@panix.com";
-      flavor = "plain";
-      imap = {
-        host = "mail.panix.com";
-        port = 993;
-        tls = {
-          enable = true;
-          useStartTls = false;
-        };
-      };
-      smtp = {
-        host = "mail.panix.com";
-        port = 587;
-        tls = {
-          enable = true;
-          useStartTls = true;
-        };
-      };
-      thunderbird = {
-        enable = true;
-        profiles = ["default"];
-      };
-    };
-
-    "spectrum-mail" = {
-      realName = "Richard Kabel";
-      address = "kabel5cd@charter.net";
-      userName = "kabel5cd@charter.net";
-      flavor = "plain";
-      imap = {
-        host = "mobile.charter.net";
-        port = 993;
-        tls = {
-          enable = true;
-          useStartTls = false;
-        };
-      };
-      smtp = {
-        host = "mobile.charter.net";
-        port = 587;
-        tls = {
-          enable = true;
-          useStartTls = true;
-        };
-      };
-      thunderbird = {
-        enable = true;
-        profiles = ["default"];
-      };
-    };
-
-    "gmail-personal" = {
-      realName = "Rik Kabel";
-      address = "amphiboly@gmail.com";
-      userName = "amphiboly@gmail.com";
-      flavor = "gmail.com";
-      thunderbird = {
-        enable = true;
-        profiles = ["default"];
-        settings = id: {
-          "mail.server.server_${id}.authMethod" = 10;
-          "mail.smtpserver.smtp_${id}.authMethod" = 10;
-        };
-      };
-    };
-
-    "gmail-backup" = {
-      realName = "Rik Kabel";
-      address = "amphiboly.backup@gmail.com";
-      userName = "amphiboly.backup@gmail.com";
-      flavor = "gmail.com";
-      thunderbird = {
-        enable = true;
-        profiles = ["default"];
-        settings = id: {
-          "mail.server.server_${id}.authMethod" = 10;
-          "mail.smtpserver.smtp_${id}.authMethod" = 10;
-        };
-      };
-    };
-
-    "gmail-HOA" = {
-      realName = "Cornwall Association";
-      address = "Cornwall.HOA@gmail.com";
-      userName = "Cornwall.HOA@gmail.com";
-      flavor = "gmail.com";
-      thunderbird = {
-        enable = true;
-        profiles = ["default"];
-        settings = id: {
-          "mail.server.server_${id}.authMethod" = 10;
-          "mail.smtpserver.smtp_${id}.authMethod" = 10;
-        };
-      };
-    };
-  };
+  #  # =========================================================================
+  #  # 1. CLEAN THUNDERBIRD MAIN SYSTEM BLOCK
+  #  # =========================================================================
+  #  programs.thunderbird = {
+  #    enable = true;
+  #    profiles.default = {
+  #      isDefault = true;
+  #    };
+  #  };
+  #
+  #  # =========================================================================
+  #  # THE EMAIL ACCOUNTS MODULE
+  #  # =========================================================================
+  #  accounts.email.accounts = {
+  #    "panix-mail" = {
+  #      primary = true;
+  #      realName = "Rik Kabel";
+  #      address = "rik@panix.com";
+  #      userName = "rik@panix.com";
+  #      flavor = "plain";
+  #      imap = {
+  #        host = "mail.panix.com";
+  #        port = 993;
+  #        tls = {
+  #          enable = true;
+  #          useStartTls = true;
+  #        };
+  #      };
+  #      smtp = {
+  #        host = "mail.panix.com";
+  #        port = 587;
+  #        tls = {
+  #          enable = true;
+  #          useStartTls = true;
+  #        };
+  #      };
+  #      thunderbird = {
+  #        enable = true;
+  #        profiles = ["default"];
+  #      };
+  #    };
+  #
+  #    "spectrum-mail" = {
+  #      realName = "Richard Kabel";
+  #      address = "kabel5cd@charter.net";
+  #      userName = "kabel5cd@charter.net";
+  #      flavor = "plain";
+  #      imap = {
+  #        host = "mobile.charter.net";
+  #        port = 993;
+  #        tls = {
+  #          enable = true;
+  #          useStartTls = false;
+  #        };
+  #      };
+  #      smtp = {
+  #        host = "mobile.charter.net";
+  #        port = 587;
+  #        tls = {
+  #          enable = true;
+  #          useStartTls = true;
+  #        };
+  #      };
+  #      thunderbird = {
+  #        enable = true;
+  #        profiles = ["default"];
+  #      };
+  #    };
+  #
+  #    "gmail-personal" = {
+  #      realName = "Rik Kabel";
+  #      address = "amphiboly@gmail.com";
+  #      userName = "amphiboly@gmail.com";
+  #      flavor = "gmail.com";
+  #      thunderbird = {
+  #        enable = true;
+  #        profiles = ["default"];
+  #        settings = id: {
+  #          "mail.server.server_${id}.authMethod" = 10;
+  #          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+  #        };
+  #      };
+  #    };
+  #
+  #    "gmail-backup" = {
+  #      realName = "Rik Kabel";
+  #      address = "amphiboly.backup@gmail.com";
+  #      userName = "amphiboly.backup@gmail.com";
+  #      flavor = "gmail.com";
+  #      thunderbird = {
+  #        enable = true;
+  #        profiles = ["default"];
+  #        settings = id: {
+  #          "mail.server.server_${id}.authMethod" = 10;
+  #          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+  #        };
+  #      };
+  #    };
+  #
+  #    "gmail-HOA" = {
+  #      realName = "Cornwall Association";
+  #      address = "Cornwall.HOA@gmail.com";
+  #      userName = "Cornwall.HOA@gmail.com";
+  #      flavor = "gmail.com";
+  #      thunderbird = {
+  #        enable = true;
+  #        profiles = ["default"];
+  #        settings = id: {
+  #          "mail.server.server_${id}.authMethod" = 10;
+  #          "mail.smtpserver.smtp_${id}.authMethod" = 10;
+  #        };
+  #      };
+  #    };
+  #  };
 
   # =========================================================================
   # 2. THE NEWSBOAT RSS FEED MODULE
