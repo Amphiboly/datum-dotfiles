@@ -286,7 +286,7 @@
       account_name=Panix Mail
       real_name=Rik Kabel
       address=rik@panix.com
-      protocol=0
+      protocol=4
       recv_server=://panix.com
       userid=rik@panix.com
       smtp_server=://panix.com
@@ -299,7 +299,7 @@
       account_name=Spectrum Mail
       real_name=Richard Kabel
       address=kabel5cd@charter.net
-      protocol=0
+      protocol=4
       recv_server=mobile.charter.net
       userid=kabel5cd@charter.net
       smtp_server=mobile.charter.net
@@ -312,10 +312,10 @@
       account_name=Amphiboly Gmail
       real_name=Rik Kabel
       address=amphiboly@gmail.com
-      protocol=0
-      recv_server=://gmail.com
+      protocol=4
+      recv_server=imap.gmail.com
       userid=amphiboly@gmail.com
-      smtp_server=://gmail.com
+      smtp_server=smtp.gmail.com
       ssl_imap=1
       ssl_smtp=1
       set_smtpport=1
@@ -325,10 +325,10 @@
       account_name=Amphiboly Backup Gmail
       real_name=Rik Kabel
       address=amphiboly.backup@gmail.com
-      protocol=0
-      recv_server=://gmail.com
+      protocol=4
+      recv_server=imap.gmail.com
       userid=amphiboly.backup@gmail.com
-      smtp_server=://gmail.com
+      smtp_server=smtp.gmail.com
       ssl_imap=1
       ssl_smtp=1
       set_smtpport=1
@@ -338,10 +338,10 @@
       account_name=Cornwall HOA Gmail
       real_name=Cornwall Association
       address=Cornwall.HOA@gmail.com
-      protocol=0
-      recv_server=://gmail.com
+      protocol=4
+      recv_server=imap.gmail.com
       userid=Cornwall.HOA@gmail.com
-      smtp_server=://gmail.com
+      smtp_server=smtp.gmail.com
       ssl_imap=1
       ssl_smtp=1
       set_smtpport=1
@@ -370,47 +370,8 @@
       nntpport=563
     '';
 
-    "claws-mail-blueprints/rssylrc".text = ''
-      [Feed: 1]
-      official_name=NixOS Security Disclosures
-      url=https://nixos.org
-      refresh_interval=60
-
-      [Feed: 2]
-      official_name=Linux Kernel Archive
-      url=https://kernel.org
-      refresh_interval=60
-
-      [Feed: 3]
-      official_name=Lowering the Bar
-      url=http://feedblitz.com
-      refresh_interval=60
-
-      [Feed: 4]
-      official_name=Sesquiotica
-      url=https://wordpress.com
-      refresh_interval=60
-
-      [Feed: 5]
-      official_name=Strong Language
-      url=https://wordpress.com
-      refresh_interval=60
-
-      [Feed: 6]
-      official_name=You Don't Say
-      url=https://blogspot.com
-      refresh_interval=60
-
-      [Feed: 7]
-      official_name=Grammarphobia » Blog
-      url=https://grammarphobia.com
-      refresh_interval=60
-
-      [Feed: 8]
-      official_name=Crooked Timber
-      url=https://crookedtimber.org
-      refresh_interval=60
-    '';
+    "claws-mail-blueprints/rssylrc".text = ''...[keep your feeds block identical] '';
+    "claws-mail-blueprints/clawsrc".text = "[Common]\n";
   };
 
   # =========================================================================
