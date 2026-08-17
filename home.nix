@@ -422,7 +422,7 @@
     "claws-mail-blueprints/folderlist.xml".text = ''
       <?xml version="1.0" encoding="US-ASCII"?>
       <folderlist>
-        <folder type="mh" name="Mailbox" path="Mailbox"/>
+        <folder type="mh" name="Mail" path="Mail"/>
       </folderlist>
     '';
   };
@@ -436,7 +436,10 @@
       mkdir -p "$HOME/.claws-mail"
       mkdir -p "$HOME/.claws-mail/addrbook"
 
-      # 2. Pre-seed foundational interface text anchors to prevent C file stream crashes
+      # Creates the local mail storage target folder
+      mkdir -p "$HOME/Mail"
+
+      # 2. Pre-seed foundational interface text anchors
       touch "$HOME/.claws-mail/menurc"
       touch "$HOME/.claws-mail/toolbar_main.xml"
 
