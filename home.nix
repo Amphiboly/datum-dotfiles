@@ -278,7 +278,7 @@
   };
 
   # =========================================================================
-  # DECLARATIVE CLAWS-MAIL REPRODUCIBLE APPLICATION BLUEPRINTS (home.nix)
+  # REPRODUCIBLE CLAWS-MAIL APPLICATION PROTOCOL ARRAYS (home.nix)
   # =========================================================================
   xdg.configFile = {
     "claws-mail-blueprints/accountrc".text = ''
@@ -286,7 +286,7 @@
       account_name=Panix Mail
       real_name=Rik Kabel
       address=rik@panix.com
-      protocol=2
+      protocol=0
       recv_server=://panix.com
       userid=rik@panix.com
       smtp_server=://panix.com
@@ -299,7 +299,7 @@
       account_name=Spectrum Mail
       real_name=Richard Kabel
       address=kabel5cd@charter.net
-      protocol=2
+      protocol=0
       recv_server=mobile.charter.net
       userid=kabel5cd@charter.net
       smtp_server=mobile.charter.net
@@ -312,7 +312,7 @@
       account_name=Amphiboly Gmail
       real_name=Rik Kabel
       address=amphiboly@gmail.com
-      protocol=2
+      protocol=0
       recv_server=://gmail.com
       userid=amphiboly@gmail.com
       smtp_server=://gmail.com
@@ -325,7 +325,7 @@
       account_name=Amphiboly Backup Gmail
       real_name=Rik Kabel
       address=amphiboly.backup@gmail.com
-      protocol=2
+      protocol=0
       recv_server=://gmail.com
       userid=amphiboly.backup@gmail.com
       smtp_server=://gmail.com
@@ -338,7 +338,7 @@
       account_name=Cornwall HOA Gmail
       real_name=Cornwall Association
       address=Cornwall.HOA@gmail.com
-      protocol=2
+      protocol=0
       recv_server=://gmail.com
       userid=Cornwall.HOA@gmail.com
       smtp_server=://gmail.com
@@ -351,7 +351,7 @@
       account_name=Gmane/Gwene Newsgroups
       real_name=Amphiboly
       address=amphiboly@gmail.com
-      protocol=3
+      protocol=2
       recv_server=news.gmane.io
       userid=Amphiboly
       ssl_nntp=1
@@ -362,7 +362,7 @@
       account_name=Panix Newsgroups
       real_name=Rik Kabel
       address=rik@panix.com
-      protocol=3
+      protocol=2
       recv_server=://panix.com
       userid=rik
       ssl_nntp=1
@@ -411,50 +411,18 @@
       url=https://crookedtimber.org
       refresh_interval=60
     '';
-
-    "claws-mail-blueprints/clawsrc".text = ''
-      [Common]
-      layout_type=0
-      toolbar_style=3
-      next_on_delete=1
-    '';
-
-    "claws-mail-blueprints/folderlist.xml".text = ''
-      <?xml version="1.0" encoding="US-ASCII"?>
-      <folderlist>
-        <folder type="mh" name="Mail" path="Mail"/>
-      </folderlist>
-    '';
   };
 
   # =========================================================================
-  # NATIVE NIX USER-SPACE ACTIVATION INFRASTRUCTURE
+  # IMMUTABLE USER-SPACE ACTIVATION INFRASTRUCTURE
   # =========================================================================
   home.activation = {
     syncClawsWorkspace = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
-      # 1. Safely establish standard writeable directory layouts
-      mkdir -p "$HOME/.claws-mail"
-      mkdir -p "$HOME/.claws-mail/addrbook"
-
-      # Creates the local mail storage target folder
-      mkdir -p "$HOME/Mail"
-
-      # 2. Pre-seed foundational interface text anchors
-      touch "$HOME/.claws-mail/menurc"
-      touch "$HOME/.claws-mail/toolbar_main.xml"
-
-      # 3. Extract blueprint directory paths cleanly
       BLUEPRINTS_DIR="$HOME/.config/claws-mail-blueprints"
-
-      # 4. Securely clone definitions using --remove-destination
-      if [ -d "$BLUEPRINTS_DIR" ]; then
+      if [ -d "$HOME/.claws-mail" ] && [ -f "$BLUEPRINTS_DIR/accountrc" ]; then
           cp --remove-destination -f "$BLUEPRINTS_DIR/accountrc" "$HOME/.claws-mail/accountrc"
           cp --remove-destination -f "$BLUEPRINTS_DIR/rssylrc" "$HOME/.claws-mail/rssylrc"
-          cp --remove-destination -f "$BLUEPRINTS_DIR/clawsrc" "$HOME/.claws-mail/clawsrc"
-          cp --remove-destination -f "$BLUEPRINTS_DIR/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
-
-          # 5. Enforce user read/write access levels natively
-          chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml" "$HOME/.claws-mail/"*.xml
+          chmod 644 "$HOME/.claws-mail/"*rc
       fi
     '';
   };
