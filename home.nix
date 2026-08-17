@@ -56,6 +56,7 @@
     tealdeer
 
     # Daily Productivity Suites
+    claws-mail
     glow
     libreoffice-fresh
     mdbook
