@@ -436,18 +436,22 @@
       mkdir -p "$HOME/.claws-mail"
       mkdir -p "$HOME/.claws-mail/addrbook"
 
-      # 2. Extract blueprint directory paths cleanly
+      # 2. Pre-seed foundational interface text anchors to prevent C file stream crashes
+      touch "$HOME/.claws-mail/menurc"
+      touch "$HOME/.claws-mail/toolbar_main.xml"
+
+      # 3. Extract blueprint directory paths cleanly
       BLUEPRINTS_DIR="$HOME/.config/claws-mail-blueprints"
 
-      # 3. Securely clone definitions using --remove-destination
+      # 4. Securely clone definitions using --remove-destination
       if [ -d "$BLUEPRINTS_DIR" ]; then
           cp --remove-destination -f "$BLUEPRINTS_DIR/accountrc" "$HOME/.claws-mail/accountrc"
           cp --remove-destination -f "$BLUEPRINTS_DIR/rssylrc" "$HOME/.claws-mail/rssylrc"
           cp --remove-destination -f "$BLUEPRINTS_DIR/clawsrc" "$HOME/.claws-mail/clawsrc"
           cp --remove-destination -f "$BLUEPRINTS_DIR/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
 
-          # 4. Enforce user read/write access levels natively
-          chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml"
+          # 5. Enforce user read/write access levels natively
+          chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml" "$HOME/.claws-mail/"*.xml
       fi
     '';
   };
