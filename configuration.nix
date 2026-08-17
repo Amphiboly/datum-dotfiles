@@ -64,20 +64,8 @@
   services.accounts-daemon.enable = true;
 
   # =========================================================================
-  # ACTIVE DESKTOP ENVIRONMENT TOGGLE SWITCH
+  # ACTIVE DESKTOP ENVIRONMENT TOGGLE SWITCH IN FLAKE.NIX
   # =========================================================================
-
-  services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
-
-  # Inject specialized GNOME styling utilities and extensions
-  environment.systemPackages = with pkgs; [
-    gnome-tweaks
-    gnomeExtensions.appindicator
-  ];
-}
-    # ./desktop-gnome.nix   # <- Comment this out and uncomment cosmic to swap!
-    # ./desktop-cosmic.nix
 
   #  # Deploy greetd with tuigreet to handle login security safely
   #  services.greetd = {
