@@ -412,6 +412,22 @@
       url=https://crookedtimber.org
       refresh_interval=60
     '';
+
+    # 3. Base Preference Initializers to tell the app-engine it is already configured
+    ".claws-mail/clawsrc".text = ''
+      [Common]
+      layout_type=0
+      toolbar_style=3
+      next_on_delete=1
+    '';
+
+    # 4. CRITICAL REPRODUCIBILITY BRIDGE: Declare structural multi-account mailbox indexes
+    ".claws-mail/folderlist.xml".text = ''
+      <?xml version="1.0" encoding="US-ASCII"?>
+      <folderlist>
+        <folder type="mh" name="Mailbox" path="Mailbox"/>
+      </folderlist>
+    '';
   };
 
   #  # =========================================================================
