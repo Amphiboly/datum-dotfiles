@@ -1,11 +1,14 @@
 # ~/Projects/datum-config/desktop-gnome.nix
 {pkgs, ...}: {
-  services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
 
-  # Inject specialized GNOME styling utilities and extensions
+  # Tell Nix to fetch GNOME packages straight from the official source
+  nix.settings.substituters = [
+    "https://cache.nixos.org"
+  ];
+
   environment.systemPackages = with pkgs; [
     gnome-tweaks
-    gnomeExtensions.appindicator
   ];
 }

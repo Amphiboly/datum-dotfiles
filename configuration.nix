@@ -369,6 +369,20 @@
   };
 
   # =========================================================================
+  # 17. NATIVE REPRODUCIBLE BINARY CACHE VERIFICATION SYSTEMS
+  # =========================================================================
+  nix.settings = {
+    # Establish the immutable global public keys needed to verify downloads
+    trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
+    ];
+
+    # Secure administrative parameters to ensure smooth transitions
+    trusted-users = ["root" "rik"];
+  };
+
+  # =========================================================================
   # MORE
   # =========================================================================
   services.openssh = {

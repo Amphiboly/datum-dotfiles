@@ -72,21 +72,6 @@
         ./disko-config.nix
         lanzaboote.nixosModules.lanzaboote
 
-        # COSMIC Desktop
-        nixos-cosmic.nixosModules.default
-        {
-          nix.settings = {
-            substituters = [
-              "https://nixos.org"
-              "https://cachix.org"
-            ];
-            trusted-public-keys = [
-              "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-              "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
-            ];
-          };
-        }
-
         # Core Modules
         ./configuration.nix
         ./users.nix

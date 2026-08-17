@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # File: deploy.sh
+# 2026-08-17: Added claws tweaks
 # 2026-08-13: Converted to use nh
 # 2026-08-07: Added rsync of secrets.dec.yaml
 # 2026-08-07: Removed z option from first rsync
@@ -7,20 +8,26 @@
 
 set -euo pipefail
 
+# =========================================================================
 # 1. Establish structural network endpoints
+# =========================================================================
 NOSTRUM_IP="192.168.5.58"
 
 echo "🎨 NixOS Workstation Deployment Engine Triggered..."
 echo "=================================================="
 
+# =========================================================================
 # 2. Update Flake Inputs
+# =========================================================================
 read -rp "🔄 Check for upstream package updates? (y/N): " check_updates </dev/tty
 if [[ "$check_updates" =~ ^[Yy]$ ]]; then
     echo "⚡ Refreshing upstream flake input hashes..."
     nix flake update --extra-experimental-features "nix-command flakes"
 fi
 
+# =========================================================================
 # 3. Dry-Run Environment Mapping
+# =========================================================================
 echo "📦 Generating dry-run system environment preview mapping..."
 nh os build .
 
@@ -36,21 +43,45 @@ fi
 # Clean up local dry-run symlink cleanly right after the comparison pass
 rm -f ./result
 
+# =========================================================================
 # 4. Compute Automatic Chronological Datetime Timestamp
-CURRENT_TS=$(date +"%m%dT%H%M")
-echo "📝 Enter a descriptive boot label message."
-read -rp "   [Press Enter to default to timestamp '$CURRENT_TS']: " build_label </dev/tty
+# =========================================================================
+#CURRENT_TS=$(date +"%m%dT%H%M")
+#echo "📝 Enter a descriptive boot label message."
+#read -rp "   [Press Enter to default to timestamp '$CURRENT_TS']: " build_label </dev/tty
+#
+#if [[ -z "$build_label" ]]; then
+#    build_label="$CURRENT_TS"
+#fi
 
-if [[ -z "$build_label" ]]; then
-    build_label="$CURRENT_TS"
-fi
-
+# =========================================================================
 # 5. Switch Live System Generations Natively via nh
+# =========================================================================
 echo "🚀 Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
 nh os switch . # -- --profile "$build_label"
 
+# =========================================================================
+# 5b. UNIFIED CLAWS-MAIL SYNCHRONIZATION HOOK
+#     Ensures 100% writeable files to stop core dumps while keeping Git clean!
+# =========================================================================
+echo "📥 Syncing declarative workspace configurations to writeable workspace files..."
+mkdir -p "$HOME/.claws-mail"
+
+# Copy text contents cleanly without retaining restrictive read-only store links
+if [ -d "$HOME/.config/claws-mail-blueprints" ]; then
+    cp -f "$HOME/.config/claws-mail-blueprints/accountrc" "$HOME/.claws-mail/accountrc"
+    cp -f "$HOME/.config/claws-mail-blueprints/rssylrc" "$HOME/.claws-mail/rssylrc"
+    cp -f "$HOME/.config/claws-mail-blueprints/clawsrc" "$HOME/.claws-mail/clawsrc"
+    cp -f "$HOME/.config/claws-mail-blueprints/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
+    
+    # Enforce standard read/write user permissions over your local files
+    chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml"
+fi
+
+# =========================================================================
 # 6. Storage Profile Management
+# =========================================================================
 echo -e "\n🧹 STORAGE CLEANUP SUITE"
 echo "--------------------------------------------------"
 read -rp "🗑️  Purge obsolete configurations? (y/N): " clean_old </dev/tty
@@ -59,7 +90,9 @@ if [[ "$clean_old" =~ ^[Yy]$ ]]; then
     nh clean all --keep 5
 fi
 
+# =========================================================================
 # 7. Remote Repository Mirror Array
+# =========================================================================
 echo -e "\n📡 NOSTRUM REPOSITORY MIRROR"
 echo "--------------------------------------------------"
 read -rp "📤 Sync validated files to nostrum (Fedora)? (y/N): " sync_fedora </dev/tty

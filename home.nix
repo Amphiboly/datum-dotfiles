@@ -44,6 +44,7 @@
     alejandra
 
     # Foundational Unix Utility Layer left out by NixOS:
+    btop
     e2fsprogs
     file
     tree
@@ -277,19 +278,19 @@
   };
 
   # =========================================================================
-  # ACTIVE LIVE CLAWS-MAIL CONFIGURATION INJECTORS
+  # DECLARATIVE CLAWS-MAIL REPRODUCIBLE APPLICATION BLUEPRINTS
   # =========================================================================
-  home.file = {
-    # 1. Declaratively pre-seed your IMAP Mail and NNTP Usenet Server Links
-    ".claws-mail/accountrc".text = ''
+  xdg.configFile = {
+    # 1. Accounts Configuration Matrix Template
+    "claws-mail-blueprints/accountrc".text = ''
       [Account: 1]
       account_name=Panix Mail
       real_name=Rik Kabel
       address=rik@panix.com
       protocol=2
-      recv_server=mail.panix.com
+      recv_server=://panix.com
       userid=rik@panix.com
-      smtp_server=mail.panix.com
+      smtp_server=://panix.com
       ssl_imap=2
       ssl_smtp=2
       set_smtpport=1
@@ -313,9 +314,9 @@
       real_name=Rik Kabel
       address=amphiboly@gmail.com
       protocol=2
-      recv_server=imap.gmail.com
+      recv_server=://gmail.com
       userid=amphiboly@gmail.com
-      smtp_server=smtp.gmail.com
+      smtp_server=://gmail.com
       ssl_imap=1
       ssl_smtp=1
       set_smtpport=1
@@ -326,9 +327,9 @@
       real_name=Rik Kabel
       address=amphiboly.backup@gmail.com
       protocol=2
-      recv_server=imap.gmail.com
+      recv_server=://gmail.com
       userid=amphiboly.backup@gmail.com
-      smtp_server=smtp.gmail.com
+      smtp_server=://gmail.com
       ssl_imap=1
       ssl_smtp=1
       set_smtpport=1
@@ -339,9 +340,9 @@
       real_name=Cornwall Association
       address=Cornwall.HOA@gmail.com
       protocol=2
-      recv_server=imap.gmail.com
+      recv_server=://gmail.com
       userid=Cornwall.HOA@gmail.com
-      smtp_server=smtp.gmail.com
+      smtp_server=://gmail.com
       ssl_imap=1
       ssl_smtp=1
       set_smtpport=1
@@ -363,15 +364,15 @@
       real_name=Rik Kabel
       address=rik@panix.com
       protocol=3
-      recv_server=news.panix.com
+      recv_server=://panix.com
       userid=rik
       ssl_nntp=1
       set_nntpport=1
       nntpport=563
     '';
 
-    # 2. Declaratively drop your initial live RSS Feed feed tracking parameters
-    ".claws-mail/rssylrc".text = ''
+    # 2. Comprehensive RSS Subscription Feed Feeds List Template
+    "claws-mail-blueprints/rssylrc".text = ''
       [Feed: 1]
       official_name=NixOS Security Disclosures
       url=https://nixos.org
@@ -384,22 +385,22 @@
 
       [Feed: 3]
       official_name=Lowering the Bar
-      url=http://feeds.feedblitz.com/loweringthebar&amp;x=1
+      url=http://feedblitz.com
       refresh_interval=60
 
       [Feed: 4]
       official_name=Sesquiotica
-      url=https://sesquiotic.wordpress.com/feed/
+      url=https://wordpress.com
       refresh_interval=60
 
       [Feed: 5]
       official_name=Strong Language
-      url=https://stronglang.wordpress.com/feed/
+      url=https://wordpress.com
       refresh_interval=60
 
       [Feed: 6]
       official_name=You Don't Say
-      url=https://johnemcintyre.blogspot.com/feeds/posts/default
+      url=https://blogspot.com
       refresh_interval=60
 
       [Feed: 7]
@@ -413,16 +414,16 @@
       refresh_interval=60
     '';
 
-    # 3. Base Preference Initializers to tell the app-engine it is already configured
-    ".claws-mail/clawsrc".text = ''
+    # 3. Base Application Preference Settings File Template
+    "claws-mail-blueprints/clawsrc".text = ''
       [Common]
       layout_type=0
       toolbar_style=3
       next_on_delete=1
     '';
 
-    # 4. CRITICAL REPRODUCIBILITY BRIDGE: Declare structural multi-account mailbox indexes
-    ".claws-mail/folderlist.xml".text = ''
+    # 4. Multi-Account Structure Storage Schema Index Template
+    "claws-mail-blueprints/folderlist.xml".text = ''
       <?xml version="1.0" encoding="US-ASCII"?>
       <folderlist>
         <folder type="mh" name="Mailbox" path="Mailbox"/>
