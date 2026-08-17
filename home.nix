@@ -438,18 +438,22 @@
     syncClawsWorkspace = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
       echo "📥 Executing native user-space Claws Mail template sync..."
 
-      # Establish a standard, fully writeable local directory footprint
+      # Establish a standard fully writeable directory footprint
       mkdir -p "$HOME/.claws-mail"
 
-      # Copy the text contents directly to guarantee write access for mailbox caching
-      if [ -d "$HOME/.config/claws-mail-blueprints" ]; then
-          cp -f "$HOME/.config/claws-mail-blueprints/accountrc" "$HOME/.claws-mail/accountrc"
-          cp -f "$HOME/.config/claws-mail-blueprints/rssylrc" "$HOME/.claws-mail/rssylrc"
-          cp -f "$HOME/.config/claws-mail-blueprints/clawsrc" "$HOME/.claws-mail/clawsrc"
-          cp -f "$HOME/.config/claws-mail-blueprints/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
+      # FIXED IMPLEMENTATION: Explicitly query file availability cleanly
+      # without tripping Zsh/Bash strict exit code traps!
+      SRC_DIR="$HOME/.config/claws-mail-blueprints"
+      if [ -f "$SRC_DIR/accountrc" ]; then
+          cp -f "$SRC_DIR/accountrc" "$HOME/.claws-mail/accountrc"
+          cp -f "$SRC_DIR/rssylrc" "$HOME/.claws-mail/rssylrc"
+          cp -f "$SRC_DIR/clawsrc" "$HOME/.claws-mail/clawsrc"
+          cp -f "$SRC_DIR/folderlist.xml" "$HOME/.claws-mail/folderlist.xml"
 
-          # Force user read/write file access permissions over your workspace assets
+          # Force active user read/write file access permissions
           chmod 644 "$HOME/.claws-mail/"*rc "$HOME/.claws-mail/folderlist.xml"
+      else
+          echo "⏭️ Blueprints folder not written to filesystem yet. Skipping sync pass."
       fi
     '';
   };
