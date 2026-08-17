@@ -278,18 +278,22 @@
   };
 
   # =========================================================================
-  # REPRODUCIBLE CLAWS-MAIL APPLICATION PROTOCOL ARRAYS (home.nix)
+  # DEFINITIVE DECLARATIVE CLAWS-MAIL APPLICATION MATRIX (home.nix)
   # =========================================================================
   xdg.configFile = {
+    # 1. Accounts Configuration Matrix (Complete Layout Setup)
     "claws-mail-blueprints/accountrc".text = ''
+      [Accounts]
+      account_list=1,2,3,4,5,6,7
+
       [Account: 1]
       account_name=Panix Mail
       real_name=Rik Kabel
       address=rik@panix.com
       protocol=4
-      recv_server=://panix.com
+      recv_server=mail.panix.com
       userid=rik@panix.com
-      smtp_server=://panix.com
+      smtp_server=mail.panix.com
       ssl_imap=2
       ssl_smtp=2
       set_smtpport=1
@@ -353,7 +357,7 @@
       address=amphiboly@gmail.com
       protocol=2
       recv_server=news.gmane.io
-      userid=Amphiboly
+      userid=
       ssl_nntp=1
       set_nntpport=1
       nntpport=563
@@ -363,20 +367,73 @@
       real_name=Rik Kabel
       address=rik@panix.com
       protocol=2
-      recv_server=://panix.com
+      recv_server=news.panix.com
       userid=rik
       ssl_nntp=1
       set_nntpport=1
       nntpport=563
     '';
 
-    "claws-mail-blueprints/rssylrc".text = ''...[keep your feeds block identical] '';
-    "claws-mail-blueprints/clawsrc".text = "[Common]\n";
+    # 2. Comprehensive RSS Subscription Feeds Configuration Layout
+    "claws-mail-blueprints/rssylrc".text = ''
+      [Feed: 1]
+      official_name=NixOS Security Disclosures
+      url=https://nixos.org
+      refresh_interval=60
+
+      [Feed: 2]
+      official_name=Linux Kernel Archive
+      url=https://kernel.org
+      refresh_interval=60
+
+      [Feed: 3]
+      official_name=Lowering the Bar
+      url=http://feedblitz.com
+      refresh_interval=60
+
+      [Feed: 4]
+      official_name=Sesquiotica
+      url=https://wordpress.com
+      refresh_interval=60
+
+      [Feed: 5]
+      official_name=Strong Language
+      url=https://wordpress.com
+      refresh_interval=60
+
+      [Feed: 6]
+      official_name=You Don't Say
+      url=https://blogspot.com
+      refresh_interval=60
+
+      [Feed: 7]
+      official_name=Grammarphobia » Blog
+      url=https://grammarphobia.com
+      refresh_interval=60
+
+      [Feed: 8]
+      official_name=Crooked Timber
+      url=https://crookedtimber.org
+      refresh_interval=60
+    '';
   };
 
-  # =========================================================================
-  # IMMUTABLE USER-SPACE ACTIVATION INFRASTRUCTURE
-  # =========================================================================
+  # 3. Secure User-Space Activation Sync Hooks
+  home.activation = {
+    syncClawsWorkspace = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
+      mkdir -p "$HOME/.claws-mail"
+      BLUEPRINTS_DIR="$HOME/.config/claws-mail-blueprints"
+      if [ -f "$BLUEPRINTS_DIR/accountrc" ]; then
+          cp --remove-destination -f "$BLUEPRINTS_DIR/accountrc" "$HOME/.claws-mail/accountrc"
+          cp --remove-destination -f "$BLUEPRINTS_DIR/rssylrc" "$HOME/.claws-mail/rssylrc"
+          chmod 644 "$HOME/.claws-mail/"*rc
+      fi
+    '';
+  };
+
+  # -------------------------------------------------------------------------
+  # THE STANDALONE HOME.ACTIVATION TOP-LEVEL COMPLIANCE ENGINE MODULE
+  # -------------------------------------------------------------------------
   home.activation = {
     syncClawsWorkspace = inputs.home-manager.lib.hm.dag.entryAfter ["writeBoundary"] ''
       BLUEPRINTS_DIR="$HOME/.config/claws-mail-blueprints"
