@@ -287,7 +287,6 @@
   # =========================================================================
   services.gaze = {
     enable = true;
-    tty.enable = false;
     pam = {
       defaultServices = ["sudo" "swaylock" "hyprlock" "cosmic-greeter"];
     };
