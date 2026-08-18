@@ -290,7 +290,11 @@
     pam = {
       defaultServices = ["sudo" "swaylock" "hyprlock" "cosmic-greeter"];
     };
-  };
+    settings = {
+      cameras = {
+        rgb = "v4l2src device=/dev/video0 ! video/x-raw,format=YUYV,width=160,height=120 ! videoconvert ! appsink";
+      };
+    };
 
   # # =========================================================================
   # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
