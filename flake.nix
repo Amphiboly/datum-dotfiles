@@ -81,8 +81,8 @@
         ./backups.nix
         ./networking.nix
         # Choose one of the following:
-        ./desktop-gnome.nix
-        #./desktop-cosmic.nix
+        #./desktop-gnome.nix
+        ./desktop-cosmic.nix
 
         # Gaze
         inputs.gaze.nixosModules.default
