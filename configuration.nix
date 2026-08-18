@@ -290,12 +290,31 @@
     pam = {
       defaultServices = ["sudo" "swaylock" "hyprlock" "cosmic-greeter"];
     };
-    settings = {
-      cameras = {
-        rgb = "v4l2src device=/dev/video0 ! video/x-raw,format=YUYV,width=160,height=120 ! videoconvert ! appsink";
-      };
-    };
   };
+
+  environment.etc."gaze/config.toml".text = ''
+    [cameras]
+    rgb = "v4l2src device=/dev/video0 ! video/x-raw,format=YUYV,width=160,height=120 ! videoconvert ! appsink"
+    ir = ""
+    emitter_enabled = false
+    dark_luma_threshold = 20
+
+    [security]
+    level = "medium"
+    detector = "det_500m.onnx"
+    recognizer = "w600k_mbf.onnx"
+    rgb_threshold = 0.40
+    ir_threshold = 0.40
+    hybrid_policy = "fallback_on_dark"
+
+    [liveness]
+    enabled = true
+    threshold = 0.80
+    max_frames = 40
+
+    [storage]
+    encrypt_templates = false
+  '';
 
   # # =========================================================================
   # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
