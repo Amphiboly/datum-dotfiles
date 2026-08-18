@@ -64,25 +64,6 @@
   services.accounts-daemon.enable = true;
 
   # =========================================================================
-  # ACTIVE DESKTOP ENVIRONMENT TOGGLE SWITCH IN FLAKE.NIX
-  # =========================================================================
-
-  #  # Deploy greetd with tuigreet to handle login security safely
-  #  services.greetd = {
-  #    enable = true;
-  #    settings = {
-  #      default_session = {
-  #        # Launches the lightweight tuigreet screen on virtual terminal 7
-  #        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd gnome-session";
-  #        user = "greeter";
-  #      };
-  #    };
-  #  };
-
-  # Stop systemd from clearing the console buffer so tuigreet prints cleanly
-  #  systemd.services.greetd.serviceConfig.Type = "idle";
-
-  # =========================================================================
   # LAPTOP BATTERY AND POWER MANAGEMENT DEAMON (TLP + COSMIC PLATFORM FIXED)
   # =========================================================================
 
@@ -313,11 +294,11 @@
         abort_if_no_camera = false;
       };
       video = {
-        # Target the primary capture stream
         device_path = "/dev/video0";
         frame_width = 640;
         frame_height = 480;
         dark_threshold = 50;
+        recording_plugin = "opencv";
       };
     };
   };
