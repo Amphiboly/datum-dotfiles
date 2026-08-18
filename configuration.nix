@@ -304,37 +304,29 @@
   # =========================================================================
   # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
   # =========================================================================
-
-  # 1. Automatically apply your calibrated hardware parameters on boot
   services.linux-enable-ir-emitter.enable = true;
+  services.howdy = {
+    enable = true;
+    settings = {
+      core = {
+        # Fall back to password prompt immediately if the camera fails
+        abort_if_no_camera = false;
+      };
+      video = {
+        # Target the primary capture stream
+        device_path = "/dev/video0";
+        frame_width = 640;
+        frame_height = 480;
+        dark_threshold = 50;
+      };
+    };
+  };
 
-  # 2. CRITICAL FIX: Turn off the global module to banish howdy from GDM/Logins!
-  services.howdy.enable = false;
-
-  # 3. Natively construct the exact configuration file the CLI expects to see
-  environment.etc."howdy/config.ini".text = ''
-    [core]
-    detection_notice = true
-    dark_threshold = 55
-    certainty = 3.5
-
-    [video]
-    device_path = /dev/video1
-    mjpeg_format = false
-    frame_width = 640
-    frame_height = 480
-    recording_frames = 5
-  '';
-
-  # =========================================================================
-  # 4. FAIL-SAFE PAM SECURITY INTERCEPTOR (SUDO ONLY)
-  # =========================================================================
-  # Using an attribute set wrapper satisfies the type validation engine.
-  # security.pam.services.sudo.rules.auth.howdy-auth = {
-  #   control = "sufficient";
-  #   modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
-  #   order = 10; # Places it at the very beginning of the auth stack
-  # };
+  security.pam.services.sudo.rules.auth.howdy-auth = {
+    order = 10;
+    control = "sufficient"; # Safe fallback behavior
+    modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
+  };
 
   # =========================================================================
   # 16. HARDENED LOCAL SYSTEM FIREWALL INFRASTRUCTURE (configuration.nix)
