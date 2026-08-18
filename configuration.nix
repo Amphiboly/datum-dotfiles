@@ -290,7 +290,7 @@
     tty.enable = false;
     pam = {
       failToPassword = true;
-      controlFlag = "sufficient";
+      defaultServices = ["sudo" "swaylock" "hyprlock" "cosmic-greeter"];
     };
   };
 
