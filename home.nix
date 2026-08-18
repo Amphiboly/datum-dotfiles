@@ -282,6 +282,11 @@
     enable = true;
     profiles.default = {
       isDefault = true;
+      feedAccounts = {};
+      settings = {
+        "mail.accountmanager.rememberpasswords" = true;
+        "mail.root.none" = true;
+      };
     };
   };
 
