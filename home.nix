@@ -29,6 +29,7 @@
     eza
     fastfetch
     ripgrep
+    dust
 
     # Shell integrations
     antidote
