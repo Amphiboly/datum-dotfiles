@@ -287,9 +287,7 @@
   # =========================================================================
   services.gaze = {
     enable = true;
-    camera = {
-      devicePath = "/dev/video0";
-    };
+    gui.enable = true;
   };
   security.pam.services.sudo.gazeAuth = {
     enable = true;
