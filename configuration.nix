@@ -287,7 +287,6 @@
   # =========================================================================
   services.gaze = {
     enable = true;
-    gui.enable = true;
     tty.enable = false;
     gdm.enable = false;
     pam = {
