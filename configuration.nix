@@ -153,7 +153,7 @@
     freerdp
     rustic
     comma
-    howdy
+    #   howdy
     v4l-utils
   ];
 
@@ -283,31 +283,45 @@
   };
 
   # =========================================================================
-  # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
+  # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (GAZE ENGINE)
   # =========================================================================
-  services.linux-enable-ir-emitter.enable = true;
-  services.howdy = {
+  services.gaze = {
     enable = true;
-    settings = {
-      core = {
-        # Fall back to password prompt immediately if the camera fails
-        abort_if_no_camera = false;
-      };
-      video = {
-        device_path = "/dev/video0";
-        frame_width = 160;
-        frame_height = 120;
-        dark_threshold = 50;
-        recording_plugin = "opencv";
-      };
+    camera = {
+      devicePath = "/dev/video0";
     };
   };
-
-  security.pam.services.sudo.rules.auth.howdy-auth = {
-    order = 10;
-    control = "sufficient"; # Safe fallback behavior
-    modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
+  security.pam.services.sudo.gazeAuth = {
+    enable = true;
+    control = "sufficient";
   };
+
+  # # =========================================================================
+  # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
+  # # =========================================================================
+  # services.linux-enable-ir-emitter.enable = true;
+  # services.howdy = {
+  #   enable = true;
+  #   settings = {
+  #     core = {
+  #       # Fall back to password prompt immediately if the camera fails
+  #       abort_if_no_camera = false;
+  #     };
+  #     video = {
+  #       device_path = "/dev/video0";
+  #       frame_width = 160;
+  #       frame_height = 120;
+  #       dark_threshold = 50;
+  #       recording_plugin = "opencv";
+  #     };
+  #   };
+  # };
+
+  # security.pam.services.sudo.rules.auth.howdy-auth = {
+  #   order = 10;
+  #   control = "sufficient"; # Safe fallback behavior
+  #   modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
+  # };
 
   # =========================================================================
   # 16. HARDENED LOCAL SYSTEM FIREWALL INFRASTRUCTURE (configuration.nix)
