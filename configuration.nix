@@ -295,8 +295,8 @@
       };
       video = {
         device_path = "/dev/video0";
-        frame_width = 640;
-        frame_height = 480;
+        frame_width = 160;
+        frame_height = 120;
         dark_threshold = 50;
         recording_plugin = "opencv";
       };
