@@ -4,9 +4,7 @@
   inputs,
   ...
 }: {
-  imports = [
-    inputs.nixos-cosmic.nixosModules.default
-  ];
+  imports = [];
 
   services.desktopManager.cosmic.enable = true;
   services.displayManager.cosmic-greeter.enable = true;
@@ -18,6 +16,6 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    #   cosmic-ext-applet-audio-select
+    cosmic-edit
   ];
 }
