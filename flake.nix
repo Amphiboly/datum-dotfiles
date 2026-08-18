@@ -22,7 +22,7 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    #   gaze.url = "github:GunduLabs/gaze";
+    gaze.url = "github:GunduLabs/gaze";
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -37,7 +37,7 @@
     home-manager,
     sops-nix,
     lanzaboote,
-    #   gaze,
+    gaze,
     nur,
     ...
   } @ inputs: let
