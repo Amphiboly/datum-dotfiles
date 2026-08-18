@@ -288,7 +288,6 @@
   services.gaze = {
     enable = true;
     tty.enable = false;
-    gdm.enable = false;
     pam = {
       failToPassword = true;
       controlFlag = "sufficient";
