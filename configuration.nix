@@ -289,10 +289,6 @@
     enable = true;
     gui.enable = true;
   };
-  security.pam.services.sudo.gazeAuth = {
-    enable = true;
-    control = "sufficient";
-  };
 
   # # =========================================================================
   # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
