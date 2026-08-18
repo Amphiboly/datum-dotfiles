@@ -285,10 +285,16 @@
   # =========================================================================
   # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (GAZE ENGINE)
   # =========================================================================
-  # services.gaze = {
-  #   enable = true;
-  #   gui.enable = true;
-  # };
+  services.gaze = {
+    enable = true;
+    gui.enable = true;
+    tty.enable = false;
+    gdm.enable = false;
+    pam = {
+      failToPassword = true;
+      controlFlag = "sufficient";
+    };
+  };
 
   # # =========================================================================
   # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
