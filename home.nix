@@ -299,7 +299,7 @@
       flavor = "plain";
       imap = {
         host = "mail.panix.com";
-        port = 993;
+        port = 143;
         tls = {
           enable = true;
           useStartTls = true;
