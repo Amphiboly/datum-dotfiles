@@ -329,11 +329,11 @@
   # 4. FAIL-SAFE PAM SECURITY INTERCEPTOR (SUDO ONLY)
   # =========================================================================
   # Using an attribute set wrapper satisfies the type validation engine.
-  security.pam.services.sudo.rules.auth.howdy-auth = {
-    control = "sufficient";
-    modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
-    order = 10; # Places it at the very beginning of the auth stack
-  };
+  # security.pam.services.sudo.rules.auth.howdy-auth = {
+  #   control = "sufficient";
+  #   modulePath = "${pkgs.howdy}/lib/security/pam_howdy.so";
+  #   order = 10; # Places it at the very beginning of the auth stack
+  # };
 
   # =========================================================================
   # 16. HARDENED LOCAL SYSTEM FIREWALL INFRASTRUCTURE (configuration.nix)
