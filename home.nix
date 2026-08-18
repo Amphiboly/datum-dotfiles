@@ -194,8 +194,6 @@
     initContent = ''
       if [ -e "$HOME/.nix-profile/etc/profile.d/nix.sh" ]; then . "$HOME/.nix-profile/etc/profile.d/nix.sh"; fi
 
-      export CLAWS_MAIL_CONFIG_DIR="$HOME/.claws-mail"
-
       export FZF_DEFAULT_COMMAND="${pkgs.fd}/bin/fd --type f --hidden --strip-cwd-prefix"
       export FZF_DEFAULT_OPTS="--height=60% --layout=reverse --border=rounded --prompt=\"  \" --pointer=\"  \" --preview-window=right:65%:wrap:border-left"
 
@@ -291,7 +289,7 @@
   # THE EMAIL ACCOUNTS MODULE
   # -------------------------------------------------------------------------
   accounts.email.accounts = {
-    "panix-mail" = {
+    "Panix Mail" = {
       primary = true;
       realName = "Rik Kabel";
       address = "rik@panix.com";
@@ -319,7 +317,7 @@
       };
     };
 
-    "spectrum-mail" = {
+    "Spectrum Mail" = {
       realName = "Richard Kabel";
       address = "kabel5cd@charter.net";
       userName = "kabel5cd@charter.net";
@@ -346,7 +344,7 @@
       };
     };
 
-    "gmail-personal" = {
+    "Amphiboly Gmail" = {
       realName = "Rik Kabel";
       address = "amphiboly@gmail.com";
       userName = "amphiboly@gmail.com";
@@ -361,7 +359,7 @@
       };
     };
 
-    "gmail-backup" = {
+    "Amphiboly Backup Gmail" = {
       realName = "Rik Kabel";
       address = "amphiboly.backup@gmail.com";
       userName = "amphiboly.backup@gmail.com";
@@ -376,7 +374,7 @@
       };
     };
 
-    "gmail-HOA" = {
+    "Cornwall HOA Gmail" = {
       realName = "Cornwall Association";
       address = "Cornwall.HOA@gmail.com";
       userName = "Cornwall.HOA@gmail.com";
