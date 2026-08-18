@@ -289,7 +289,6 @@
     enable = true;
     tty.enable = false;
     pam = {
-      failToPassword = true;
       defaultServices = ["sudo" "swaylock" "hyprlock" "cosmic-greeter"];
     };
   };
