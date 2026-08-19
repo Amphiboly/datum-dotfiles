@@ -54,6 +54,7 @@
     which
 
     # Just for fun (or the animal names)
+    cmatrix
     cowsay
     tealdeer
 
