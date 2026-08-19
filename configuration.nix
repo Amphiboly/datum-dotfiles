@@ -297,9 +297,10 @@
 
   environment.etc."gaze/config.toml".text = ''
     [cameras]
-    ir = "v4l2src device=/dev/video0 extra-controls=\"c,custom_caps=video/x-raw,format=YUYV,width=160,height=120\""
-    rgb = ""
-    emitter_enabled = true
+    # Set the working hardware pipeline back to the RGB channel
+    rgb = "v4l2src device=/dev/video0 extra-controls=\"c,custom_caps=video/x-raw,format=YUYV,width=160,height=120\""
+    ir = ""
+    emitter_enabled = false # Let the kernel handle the lights automatically
     dark_luma_threshold = 20
 
     [security]
@@ -308,10 +309,15 @@
     recognizer = "w600k_mbf.onnx"
     rgb_threshold = 0.40
     ir_threshold = 0.40
+
+    # CRITICAL: Dynamically shifts models if the IR emitters wash out the color palette
     hybrid_policy = "fallback_on_dark"
 
     [liveness]
-    enabled = true
+    # TEMPORARY TROUBLESHOOTING: Turn off liveness/anti-spoofing during enrollment.
+    # Liveness (MiniFASNet) requires a secondary color-spectrum analysis which
+    # your tiny 160x120 YUYV stream might be failing to provide.
+    enabled = false
     threshold = 0.80
     max_frames = 40
 
