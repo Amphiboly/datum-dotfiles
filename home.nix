@@ -278,7 +278,7 @@
               exec zellij attach "default"
           else
               # 3. Create a fresh session and force Locked mode to prevent key collisions
-              exec zellij options --default-mode locked
+              exec zellij options --default-mode locked --theme dracula --simplified-ui true
           fi
       fi    '';
   };
