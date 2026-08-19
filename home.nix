@@ -487,6 +487,11 @@
       "wayland_enable_ime" = "no";
     };
   };
+  ## Inside your kitty.conf or home-manager kitty mappings block
+  ## Unbind native terminal shortcuts so they pass cleanly down to Zellij
+  #map ctrl+shift+t no_op
+  #map ctrl+shift+w no_op
+  #map ctrl+shift+enter no_op
 
   # =========================================================================
   # NATIVE INFRASTRUCTURE DEPLOYMENT: REMMINA WITH COUPLING PLUGINS

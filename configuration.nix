@@ -319,6 +319,13 @@
     encrypt_templates = false
   '';
 
+  systemd.services.gazed = {
+    serviceConfig = {
+      # Ensure the background daemon has group privileges to read video hardware
+      SupplementaryGroups = ["video"];
+    };
+  };
+
   # # =========================================================================
   # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
   # # =========================================================================
