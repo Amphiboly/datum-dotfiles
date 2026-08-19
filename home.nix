@@ -84,20 +84,6 @@
   ];
 
   # =========================================================================
-  # 2. Secrets processing
-  # =========================================================================
-  sops = {
-    defaultSopsFile = ./secrets.yaml;
-    defaultSopsFormat = "yaml";
-    secrets = {
-      "spectrum-smtp-password" = {};
-      "gmail-amphiboly-password" = {};
-      "gmail-amphibolybackup-password" = {};
-      "gmail-cornwall-password" = {};
-    };
-  };
-
-  # =========================================================================
   # 2. Shell context and environmental mappings
   # =========================================================================
   home.sessionVariables = {
@@ -294,6 +280,7 @@
   # =========================================================================
   # The following is disabled after the initial build so that home-manager
   # does not rebuild the accounts, losing non-smtp accounts in the process.
+  # NOTE: The password entries are untested.
   # 1. CLEAN THUNDERBIRD MAIN SYSTEM BLOCK FOR REFERENCE
   # =========================================================================
   # programs.thunderbird = {
@@ -338,6 +325,7 @@
   #       enable = true;
   #       profiles = ["default"];
   #     };
+  #     passwordFile = config.sops.secrets."panix-smtp-password".path;
   #   };
 
   #   "Spectrum Mail" = {
@@ -365,6 +353,7 @@
   #       enable = true;
   #       profiles = ["default"];
   #     };
+  #     passwordFile = config.sops.secrets."spectrum-smtp-password".path;
   #   };
 
   #   "Amphiboly Gmail" = {
@@ -380,6 +369,7 @@
   #         "mail.smtpserver.smtp_${id}.authMethod" = 10;
   #       };
   #     };
+  #     passwordFile = config.sops.secrets."gmail-amphiboly-password".path;
   #   };
 
   #   "Amphiboly Backup Gmail" = {
@@ -395,6 +385,7 @@
   #         "mail.smtpserver.smtp_${id}.authMethod" = 10;
   #       };
   #     };
+  #     passwordFile = config.sops.secrets."gmail-amphibolybackup-password".path;
   #   };
 
   #   "Cornwall HOA Gmail" = {
@@ -410,6 +401,7 @@
   #         "mail.smtpserver.smtp_${id}.authMethod" = 10;
   #       };
   #     };
+  #     passwordFile = config.sops.secrets."gmail-cornwall-password".path;
   #   };
   # };
 
