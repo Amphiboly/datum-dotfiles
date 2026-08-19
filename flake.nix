@@ -83,7 +83,6 @@
         gaze.nixosModules.default
 
         # Sops Secrets
-        sops-nix.homeManagerModules.sops
         sops-nix.nixosModules.sops
 
         # Global Nixpkgs & Environment
@@ -106,6 +105,7 @@
             backupFileExtension = "hm-backup";
             extraSpecialArgs = {inherit inputs;};
             sharedModules = [
+              sops-nix.homeManagerModules.sops
               {systemd.user.startServices = "sd-switch";}
             ];
             users = {
