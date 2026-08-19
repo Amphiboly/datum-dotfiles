@@ -297,7 +297,7 @@
 
   environment.etc."gaze/config.toml".text = ''
     [cameras]
-    rgb = "v4l2src device=/dev/video0 ! video/x-raw,format=YUYV,width=160,height=120"
+    rgb = "v4l2src device=/dev/video0 extra-controls=\"c,custom_caps=video/x-raw,format=YUYV,width=160,height=120\""
     ir = ""
     emitter_enabled = false
     dark_luma_threshold = 20
