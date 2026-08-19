@@ -22,11 +22,11 @@
       url = "github:nix-community/lanzaboote/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    gaze.url = "github:GunduLabs/gaze";
     nur = {
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    gaze.url = "github:GunduLabs/gaze";
   };
 
   outputs = {
@@ -37,8 +37,8 @@
     home-manager,
     sops-nix,
     lanzaboote,
-    gaze,
     nur,
+    gaze,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -80,23 +80,11 @@
         ./desktop-cosmic.nix
 
         # Gaze
-        inputs.gaze.nixosModules.default
+        gaze.nixosModules.default
 
         # Sops Secrets
+        sops-nix.homeManagerModules.sops
         sops-nix.nixosModules.sops
-        {
-          sops = {
-            defaultSopsFile = ./secrets.yaml;
-            validateSopsFiles = false;
-            age.keyFile = "/var/lib/sops/age/keys.txt";
-            secrets = {
-              "w11-cifs-password" = {
-                key = "w11-cifs-credentials";
-              };
-              "rik-password-hash" = {neededForUsers = true;};
-            };
-          };
-        }
 
         # Global Nixpkgs & Environment
         {

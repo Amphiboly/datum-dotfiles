@@ -9,21 +9,18 @@
   # =========================================================================
   # 1. GLOBAL SECRETS LEDGER NATIVE PERMISSIONS
   # =========================================================================
-  sops.secrets = {
-    "rik-password-hash" = {neededForUsers = true;};
-    "w11-cifs-credentials" = {};
-
-    # Required by rustic-atomic-backup.service EnvironmentFile
-    "restic-vault-password" = {owner = "root";};
-
-    # Required by msmtp outbound alerts transit pipeline
-    "panix-smtp-password" = {owner = "root";};
-
-    # Kept active for other system/backup targets if needed
-    "spectrum-smtp-password" = {};
-    "gmail-amphiboly-password" = {};
-    "gmail-amphibolybackup-password" = {};
-    "gmail-cornwall-password" = {};
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    defaultSopsFormat = "yaml";
+    age.keyFile = "/var/lib/sops/age/keys.txt";
+    secrets = {
+      "rik-password-hash" = {neededForUsers = true;};
+      "w11-cifs-password" = {
+        key = "w11-cifs-credentials";
+      };
+      "restic-vault-password" = {owner = "root";};
+      "panix-smtp-password" = {owner = "root";};
+    };
   };
 
   # =========================================================================
@@ -96,6 +93,7 @@
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILtSxcpUnDPA5EfZ0KmlDAjg7RzgqNoujzqOoQtQGuK4 rik@ambiguous"
     ];
+    hashedPasswordFile = config.sops.secrets."rik-password-hash".path;
   };
   users.users.guest = {
     isNormalUser = true;

@@ -84,6 +84,21 @@
   ];
 
   # =========================================================================
+  # 2. Secrets processing
+  # =========================================================================
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    defaultSopsFormat = "yaml";
+
+    secrets = {
+      "spectrum-smtp-password" = {};
+      "gmail-amphiboly-password" = {};
+      "gmail-amphibolybackup-password" = {};
+      "gmail-cornwall-password" = {};
+    };
+  };
+
+  # =========================================================================
   # 2. Shell context and environmental mappings
   # =========================================================================
   home.sessionVariables = {
