@@ -294,29 +294,29 @@
       defaultServices = ["sudo" "swaylock" "hyprlock" "cosmic-greeter"];
     };
   };
-
   environment.etc."gaze/config.toml".text = ''
     [cameras]
-    # Set the working hardware pipeline back to the RGB channel
     rgb = "v4l2src device=/dev/video0 extra-controls=\"c,custom_caps=video/x-raw,format=YUYV,width=160,height=120\""
     ir = ""
-    emitter_enabled = false # Let the kernel handle the lights automatically
+    emitter_enabled = false
     dark_luma_threshold = 20
 
     [security]
     level = "medium"
     detector = "det_500m.onnx"
     recognizer = "w600k_mbf.onnx"
-    rgb_threshold = 0.40
-    ir_threshold = 0.40
-
-    # CRITICAL: Dynamically shifts models if the IR emitters wash out the color palette
+    # LOWERED: Make the model more sensitive to low-res structures
+    rgb_threshold = 0.25
+    ir_threshold = 0.25
     hybrid_policy = "fallback_on_dark"
 
+    [enrollment]
+    # CRITICAL TWEAK: Lower the minimum face-to-frame size ratio.
+    # This forces the model to accept your face even if it looks tiny on the 160x120 canvas!
+    min_face_size_ratio = 0.10
+    max_templates = 2
+
     [liveness]
-    # TEMPORARY TROUBLESHOOTING: Turn off liveness/anti-spoofing during enrollment.
-    # Liveness (MiniFASNet) requires a secondary color-spectrum analysis which
-    # your tiny 160x120 YUYV stream might be failing to provide.
     enabled = false
     threshold = 0.80
     max_frames = 40
