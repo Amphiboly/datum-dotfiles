@@ -57,6 +57,15 @@
   time.timeZone = "America/New_York";
 
   # =========================================================================
+  # HARDWARE DRIVER PATCHES (HYBRID CAMERA QUIRKS)
+  # =========================================================================
+  boot.extraModprobeConfig = ''
+    # 0x100: Ignore frame payload format mismatches on HP/SPC hybrid modules
+    # 0x2: Trust the hardware stream timestamps explicitly
+    options uvcvideo quirks=0x102
+  '';
+
+  # =========================================================================
   #  3. DESKTOP ENVIRONMENT CONFIGURATION MATRIX
   # =========================================================================
 
