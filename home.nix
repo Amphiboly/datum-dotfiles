@@ -89,8 +89,7 @@
   sops = {
     defaultSopsFile = ./secrets.yaml;
     defaultSopsFormat = "yaml";
-    age.keyFile = "/var/lib/sops/age/keys.txt";
-
+    age.sshKeyPaths = ["/etc/ssh/ssh_host_ed25519_key"];
     secrets = {
       "spectrum-smtp-password" = {};
       "gmail-amphiboly-password" = {};
