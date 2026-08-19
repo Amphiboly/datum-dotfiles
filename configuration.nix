@@ -318,7 +318,6 @@
     [storage]
     encrypt_templates = false
   '';
-  };
 
   # # =========================================================================
   # # 15. BIOMETRIC FACIAL AUTHENTICATION INFRASTRUCTURE (HOWDY ENGINE)
