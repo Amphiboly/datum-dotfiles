@@ -89,7 +89,7 @@
   sops = {
     defaultSopsFile = ./secrets.yaml;
     defaultSopsFormat = "yaml";
-    age.keyfile = "/var/lib/sops/age/keys.txt";
+    age.keyFile = "/var/lib/sops/age/keys.txt";
 
     secrets = {
       "spectrum-smtp-password" = {};
