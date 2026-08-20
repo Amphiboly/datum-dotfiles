@@ -26,7 +26,6 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    gaze.url = "github:GunduLabs/gaze";
   };
 
   outputs = {
@@ -38,7 +37,6 @@
     sops-nix,
     lanzaboote,
     nur,
-    gaze,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -78,9 +76,6 @@
         # Choose one of the following:
         #./desktop-gnome.nix
         ./desktop-cosmic.nix
-
-        # Gaze
-        gaze.nixosModules.default
 
         # Sops Secrets
         sops-nix.nixosModules.sops

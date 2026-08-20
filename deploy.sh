@@ -21,7 +21,7 @@ echo "=================================================="
 read -rp "🔄 Check for upstream package updates? (y/N): " check_updates </dev/tty
 if [[ "$check_updates" =~ ^[Yy]$ ]]; then
     echo "⚡ Refreshing upstream flake input hashes..."
-    nix flake update --extra-experimental-features "nix-command flakes"
+    nh flake update
 fi
 
 # =========================================================================
