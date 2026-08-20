@@ -516,7 +516,7 @@
   # =========================================================================
   programs.firefox = {
     enable = true;
-    profiles.default = {
+    profiles."${config.home.username}" = {
       id = 0;
       name = "Default";
       isDefault = true;
