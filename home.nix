@@ -485,13 +485,15 @@
       background_opacity = "0.95";
 
       "wayland_enable_ime" = "no";
+
+      # —————————————————————————————————————————————————————————————————————
+      # ZELLIJ KEYBIND PASS-THROUGH OVERRIDES
+      # —————————————————————————————————————————————————————————————————————
+      "map ctrl+shift+t" = "no_op";
+      "map ctrl+shift+w" = "no_op";
+      "map ctrl+shift+enter" = "no_op";
     };
   };
-  ## Inside your kitty.conf or home-manager kitty mappings block
-  ## Unbind native terminal shortcuts so they pass cleanly down to Zellij
-  #map ctrl+shift+t no_op
-  #map ctrl+shift+w no_op
-  #map ctrl+shift+enter no_op
 
   # =========================================================================
   # NATIVE INFRASTRUCTURE DEPLOYMENT: REMMINA WITH COUPLING PLUGINS
