@@ -13,8 +13,5 @@ result-*
 --- Volatile Local Cache Keys ---
 keys.txt
 
---- Encoded Secrets ---
-secrets.yaml
-
 --- Other stuff as needed ---
 
