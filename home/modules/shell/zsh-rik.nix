@@ -64,18 +64,8 @@
 
       # 3. Fastfetch environment detection logo engine
       fastfetch_dynamic() {
-          if [ -f /etc/fedora-release ]; then
-              export FF_OS_ICON=""
-              export FF_OS_COLOR="blue"
-              export FF_LOGO="$HOME/.config/fastfetch/logos/Fedora.png"
-          elif ${pkgs.gnugrep}/bin/grep -q "NixOS" /etc/os-release 2>/dev/null; then
-             export FF_LOGO="${../../../assets/NixOS.png}"
-          else
-              export FF_OS_ICON=""
-              export FF_OS_COLOR="green"
-              export FF_LOGO=""
-          fi
-          command fastfetch --logo "$FF_LOGO" --logo-type kitty --logo-width 28 --logo-height 12 "$@"
+         export FF_LOGO="${../../../assets/NixOS.png}"
+         command fastfetch --logo "$FF_LOGO" --logo-type kitty --logo-width 28 --logo-height 12 "$@"
       }
 
       if [[ -o interactive ]]; then
