@@ -5,6 +5,7 @@
   ...
 }: {
   imports = [
+    ./home/modules/unix-tools/claude-code.nix
     ./home/modules/theme/fonts.nix
     ./home/modules/shell/zsh.nix
     ./home/modules/shell/zsh-guest.nix
