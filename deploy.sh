@@ -21,14 +21,17 @@ echo "=================================================="
 read -rp "🔄 Check for upstream package updates? (y/N): " check_updates </dev/tty
 if [[ "$check_updates" =~ ^[Yy]$ ]]; then
     echo "⚡ Refreshing upstream flake input hashes..."
-    nh flake update
+    # nh 4.x dropped the standalone `flake` subcommand — input updates are now
+    # a flag on `nh os build/switch` (-u/--update) rather than a separate
+    # lock-file-only action, so we call plain `nix flake update` here instead.
+    nix flake update
 fi
 
 # =========================================================================
 # 3. Dry-Run Environment Mapping
 # =========================================================================
 echo "📦 Generating dry-run system environment preview mapping..."
-nh os build .
+nh os build
 
 if command -v nvd &> /dev/null; then
     echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
