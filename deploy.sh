@@ -28,7 +28,7 @@ fi
 # 3. Dry-Run Environment Mapping
 # =========================================================================
 echo "📦 Generating dry-run system environment preview mapping..."
-nh os build .
+nh os build
 
 if command -v nvd &> /dev/null; then
     echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
