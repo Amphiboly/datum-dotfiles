@@ -14,6 +14,9 @@
     nil
     alejandra
 
+    # Version control
+    gh
+
     # Foundational Unix Utility Layer left out by NixOS:
     btop
     e2fsprogs
