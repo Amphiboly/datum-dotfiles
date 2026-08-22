@@ -14,6 +14,7 @@
     ./home/modules/unix-tools/git-identity-rik.nix
     ./home/modules/unix-tools/cli-utils.nix
     ./home/modules/shell/zsh.nix
+    ./home/modules/shell/zsh-rik.nix
     ./home/modules/shell/starship.nix
     ./home/modules/shell/fzf-zoxide.nix
     ./home/modules/terminal/kitty.nix
