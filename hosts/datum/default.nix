@@ -46,8 +46,10 @@
     ../../modules/nixos/users/rik.nix
     ../../modules/nixos/users/guest.nix
 
-    # Desktop environment — choose one:
-    # ../../modules/nixos/desktop/gnome.nix
+    # Desktop environment — choose one. Gnome was a stopgap for when Cosmic's
+    # heavy update cadence outran this laptop's rebuild speed; removed since
+    # it was never wanted on its own merits. Noctalia is the candidate for a
+    # real second option here, once its supporting infra is ready.
     ../../modules/nixos/desktop/cosmic.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
