@@ -1,0 +1,9 @@
+# /etc/nixos/.sops.yaml
+keys:
+    - &admin_key age18tvsxgvkj7xjh0davtx6y6qf8kt3vrmp79wexz4jcg77300xvuds5yqv8e
+
+creation_rules:
+  - path_regex: secrets\.yaml$
+    key_groups:
+      - age:
+        - *admin_key
