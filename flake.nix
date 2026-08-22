@@ -31,85 +31,45 @@
   outputs = {
     self,
     nixpkgs,
-    nixos-hardware,
-    disko,
     home-manager,
-    sops-nix,
-    lanzaboote,
     nur,
     ...
   } @ inputs: let
     system = "x86_64-linux";
-    # Instantiates pkgs with unfree allowed for standalone flake inputs
+    # Instantiated once, correctly (with the NUR overlay applied), and reused
+    # by every standalone home-manager output below.
     pkgs = import nixpkgs {
       inherit system;
       config.allowUnfree = true;
-      nixpkgs.overlays = [
-        nur.overlays.default
-      ];
+      overlays = [nur.overlays.default];
     };
   in {
     nixosConfigurations.datum = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {inherit inputs;};
-      modules = [
-        # Hardware & Platform
-        nixos-hardware.nixosModules.common-cpu-intel
-        nixos-hardware.nixosModules.common-pc-laptop
-        nixos-hardware.nixosModules.common-pc-ssd
-        ./hardware-configuration.nix
-        ./laptop-configuration.nix
+      modules = [./hosts/datum];
+    };
 
-        # Disko & Lanzaboote
-        disko.nixosModules.disko
-        ./disko-config.nix
-        lanzaboote.nixosModules.lanzaboote
-
-        # Core Modules
-        ./configuration.nix
-        ./users.nix
-        ./desktop.nix
-        ./shell-environment.nix
-        ./bluetooth.nix
-        ./backups.nix
-        ./networking.nix
-        # Choose one of the following:
-        #./desktop-gnome.nix
-        ./desktop-cosmic.nix
-
-        # Sops Secrets
-        sops-nix.nixosModules.sops
-
-        # Global Nixpkgs & Environment
-        {
-          nixpkgs.config.allowUnfree = true;
-          nixpkgs.overlays = [
-            nur.overlays.default
+    # Standalone per-user configs: `home-manager switch --flake .#<user>`
+    # applies without sudo or a system rebuild, for users (like guest) who
+    # shouldn't need wheel access just to tweak their own home config.
+    homeConfigurations = let
+      mkHome = homeModule:
+        home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = {
+            inherit inputs;
+            osConfig = null; # only set when integrated via nixosModules.home-manager
+          };
+          modules = [
+            inputs.sops-nix.homeManagerModules.sops
+            {systemd.user.startServices = "sd-switch";}
+            homeModule
           ];
-          environment.sessionVariables = {
-            ZED_ALLOW_EMULATED_GPU = "1";
-          };
-        }
-
-        # Home Manager Module with Rik and Guest
-        home-manager.nixosModules.home-manager
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            backupFileExtension = "hm-backup";
-            extraSpecialArgs = {inherit inputs;};
-            sharedModules = [
-              sops-nix.homeManagerModules.sops
-              {systemd.user.startServices = "sd-switch";}
-            ];
-            users = {
-              rik = import ./home.nix;
-              guest = import ./home-guest.nix;
-            };
-          };
-        }
-      ];
+        };
+    in {
+      rik = mkHome ./home.nix;
+      guest = mkHome ./home-guest.nix;
     };
   };
 }

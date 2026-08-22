@@ -21,4 +21,8 @@
     VDPAU_DRIVER = "va_gl";
     LIBVA_DRIVER_NAME = "iHD";
   };
+
+  # This machine's state version — belongs with host-identity files like
+  # this one, which will move under hosts/datum/ in a later pass.
+  system.stateVersion = "26.05";
 }

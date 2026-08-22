@@ -4,29 +4,22 @@
   pkgs,
   ...
 }: {
+  imports = [
+    ./home/modules/theme/fonts.nix
+    ./home/modules/shell/zsh.nix
+    ./home/modules/shell/zsh-guest.nix
+    ./home/modules/terminal/kitty.nix
+    ./home/modules/terminal/kitty-guest.nix
+    ./home/modules/browsers/firefox.nix
+  ];
+
   home.username = "guest";
   home.homeDirectory = "/home/guest";
   home.stateVersion = "26.05";
 
-  home.packages = with pkgs; [
-    firefox
-  ];
-
   home.sessionVariables = {
     EDITOR = "nano";
     VISUAL = "nano";
-  };
-
-  programs.kitty = {
-    enable = true;
-    settings.enable_audio_bell = false;
-  };
-
-  programs.zsh = {
-    enable = true;
-    shellAliases = {
-      ls = "ls --color=auto";
-    };
   };
 
   xdg.mimeApps = {

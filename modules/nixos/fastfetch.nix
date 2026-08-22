@@ -1,3 +1,8 @@
+# modules/nixos/fastfetch.nix
+#
+# Renamed from the root's old desktop.nix — this is fastfetch's system-wide
+# config.jsonc, not a desktop-environment choice (see modules/nixos/desktop/
+# for that).
 {
   config,
   lib,
