@@ -34,7 +34,11 @@
 # a match and a photograph. That model is decent against a phone screen or a
 # flat print but it is not the boundary an IR sensor gives you. Accepted
 # deliberately here: this is a backup laptop.
-{lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   # The single switch for whether face auth participates in authentication.
   # False still builds and runs the daemon but keeps pam_gaze out of every PAM
   # stack, which is how this sat between 2026-08-22 and 2026-08-23 while the
@@ -124,6 +128,26 @@ in {
       #                              # failure isn't confused for a camera one.
     };
   };
+
+  # Restart gazed when its config changes.
+  #
+  # The upstream module sets no restartTriggers, so a rebuild rewrites
+  # /etc/gaze/config.toml while the daemon keeps serving whatever it parsed at
+  # startup. That bit hard on 2026-08-23: the camera pin below landed in the
+  # file, `gaze doctor` (a separate process, reading from disk) reported it
+  # correctly, but the running daemon still held rgb = "primary" and kept
+  # opening a bare `pipewiresrc` — which resolved to the broken internal
+  # camera, fired its IR emitters, and timed out after 5s with no face. The
+  # symptom points at the camera rather than at staleness, so it is worth
+  # keeping this wired up.
+  #
+  # This reads environment.etc, which the upstream module only populates when
+  # mutableConfig = false (set above). Revisit if that is ever flipped back:
+  # under mutableConfig = true the file is seeded via tmpfiles instead and this
+  # reference would not resolve.
+  systemd.services.gazed.restartTriggers = [
+    config.environment.etc."gaze/config.toml".source
+  ];
 
   # COSMIC uses one PAM service, "cosmic-greeter", for both the greetd login
   # screen and the session lock screen, so this single line covers both. It is
