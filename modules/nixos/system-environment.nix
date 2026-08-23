@@ -19,7 +19,6 @@
     tailscale # client cli companion for your mesh vpn daemon
     rustic
     comma
-    #   howdy
-    v4l-utils
+    v4l-utils # camera debugging; face auth itself comes from facial-auth.nix
   ];
 }

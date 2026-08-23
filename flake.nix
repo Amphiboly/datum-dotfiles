@@ -26,6 +26,13 @@
       url = "github:nix-community/NUR";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Facial authentication. `follows` is safe here only because the nixpkgs
+    # above is unstable: gaze is Rust edition 2024, and a stable channel's
+    # older rustc breaks partway through its dependency tree.
+    gaze = {
+      url = "github:GunduLabs/gaze";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

@@ -20,6 +20,9 @@
     # Sops Secrets
     inputs.sops-nix.nixosModules.sops
 
+    # Gaze (facial authentication): daemon, D-Bus/polkit, PAM wiring
+    inputs.gaze.nixosModules.default
+
     # Core system modules
     ../../modules/nixos/secrets.nix
     ../../modules/nixos/boot.nix
@@ -34,6 +37,7 @@
     ../../modules/nixos/pipewire.nix
     ../../modules/nixos/session-daemons.nix
     ../../modules/nixos/ssh.nix
+    ../../modules/nixos/facial-auth.nix
     ../../modules/nixos/kdeconnect.nix
     ../../modules/nixos/remote-desktop.nix
     ../../modules/nixos/dropbox-sync.nix
