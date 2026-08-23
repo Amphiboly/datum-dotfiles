@@ -38,6 +38,7 @@
     ../../modules/nixos/session-daemons.nix
     ../../modules/nixos/ssh.nix
     ../../modules/nixos/facial-auth.nix
+    ../../modules/nixos/onepassword.nix
     ../../modules/nixos/kdeconnect.nix
     ../../modules/nixos/remote-desktop.nix
     ../../modules/nixos/dropbox-sync.nix

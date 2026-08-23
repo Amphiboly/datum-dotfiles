@@ -31,8 +31,9 @@
     cowsay
     tealdeer
 
-    # Cloud storage and security
-    _1password-cli
-    _1password-gui
+    # 1Password lives in modules/nixos/onepassword.nix instead: the GUI needs
+    # a setuid browser-support helper and a polkit policy that a home.packages
+    # entry cannot provide, and both programs._1password{,-gui} already put
+    # their packages in environment.systemPackages.
   ];
 }

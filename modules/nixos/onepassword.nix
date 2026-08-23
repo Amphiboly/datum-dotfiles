@@ -1,0 +1,38 @@
+# modules/nixos/onepassword.nix
+#
+# 1Password, installed the way NixOS needs rather than as a bare package.
+#
+# `programs._1password-gui` exists because the desktop app needs a setuid
+# 1Password-BrowserSupport helper and a polkit policy naming the users allowed
+# to drive it. Dropping _1password-gui into home.packages (as this config did
+# until now) installs the binary but none of that scaffolding, which costs you
+# system authentication — unlocking with your login password, and the
+# fingerprint/face path later on — and browser integration.
+#
+# `programs._1password` does the same job for the `op` CLI, creating the
+# onepassword-cli group that lets the CLI talk to the desktop app for
+# biometric unlock. Both put their packages in environment.systemPackages, so
+# neither belongs in home.packages any more.
+{...}: {
+  programs._1password.enable = true;
+
+  programs._1password-gui = {
+    enable = true;
+    # Users permitted by the polkit policy to use the browser/system
+    # integration. guest deliberately absent.
+    polkitPolicyOwners = ["rik"];
+  };
+
+  # Hand the SSH agent role to 1Password alone.
+  #
+  # gnome-keyring arrives with the COSMIC session and its gcr-ssh-agent claims
+  # SSH_AUTH_SOCK (/run/user/1000/gcr/ssh) while holding no identities at all.
+  # `ssh` itself is unaffected — IdentityAgent in ~/.ssh/config overrides the
+  # environment — but anything that reaches for SSH_AUTH_SOCK directly instead
+  # of reading ssh_config finds an empty agent and fails confusingly. Only one
+  # SSH agent can own that variable, so this yields it.
+  #
+  # This turns off the SSH agent component only. gnome-keyring-daemon keeps
+  # running for libsecret/Secret Service, which COSMIC and others still want.
+  services.gnome.gcr-ssh-agent.enable = false;
+}

@@ -31,6 +31,7 @@
     ./home/modules/productivity/thunderbird.nix
     ./home/modules/productivity/maestral-service.nix
     ./home/modules/desktop-integration/xdg.nix
+    ./home/modules/desktop-integration/onepassword.nix
     ./home/modules/desktop-integration/compose-key.nix
     ./home/modules/desktop-integration/wallpapers.nix
   ];
