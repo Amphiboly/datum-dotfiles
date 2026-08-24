@@ -56,7 +56,7 @@ echo "🚀 Switching live system tracks to new generation..."
 if [[ -z "$build_label" ]]; then
   nh os switch .
 else
-  nh os switch . -- --label "$build_label"
+  NIXOS_LABEL="$build_label" nh os switch .
 fi
 
 # =========================================================================
