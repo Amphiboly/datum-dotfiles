@@ -1,5 +1,5 @@
 # modules/nixos/power-management.nix
-{...}: {
+_: {
   # Block the default desktop power module to clear system locks
   services.power-profiles-daemon.enable = false;
 

@@ -2,7 +2,7 @@
 #
 # Merges what used to be split (and partly duplicated) across the root
 # networking.nix and configuration.nix into one definition.
-{...}: {
+_: {
   networking = {
     hostName = "datum";
     networkmanager.enable = true;

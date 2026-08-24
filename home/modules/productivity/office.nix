@@ -2,7 +2,8 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
     glow
-    libreoffice-fresh
+    just
+    libreoffice-stable
     mdbook
     naps2
     pandoc

@@ -1,9 +1,5 @@
 # home-guest.nix
-{
-  config,
-  pkgs,
-  ...
-}: {
+_: {
   imports = [
     ./home/modules/unix-tools/claude-code.nix
     ./home/modules/theme/fonts.nix
@@ -14,13 +10,14 @@
     ./home/modules/browsers/firefox.nix
   ];
 
-  home.username = "guest";
-  home.homeDirectory = "/home/guest";
-  home.stateVersion = "26.05";
-
-  home.sessionVariables = {
-    EDITOR = "nano";
-    VISUAL = "nano";
+  home = {
+    username = "guest";
+    homeDirectory = "/home/guest";
+    stateVersion = "26.05";
+    sessionVariables = {
+      EDITOR = "nano";
+      VISUAL = "nano";
+    };
   };
 
   xdg.mimeApps = {

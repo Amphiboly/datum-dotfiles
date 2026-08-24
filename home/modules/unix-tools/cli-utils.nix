@@ -9,10 +9,12 @@
     dust
 
     # Nix utilities
-    comma
-    nvd
-    nil
     alejandra
+    comma
+    deadnix
+    nil
+    nvd
+    statix
 
     # Version control
     gh

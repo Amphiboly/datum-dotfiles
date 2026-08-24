@@ -1,5 +1,5 @@
 # modules/nixos/nix-settings.nix
-{...}: {
+_: {
   # Disable native GC to avoid conflicts with nh
   nix.gc.automatic = false;
 

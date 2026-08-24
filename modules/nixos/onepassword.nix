@@ -13,7 +13,7 @@
 # onepassword-cli group that lets the CLI talk to the desktop app for
 # biometric unlock. Both put their packages in environment.systemPackages, so
 # neither belongs in home.packages any more.
-{...}: {
+_: {
   programs._1password.enable = true;
 
   programs._1password-gui = {

@@ -1,5 +1,5 @@
 # modules/nixos/filesystems.nix
-{...}: {
+_: {
   fileSystems = {
     # 5CD-RACK TAILSCALE SMB/CIFS NETWORK SHARES MATRIX
     "/mnt/5CDbackup" = {

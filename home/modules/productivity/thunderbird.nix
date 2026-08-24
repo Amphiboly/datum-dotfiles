@@ -5,7 +5,7 @@
 # three would come up, never all three. Only the package/binary is managed
 # declaratively; the commented block below is kept as reference for a future
 # attempt.
-{config, ...}: {
+_: {
   programs.thunderbird.enable = true;
 
   # =========================================================================

@@ -1,12 +1,5 @@
 # ~/Projects/datum-config/home.nix
-{
-  config,
-  osConfig,
-  lib,
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [
     ./home/modules/theme/fonts.nix
     ./home/modules/theme/colors.nix
@@ -19,6 +12,7 @@
     ./home/modules/shell/starship.nix
     ./home/modules/shell/fzf-zoxide.nix
     ./home/modules/terminal/kitty.nix
+    ./home/modules/terminal/kitty-rik.nix
     ./home/modules/editors/helix.nix
     ./home/modules/editors/helix-rik.nix
     ./home/modules/editors/vim.nix
@@ -36,9 +30,11 @@
     ./home/modules/desktop-integration/wallpapers.nix
   ];
 
-  home.username = "rik";
-  home.homeDirectory = "/home/rik";
-  home.stateVersion = "26.05";
+  home = {
+    username = "rik";
+    homeDirectory = "/home/rik";
+    stateVersion = "26.05";
+  };
 
   # =========================================================================
   # Rik-specific one-off scripts (not a shared category, so it stays here)

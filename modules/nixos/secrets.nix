@@ -1,5 +1,5 @@
 # modules/nixos/secrets.nix
-{...}: {
+_: {
   sops = {
     defaultSopsFile = ../../secrets.yaml;
     defaultSopsFormat = "yaml";

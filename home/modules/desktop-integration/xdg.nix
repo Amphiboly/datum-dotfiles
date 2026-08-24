@@ -1,23 +1,24 @@
 # home/modules/desktop-integration/xdg.nix
-{...}: {
-  xdg.mimeApps = {
-    enable = true;
-    defaultApplications = {
-      "text/plain" = ["dev.zed.Zed.desktop"];
-      "text/markdown" = ["dev.zed.Zed.desktop"];
-      "application/x-shellscript" = ["dev.zed.Zed.desktop"];
+_: {
+  xdg = {
+    mimeApps = {
+      enable = true;
+      defaultApplications = {
+        "text/plain" = ["dev.zed.Zed.desktop"];
+        "text/markdown" = ["dev.zed.Zed.desktop"];
+        "application/x-shellscript" = ["dev.zed.Zed.desktop"];
+      };
     };
-  };
-  xdg.terminal-exec = {
-    enable = true;
-    settings.default = ["kitty.desktop"]; # Swift transition to Kitty
-  };
-
-  xdg.desktopEntries.yazi = {
-    name = "Yazi";
-    exec = "kitty -- yazi %u";
-    terminal = false;
-    icon = "yazi";
-    categories = ["System" "FileTransfer"];
+    terminal-exec = {
+      enable = true;
+      settings.default = ["kitty.desktop"]; # Swift transition to Kitty
+    };
+    desktopEntries.yazi = {
+      name = "Yazi";
+      exec = "kitty -- yazi %u";
+      terminal = false;
+      icon = "yazi";
+      categories = ["System" "FileTransfer"];
+    };
   };
 }

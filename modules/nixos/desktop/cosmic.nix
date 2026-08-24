@@ -1,9 +1,5 @@
 # ~/Projects/datum-config/desktop-cosmic.nix
-{
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   imports = [];
 
   services.desktopManager.cosmic.enable = true;

@@ -2,7 +2,7 @@
 #
 # Two halves of the same feature: COSMIC's input config binds Right Alt as
 # the Compose trigger, and .XCompose defines what it produces.
-{...}: {
+_: {
   home.file.".config/cosmic/com.system76.CosmicInput/v1/keys".text = ''
     (
         caps_lock: None,

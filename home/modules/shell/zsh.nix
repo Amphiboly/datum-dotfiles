@@ -5,7 +5,6 @@
 # zsh-guest.nix for those.
 {pkgs, ...}: {
   home.packages = with pkgs; [
-    zellij
     zsh-completions
   ];
 

@@ -3,7 +3,7 @@
 # Generic mechanism + sane defaults only — no personal bookmarks, extensions,
 # homepage, or search engine here. See firefox-rik.nix for that, imported
 # only by profiles that want it.
-{...}: {
+_: {
   programs.firefox = {
     enable = true;
     profiles.default = {

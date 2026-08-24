@@ -15,7 +15,7 @@
 # (see modules/nixos/onepassword.nix), so Exec deliberately names the bare
 # binary and picks up the polkit-wrapped build from the session PATH rather
 # than pinning an unwrapped store path.
-{...}: {
+_: {
   xdg.configFile."autostart/1password.desktop".text = ''
     [Desktop Entry]
     Type=Application

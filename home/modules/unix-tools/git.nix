@@ -2,7 +2,7 @@
 #
 # Generic mechanism only — no identity here. See git-identity-rik.nix for
 # the per-user name/email, imported only by profiles that want it.
-{...}: {
+_: {
   programs.git = {
     enable = true;
     settings = {

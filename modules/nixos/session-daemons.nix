@@ -1,5 +1,5 @@
 # modules/nixos/session-daemons.nix
-{...}: {
+_: {
   # Optimization tier for smooth interactive window scaling
   services.system76-scheduler.enable = true;
   # Required user context tracking backend for modern greeters and multi-user configurations

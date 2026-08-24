@@ -1,9 +1,5 @@
 # ~/Projects/datum-config/laptop-configuration.nix
-{
-  config,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   # 1. HARDWARE ACCELERATION PIPELINES (PHYSICAL LAPTOP TARGET ONLY)
   hardware.graphics = {
     enable = true;

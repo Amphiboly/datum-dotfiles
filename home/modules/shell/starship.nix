@@ -1,5 +1,5 @@
 # home/modules/shell/starship.nix
-{...}: {
+_: {
   programs.starship = {
     enable = true;
     enableZshIntegration = true;

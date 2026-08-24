@@ -73,17 +73,18 @@
           fastfetch_dynamic
       fi
 
-      # AUTOMATIC WORKSPACE PERSISTENCE (ZELLIJ INTERACTIVE INITIALIZATION)
-      # 1. Ensure the shell is interactive and not already inside an active Zellij workspace
-      if [[ -o interactive && -z "$ZELLIJ" && "$TERM_PROGRAM" != "vscode" ]]; then
-          # 2. Check if a master session already exists to hook back into
-          if zellij list-sessions 2>/dev/null | grep -q "default"; then
-              exec zellij attach "default"
-          else
-              # 3. Create a fresh session and force Locked mode to prevent key collisions
-              exec zellij options --default-mode locked --theme dracula --simplified-ui true
-          fi
-      fi
+      # Commented out 2026-08-24 -- kitty should be sufficient
+      # # AUTOMATIC WORKSPACE PERSISTENCE (ZELLIJ INTERACTIVE INITIALIZATION)
+      # # 1. Ensure the shell is interactive and not already inside an active Zellij workspace
+      # if [[ -o interactive && -z "$ZELLIJ" && "$TERM_PROGRAM" != "vscode" ]]; then
+      #     # 2. Check if a master session already exists to hook back into
+      #     if zellij list-sessions 2>/dev/null | grep -q "default"; then
+      #         exec zellij attach "default"
+      #     else
+      #         # 3. Create a fresh session and force Locked mode to prevent key collisions
+      #         exec zellij options --default-mode locked --theme dracula --simplified-ui true
+      #     fi
+      # fi
     '';
   };
 }

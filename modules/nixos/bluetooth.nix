@@ -1,9 +1,5 @@
 # ~/Projects/datum-config/bluetooth.nix
-{
-  config,
-  pkgs,
-  ...
-}: {
+_: {
   # 1. CORE HARDWARE BLUETOOTH DAEMON ENGINES
   hardware.bluetooth = {
     enable = true;
