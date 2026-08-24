@@ -46,25 +46,21 @@ fi
 rm -f ./result
 
 # =========================================================================
-# 4. Compute Automatic Chronological Datetime Timestamp
+# 4. Switch Live System Generations Natively via nh
 # =========================================================================
-#CURRENT_TS=$(date +"%m%dT%H%M")
-#echo "📝 Enter a descriptive boot label message."
-#read -rp "   [Press Enter to default to timestamp '$CURRENT_TS']: " build_label </dev/tty
-#
-#if [[ -z "$build_label" ]]; then
-#    build_label="$CURRENT_TS"
-#fi
+echo "📝 Enter a descriptive boot label message."
+read -rp "   or press  Enter  for standard grub generation label: " build_label </dev/tty
 
-# =========================================================================
-# 5. Switch Live System Generations Natively via nh
-# =========================================================================
 echo "🚀 Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
-nh os switch . # -- --profile "$build_label"
+if [[ -z "$build_label" ]]; then
+  nh os switch .
+else
+  nh os switch . -- --label "$build_label"
+fi
 
 # =========================================================================
-# 6. Storage Profile Management
+# 5. Storage Profile Management
 # =========================================================================
 echo -e "\n🧹 STORAGE CLEANUP SUITE"
 echo "--------------------------------------------------"
@@ -75,7 +71,7 @@ if [[ "$clean_old" =~ ^[Yy]$ ]]; then
 fi
 
 # =========================================================================
-# 7. Remote Repository Mirror Array
+# 6. Remote Repository Mirror Array
 # =========================================================================
 echo -e "\n📡 NOSTRUM REPOSITORY MIRROR"
 echo "--------------------------------------------------"
