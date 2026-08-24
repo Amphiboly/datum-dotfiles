@@ -48,7 +48,7 @@ mode and dies looking for `<nixos-config>`.
   unit, D-Bus and polkit policy, PAM wiring). It is a flake input; configure it
   through `services.gaze.*`. Never `curl | sh`.
 - Gaze on NixOS: `gaze doctor` reports `pam_gaze.so is not installed where PAM
-  can load it` as an error. This is a FALSE POSITIVE — it probes FHS paths like
+can load it` as an error. This is a FALSE POSITIVE — it probes FHS paths like
   `/lib/security`, which do not exist here, while NixOS references PAM modules
   by absolute store path. Do not "reinstall the base package" in response.
 - PAM: keep the password a working fallback in every stack. The gaze rule goes
@@ -79,3 +79,5 @@ mode and dies looking for `<nixos-config>`.
 - Avoid multi-file global rewrites in a single command.
 - Validate incrementally with `nix eval` or `nix flake check` before rebuilding.
 - Follow idiomatic module structure using `options`, `config`, and `imports`.
+- Statix and deadnix are installed and should be used.
+- Use the `mcp-nixos` tool to query accurate package names, options, and Home Manager attributes before suggesting changes.

@@ -2,6 +2,7 @@
 _: {
   imports = [
     ./home/modules/unix-tools/claude-code.nix
+    #   ./home/modules/unix-tools/claude-code-guest.nix # optional, non-existant
     ./home/modules/theme/fonts.nix
     ./home/modules/shell/zsh.nix
     ./home/modules/shell/zsh-guest.nix

@@ -36,7 +36,6 @@
   };
 
   outputs = {
-    self,
     nixpkgs,
     home-manager,
     nur,
