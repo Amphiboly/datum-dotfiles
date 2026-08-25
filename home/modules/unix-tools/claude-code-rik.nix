@@ -1,15 +1,13 @@
 # home/modules/unix-tools/claude-rik.nix
-{pkgs, ...}: {
+#
+# NOTE: MCP servers cannot be declared here. Claude Code settings files have
+# no mcpServers key, so a block placed here is read as valid JSON, silently
+# ignored, and `claude mcp list` stays empty -- while the permissions below,
+# in the same file, apply normally. Server definitions belong in
+# ~/.claude.json (user scope) or <repo>/.mcp.json (project scope); mcp-nixos
+# is wired up in the checked-in .mcp.json at the repo root.
+_: {
   home.file.".claude/settings.local.json".text = builtins.toJSON {
-    mcpServers = {
-      nixos = {
-        # Nix correctly resolves the package path here even though
-        # the package is installed in the sibling file.
-        command = "${pkgs.mcp-nixos}/bin/mcp-nixos";
-        args = [];
-      };
-    };
-
     permissions = {
       allow = [
         "Read(//home/rik/Projects/datum/datum-config/**)"
