@@ -13,6 +13,7 @@
         context
         collection-luatex
       ]))
+    typst
     zettlr
     zotero
   ];
