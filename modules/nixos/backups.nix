@@ -16,11 +16,21 @@
         snapshot_preserve = "24h 7d 4w";
 
         # --- INFRASTRUCTURE AUTOMATION CONTROLS ---
-        # Forces btrbk to actively scan and adopt/prune unmanaged files in the directory
-        snapshot_create = "ondemand";
+        # Only snapshot when @home's btrfs generation actually moved. NOT
+        # "ondemand" -- that means "snapshot only if a target subvolume is
+        # reachable", and this instance declares no target at all, so it
+        # would never snapshot. Pruning per snapshot_preserve* happens
+        # either way.
+        snapshot_create = "onchange";
         archive_preserve_min = "latest";
         archive_preserve = "7d 4w";
-        lockfile = "/run/btrbk.lock";
+
+        # btrbk opens this itself, as User=btrbk (uid 998) -- not via the
+        # btrfs-progs-sudo backend. It must therefore live somewhere that
+        # user can write; /run is root-owned 0755, so /run/btrbk.lock is
+        # EACCES and btrbk exits 3 before doing any work. StateDirectory=
+        # gives us /var/lib/btrbk, owned btrbk:btrbk.
+        lockfile = "/var/lib/btrbk/btrbk.lock";
 
         volume."/mnt/btrfs-root" = {
           subvolume = "@home";
@@ -29,6 +39,12 @@
       };
     };
   };
+
+  # The btrbk module builds the unit itself and exposes no onFailure hook, so
+  # wire the notifier onto the generated unit by name. Without this a broken
+  # btrbk fails silently every hour -- which is exactly how the lockfile
+  # EACCES above went unnoticed for 15 days.
+  systemd.services.btrbk-local.onFailure = ["status-email-alert@%n.service"];
 
   # =========================================================================
   # 2. DECLARATIVE ATOMIC BACKUPS (NATIVE SYSTEMD RUSTIC CALL ENGINE)
@@ -140,6 +156,10 @@
         tls_starttls = true;
         auth = true;
         user = "rik";
+        # Without this msmtp exits 78 with "envelope-from address is missing"
+        # and no mail is ever sent. Must be the authenticated user's real
+        # address -- panix rejects an envelope sender that doesn't match.
+        from = "rik@panix.com";
         passwordeval = "cat ${config.sops.secrets."panix-smtp-password".path}";
       };
     };
@@ -154,28 +174,36 @@
     serviceConfig = {
       Type = "oneshot";
       User = "root"; # Runs as root to read systemd logs securely
-      ExecStart = pkgs.writeShellScript "systemd-email-alert" ''
-                set -euo pipefail
+      # %i is passed as argv[1], NOT interpolated into the script body.
+      # systemd expands specifiers only in the unit file's ExecStart= line;
+      # inside the script writeShellScript points at, "%i" stays literal
+      # (journalctl rejected it: Invalid unit name "%i" escaped as "\x25i").
+      # Use %i and never %I here -- %I would unescape the dashes in a name
+      # like rustic-atomic-backup.service into slashes.
+      ExecStart = "${pkgs.writeShellScript "systemd-email-alert" ''
+        set -euo pipefail
 
-                # Get the logs for the service that failed
-                SERVICE_LOGS=$(journalctl -u "%i" -n 50 --no-pager)
+        UNIT="$1"
 
-                # Construct a clean email payload
-                # Note: msmtp looks for a blank line after headers to identify the message body
-                cat <<EOF | msmtp --account=default rik@panix.com
-        From: status-alert@datum-laptop.local
+        # Get the logs for the service that failed
+        SERVICE_LOGS=$(journalctl -u "$UNIT" -n 50 --no-pager)
+
+        # Construct a clean email payload
+        # Note: msmtp looks for a blank line after headers to identify the message body
+        cat <<EOF | msmtp --account=default rik@panix.com
+        From: datum systemd <rik@panix.com>
         To: rik@panix.com
-        Subject: [SYSTEMD ALERT] %i has FAILED on datum-laptop
+        Subject: [SYSTEMD ALERT] $UNIT has FAILED on datum-laptop
 
-        The systemd service unit "%i" has entered a failed state.
+        The systemd service unit "$UNIT" has entered a failed state.
 
         -----------------------------------------------------------------
         LAST 50 LOG ENTRIES FROM JOURNAL:
         -----------------------------------------------------------------
         $SERVICE_LOGS
         EOF
-                echo "Alert dispatch completed for failure event instance: %i"
-      '';
+        echo "Alert dispatch completed for failure event instance: $UNIT"
+      ''} %i";
     };
   };
 }
