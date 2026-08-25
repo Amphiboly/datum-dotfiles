@@ -89,10 +89,26 @@
         mkdir -p /run/restic-atomic-home
         mount --bind "$LATEST_SNAP" /run/restic-atomic-home
 
-        # 2. Inspects if the physical config file exists inside the target directory path.
-        if [ ! -f "/mnt/5CDbackup/restic-repo/config" ]; then
-          echo "No active config asset found at target path. Initializing fresh repository pool..."
-          rustic init
+        # 2. Refuse to run unless the repository already exists.
+        #
+        # This deliberately does NOT auto-init. `rustic init` here is a
+        # footgun: if the share mounts but is empty, or points somewhere
+        # unexpected, init silently creates a brand-new empty repository,
+        # backs up into it, and exits 0 -- reporting success while the real
+        # history sits unreachable and nothing fails to alert on. That is
+        # exactly how a second repository appeared: the path moved from
+        # /mnt/5CDbackup (restic, services.restic.backups) to
+        # /mnt/5CDbackup/restic-repo (rustic), and this guard created a fresh
+        # repo at the new location rather than complaining.
+        #
+        # Derive the path from RUSTIC_REPOSITORY instead of repeating the
+        # literal, so the check cannot drift away from the repo it guards.
+        if [ ! -f "$RUSTIC_REPOSITORY/config" ]; then
+          echo "Error: no rustic repository at $RUSTIC_REPOSITORY (no 'config' file)."
+          echo "Refusing to auto-initialise -- that would mask a missing, empty or wrong mount."
+          echo "If a new repository really is intended, create it deliberately:"
+          echo "    sudo rustic -r $RUSTIC_REPOSITORY init"
+          exit 1
         fi
 
         # Administrator profile backup pipeline (rik)
