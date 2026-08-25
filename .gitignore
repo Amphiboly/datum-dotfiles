@@ -13,5 +13,10 @@ result-*
 --- Volatile Local Cache Keys ---
 keys.txt
 
+# --- Never commit decrypted secrets ---
+secrets.dec.yaml
+*.dec.yaml
+*.decrypted.yaml
+
 --- Other stuff as needed ---
 
