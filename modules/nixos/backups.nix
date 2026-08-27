@@ -1,9 +1,45 @@
 # ~/Projects/datum-config/backups.nix
 {
   config,
+  lib,
   pkgs,
   ...
-}: {
+}: let
+  # Where the backup service mounts the share for its own use. Deliberately
+  # NOT /mnt/5CDbackup: that path carries an x-systemd.automount direct mount
+  # (filesystems.nix), and mounting over a live autofs mountpoint is a mess.
+  # Keeping them separate leaves /mnt/5CDbackup untouched for interactive
+  # browsing while the service manages its own mount lifecycle.
+  shareMnt = "/run/backup-share";
+  sharePath = "n/datum";
+
+  # Tried in order; first one answering on 445 wins.
+  #
+  # 5cd-rack.local is mDNS (avahi + nsswitch mdns4_minimal), so it survives
+  # the server's DHCP lease changing -- no hard-coded LAN address to rot.
+  # Note the implicit dependency: avahi is enabled in printing.nix, not here.
+  #
+  # The Tailscale entry is the literal address, NOT the MagicDNS name
+  # 5cd-rack.taildad098.ts.net -- MagicDNS resolves via 100.100.100.100,
+  # which needs tailscaled up, and tailscaled being down is exactly the case
+  # this fallback exists to survive.
+  shareHosts = ["5cd-rack.local" "100.76.108.83"];
+
+  # How long to keep retrying before giving up and alerting.
+  mountDeadlineSecs = 300;
+
+  # Single source of truth for the CIFS options: reuse the ones declared on
+  # /mnt/5CDbackup, minus the pseudo-options that are directives to systemd's
+  # fstab generator rather than arguments mount(8) understands.
+  cifsOpts = lib.concatStringsSep "," (
+    lib.filter (
+      o:
+        !(lib.hasPrefix "x-systemd." o)
+        && !(builtins.elem o ["noauto" "nofail" "_netdev"])
+    )
+    config.fileSystems."/mnt/5CDbackup".options
+  );
+in {
   # ======================================================================
   # 1. LOCAL BTRFS AUTOMATED SNAPSHOT MATRIX (BTRBK)
   # ======================================================================
@@ -52,12 +88,31 @@
   systemd.services.rustic-atomic-backup = {
     description = "Atomic Daily Rustic Backup via Btrbk Snapshots";
 
-    # Ensures the backup service won't execute if the physical backup mount goes offline
-    requires = ["mnt-5CDbackup.mount"];
-    after = ["multi-user.target" "mnt-5CDbackup.mount"];
+    # Deliberately NO Requires=mnt-5CDbackup.mount.
+    #
+    # That hard dependency is what silently skipped the 08-26 and 08-27 runs.
+    # The timer is Persistent=true, so a run missed while asleep fires the
+    # instant the machine resumes -- in the same second tailscaled logs
+    # "time jump detected ... probably wake from sleep" and "all links down;
+    # pausing". CIFS then tried the Tailscale address over a dead network,
+    # the mount unit failed, and the dependency failure aborted the systemd
+    # *job* before the service ever activated. Because the unit never
+    # activated, nothing set a failure result: `systemctl show` still reports
+    # Result=success and ExecMainStatus=0 for a backup that did not happen.
+    # Only the journal and the OnFailure= mail reveal it.
+    #
+    # The mount is now acquired inside the runner, with a candidate list and
+    # a bounded retry, so a transient post-resume network state costs a few
+    # seconds instead of a whole day's backup.
+    after = ["multi-user.target" "tailscaled.service"];
     onFailure = ["status-email-alert@%n.service"];
 
-    path = with pkgs; [coreutils util-linux rustic gnutar gzip];
+    # cifs-utils: mount(8) execs mount.cifs out of PATH for -t cifs, and
+    # without it the mount fails with "unknown filesystem type 'cifs'" even
+    # though the kernel module is fine. Nothing else here needed adding --
+    # the probe re-invokes this script's own interpreter via $BASH rather
+    # than depending on a bash package being on PATH.
+    path = with pkgs; [coreutils util-linux rustic gnutar gzip cifs-utils];
 
     serviceConfig = {
       Type = "oneshot";
@@ -65,7 +120,7 @@
 
       # ENVIRONMENT INJECTION: Maps repository variables directly into the process layout
       Environment = [
-        "RUSTIC_REPOSITORY=/mnt/5CDbackup/restic-repo"
+        "RUSTIC_REPOSITORY=${shareMnt}/restic-repo"
         "RUSTIC_NON_INTERACTIVE=true"
       ];
 
@@ -75,6 +130,54 @@
 
       ExecStart = pkgs.writeShellScript "rustic-atomic-runner" ''
         set -euo pipefail
+
+        # 0. Acquire the backup share ourselves, LAN first, Tailscale second.
+        #
+        # Each candidate is probed on 445 before mounting, so an unreachable
+        # or unresolvable one costs 3 seconds instead of a mount timeout.
+        # /dev/tcp is a bash builtin, not a real device, so it needs a bash
+        # to run in -- $BASH is this script's own interpreter, which beats
+        # putting a bash package on PATH: it cannot drift and adds nothing
+        # to the closure.
+        #
+        # Worth knowing before tuning this: Tailscale already carries this
+        # traffic over the local link when both ends are on the same LAN
+        # (`tailscale ping 5cd-rack` reports a direct 4ms path, no DERP), so
+        # trying the .local name first buys no throughput whatsoever. What it
+        # buys is a working mount during the window after resume when
+        # tailscaled has not finished reconnecting -- which is the only
+        # window in which this service has ever failed.
+        mkdir -p ${shareMnt}
+
+        deadline=$(( $(date +%s) + ${toString mountDeadlineSecs} ))
+
+        while ! mountpoint -q ${shareMnt}; do
+          for host in ${lib.concatStringsSep " " shareHosts}; do
+            if timeout 3 "$BASH" -c "</dev/tcp/$host/445" 2>/dev/null; then
+              echo "Share answering at $host; mounting //$host/${sharePath}"
+              if mount -t cifs "//$host/${sharePath}" ${shareMnt} -o '${cifsOpts}'; then
+                break
+              fi
+              echo "Mount via $host failed; trying next candidate."
+            else
+              echo "No answer from $host:445."
+            fi
+          done
+
+          if mountpoint -q ${shareMnt}; then
+            break
+          fi
+
+          if [ "$(date +%s)" -ge "$deadline" ]; then
+            echo "Error: backup share unreachable via ${lib.concatStringsSep ", " shareHosts} after ${toString mountDeadlineSecs}s."
+            exit 1
+          fi
+
+          echo "No candidate reachable yet; retrying in 15s."
+          sleep 15
+        done
+
+        echo "Backup share mounted at ${shareMnt}."
 
         # 1. Discover the most recent timestamped subvolume folder generated by btrbk
         # Use find + sort to handle unexpected blank states or space chars robustly
@@ -137,12 +240,21 @@
       '';
 
       # Post-execution hook, in case rustic fails
+      # Runs on every exit path, success or failure, including the deadline
+      # abort above (where neither mount exists yet -- hence the guards).
       ExecStopPost = pkgs.writeShellScript "rustic-atomic-cleanup" ''
         echo "Tearing down atomic runtime namespaces..."
         if mountpoint -q /run/restic-atomic-home; then
           umount /run/restic-atomic-home
         fi
         rmdir /run/restic-atomic-home || true
+
+        # Drop the share too, so a stale or half-open CIFS mount cannot be
+        # inherited by the next run and mistaken for a healthy one.
+        if mountpoint -q ${shareMnt}; then
+          umount ${shareMnt}
+        fi
+        rmdir ${shareMnt} || true
       '';
     };
   };
