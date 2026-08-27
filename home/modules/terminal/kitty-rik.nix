@@ -3,7 +3,7 @@ _: {
   programs.kitty = {
     settings = {
       confirm_os_window_close = 0;
-      windw_padding_width = 4;
+      window_padding_width = 4;
     };
     autoThemeFiles = {
       light = "Tomorrow";
