@@ -13,6 +13,15 @@
   shareMnt = "/run/backup-share";
   sharePath = "n/datum";
 
+  # Two paths, ONE repository. The service mounts the share itself and
+  # unmounts it on the way out, so shareMnt does not exist between runs --
+  # interactive use has to reach the repo through the x-systemd.automount at
+  # /mnt/5CDbackup, which filesystems.nix still declares for exactly this.
+  # Derive both from one name so they cannot drift apart.
+  repoSubdir = "restic-repo";
+  serviceRepo = "${shareMnt}/${repoSubdir}";
+  interactiveRepo = "/mnt/5CDbackup/${repoSubdir}";
+
   # Tried in order; first one answering on 445 wins.
   #
   # 5cd-rack.local is mDNS (avahi + nsswitch mdns4_minimal), so it survives
@@ -39,7 +48,110 @@
     )
     config.fileSystems."/mnt/5CDbackup".options
   );
+
+  # rustic with the repository and password pre-wired.
+  #
+  # Plain `rustic` cannot work here and never will: the repo path lives only
+  # in the service's Environment=, and the password only in a 0400 root sops
+  # secret consumed as an EnvironmentFile= (so it is KEY=VALUE, which rules
+  # out pointing RUSTIC_PASSWORD_FILE at it -- it has to be sourced).
+  #
+  # Sourcing rather than passing the password as an argument keeps it out of
+  # ps(1). Root is required to read the secret at all, so say so plainly
+  # instead of failing with a confusing permission error.
+  backupRustic = pkgs.writeShellApplication {
+    name = "backup-rustic";
+    runtimeInputs = [pkgs.rustic];
+    text = ''
+      if [ "$(id -u)" -ne 0 ]; then
+        echo "backup-rustic: the repository password is root-only." >&2
+        echo "Try: sudo backup-rustic $*" >&2
+        exit 1
+      fi
+
+      set -a
+      # shellcheck disable=SC1091  # sops secret; only exists at runtime
+      . ${config.sops.secrets."restic-vault-password".path}
+      set +a
+
+      export RUSTIC_REPOSITORY=${interactiveRepo}
+      export RUSTIC_NON_INTERACTIVE=true
+      exec rustic "$@"
+    '';
+  };
+
+  # One-shot health summary: is it scheduled, did it run, what is in the repo.
+  backupStatus = pkgs.writeShellApplication {
+    name = "backup-status";
+    runtimeInputs = with pkgs; [systemd coreutils gnugrep];
+    text = ''
+      echo "== Schedule =="
+      systemctl list-timers --all --no-pager \
+        btrbk-local.timer rustic-atomic-backup.timer
+
+      echo
+      echo "== Rustic runs, last 7 days =="
+      # Deliberately the journal, not `systemctl status`. A Requires= failure
+      # aborts the systemd job before the unit activates, so nothing sets a
+      # failure result and status reports Result=success for a backup that
+      # never happened. That is how 08-26 and 08-27 were missed.
+      #
+      # Summarise then tail. A week of history is hundreds of lines when a
+      # unit is failing hourly, and an unbounded dump buries the one line
+      # that matters.
+      rustic_log=$(journalctl -u rustic-atomic-backup.service --since -7d \
+        -o short-iso --no-pager || true)
+      rustic_ok=$(printf '%s\n' "$rustic_log" | grep -c 'Finished Atomic' || true)
+      rustic_bad=$(printf '%s\n' "$rustic_log" |
+        grep -cE 'Dependency failed|Failed with result' || true)
+      echo "  $rustic_ok completed, $rustic_bad failed"
+      printf '%s\n' "$rustic_log" |
+        grep -E 'Starting|Share answering|No answer from|Mount via|Finished|Dependency failed|successfully saved|Error:' |
+        tail -12 || true
+
+      echo
+      echo "== btrbk snapshots, last 7 days =="
+      # Anchor on "+++ /" -- the path form is a real creation. btrbk also
+      # prints a legend every single run that contains the bare string
+      # "+++  created subvolume", and matching that counts 168 phantom
+      # snapshots a week.
+      btrbk_log=$(journalctl -u btrbk-local.service --since -7d \
+        -o short-iso --no-pager || true)
+      btrbk_new=$(printf '%s\n' "$btrbk_log" | grep -cE '\+\+\+ /' || true)
+      btrbk_bad=$(printf '%s\n' "$btrbk_log" | grep -c 'Failed with result' || true)
+      echo "  $btrbk_new created, $btrbk_bad failed run(s)"
+      printf '%s\n' "$btrbk_log" | grep -E '\+\+\+ /' | tail -3 || true
+      if [ "$btrbk_bad" -gt 0 ]; then
+        echo "  most recent error:"
+        printf '%s\n' "$btrbk_log" | grep 'ERROR' | tail -2 || true
+      fi
+
+      echo
+      echo "== Repository =="
+      if [ "$(id -u)" -ne 0 ]; then
+        echo "  Skipped: the repository password is root-only."
+        echo "  Run 'sudo backup-status' to see the latest snapshot per profile."
+        exit 0
+      fi
+      # `latest` resolves per group, and grouping defaults to host,label,paths
+      # -- with --as-path=/home/rik and /home/guest that is one row per
+      # profile. Fall back to the full list if the repo predates that.
+      if ! ${lib.getExe backupRustic} snapshots latest; then
+        echo "  (could not resolve 'latest'; showing everything)"
+        ${lib.getExe backupRustic} snapshots
+      fi
+    '';
+  };
 in {
+  # ======================================================================
+  # 0. OPERATOR TOOLING
+  # These live here rather than in their own file so they can share the
+  # repository paths above; splitting them out would mean repeating
+  # /mnt/5CDbackup/restic-repo in a second place, which is precisely the
+  # drift that produced two separate repositories once already.
+  # ======================================================================
+  environment.systemPackages = [backupStatus backupRustic];
+
   # ======================================================================
   # 1. LOCAL BTRFS AUTOMATED SNAPSHOT MATRIX (BTRBK)
   # ======================================================================
@@ -120,7 +232,7 @@ in {
 
       # ENVIRONMENT INJECTION: Maps repository variables directly into the process layout
       Environment = [
-        "RUSTIC_REPOSITORY=${shareMnt}/restic-repo"
+        "RUSTIC_REPOSITORY=${serviceRepo}"
         "RUSTIC_NON_INTERACTIVE=true"
       ];
 
