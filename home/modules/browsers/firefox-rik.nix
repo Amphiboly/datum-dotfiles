@@ -8,14 +8,14 @@
     settings = {
       "browser.startup.homepage" = "https://nixos.org";
       "browser.search.defaultenginename" = "DuckDuckGo";
+      "identity.fxaccounts.enabled" = true;
+      "services.sync.engine.bookmarks" = true;
+      "services.sync.engine.prefs" = true;
     };
 
     bookmarks = {
       #     force = true;
       #     settings = import ./bookmarks.nix;
-      "identity.fxaccounts.enabled" = true;
-      "services.sync.engine.bookmarks" = true;
-      "services.sync.engine.prefs" = true;
     };
 
     # Nested extensions block with local scoped variables
