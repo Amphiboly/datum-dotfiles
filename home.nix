@@ -23,6 +23,7 @@
     ./home/modules/browsers/firefox.nix
     ./home/modules/browsers/firefox-rik.nix
     ./home/modules/productivity/office.nix
+    ./home/modules/productivity/document-fonts.nix
     ./home/modules/productivity/thunderbird.nix
     ./home/modules/productivity/maestral-service.nix
     ./home/modules/desktop-integration/xdg.nix

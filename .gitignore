@@ -18,5 +18,9 @@ secrets.dec.yaml
 *.dec.yaml
 *.decrypted.yaml
 
+# --- Proprietary fonts (Microsoft EULA forbids redistribution) ---
+assets/fonts/msjh*.ttc
+assets/fonts/times.ttf
+
 --- Other stuff as needed ---
 
