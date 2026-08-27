@@ -14,6 +14,7 @@
         collection-luatex
       ]))
     typst
+    zathura
     zettlr
     zotero
   ];
