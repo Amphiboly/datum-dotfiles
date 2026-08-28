@@ -1,26 +1,26 @@
-# home/modules/browsers/firefox-rik.nix
-# 2026-08-28 Added settings and search settings in common with zen
-# 2026-08-27 Changed fixed forced bookmarks.nix to sync'd bookmarks
-#            via Firefox account sync. Also moved ./bookmarks.nix to
-#            this directory from ../../../bookmarks.nix to preserve
-#            it in a more appropriate place.
+# home/modules/browsers/zen-rik.nix
+#   by Chat 2026-08-28
+#   based on firefox-rik.nix
 {pkgs, ...}: {
-  programs.firefox.profiles.default = {
+  programs.zen-browser.profiles.default = {
     settings = {
       "browser.startup.homepage" = "https://nixos.org";
+
       "identity.fxaccounts.enabled" = true;
       "services.sync.engine.bookmarks" = true;
+      "services.sync.engine.prefs" = true;
 
-      # True Compact Mode: Tells Firefox to reduce paddings around the sidebar and tabs
+      # True Compact Mode: Tells Zen to reduce paddings around the sidebar and tabs
       "browser.uidensity" = 1; # 0 = Normal, 1 = Compact, 2 = Touch UI
+
       # Workspace and Sidebar Mechanics
       "zen.view.compact-sidebar" = true; # Keeps the vertical sidebar narrow/icon-only by default
       "zen.view.hover-sidebar" = false; # Set to true if you want the sidebar 100% hidden until mouse hover
       "zen.workspaces.show-workspace-indicator" = true; # Keeps a subtle visual cue for your active context
+
       # Tab Behavior adjustments
-      "browser.tabs.closeWindowWithLastTab" = false; # Prevent Firefox from completely crashing out if you close the last active tab
+      "browser.tabs.closeWindowWithLastTab" = false; # Prevent Zen from completely crashing out if you close the last active tab
       "browser.tabs.loadInBackground" = true; # Prevent links you click from stealing focus away from your active view
-      "services.sync.engine.prefs" = true;
     };
 
     search = {
@@ -46,18 +46,13 @@
       };
     };
 
-    bookmarks = {
-      #     force = true;
-      #     settings = import ./bookmarks.nix;
-    };
+    bookmarks = {};
 
-    # Nested extensions block with local scoped variables
     extensions = {
       force = true;
       packages = with pkgs.nur.repos.rycee.firefox-addons; [
         ghostery
-        sidebery
-        onepassword-password-manager
+        onepassword-password-manager # Cleaner setup without Sidebery
       ];
     };
   };

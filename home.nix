@@ -22,6 +22,8 @@
     ./home/modules/editors/zed-rik.nix
     ./home/modules/browsers/firefox.nix
     ./home/modules/browsers/firefox-rik.nix
+    ./home/modules/browsers/zen.nix
+    ./home/modules/browsers/zen-rik.nix
     ./home/modules/productivity/office.nix
     ./home/modules/productivity/document-fonts.nix
     ./home/modules/productivity/thunderbird.nix
