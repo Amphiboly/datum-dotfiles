@@ -13,10 +13,6 @@
 
       # True Compact Mode: Tells Firefox to reduce paddings around the sidebar and tabs
       "browser.uidensity" = 1; # 0 = Normal, 1 = Compact, 2 = Touch UI
-      # Workspace and Sidebar Mechanics
-      "zen.view.compact-sidebar" = true; # Keeps the vertical sidebar narrow/icon-only by default
-      "zen.view.hover-sidebar" = false; # Set to true if you want the sidebar 100% hidden until mouse hover
-      "zen.workspaces.show-workspace-indicator" = true; # Keeps a subtle visual cue for your active context
       # Tab Behavior adjustments
       "browser.tabs.closeWindowWithLastTab" = false; # Prevent Firefox from completely crashing out if you close the last active tab
       "browser.tabs.loadInBackground" = true; # Prevent links you click from stealing focus away from your active view

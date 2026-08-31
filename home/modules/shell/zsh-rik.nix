@@ -14,6 +14,7 @@
       la = "eza --icons --color=auto --color-scale=all --icons=auto -la";
       ll = "eza --icons --color=auto --color-scale=all --icons=auto -ll";
       lm = "eza --icons --color=auto --color-scale=all --icons=auto -ll -s modified";
+      toggle-panel = "pkill -f 'kitty +kitten panel' || nohup kitty +kitten panel --edge=background btop > /dev/null 2>&1 &";
       tree = "eza --icons --tree";
       ffetch = "fastfetch -c all.jsonc";
       grep = "rg --color=auto";

@@ -18,7 +18,34 @@
     LIBVA_DRIVER_NAME = "iHD";
   };
 
-  # This machine's state version — belongs with host-identity files like
-  # this one, which will move under hosts/datum/ in a later pass.
+  # Use compressed virtual swap up to 6.08GB
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 38;
+  };
+
+  # Automatically set performance level based on battery/ac
+  services.auto-cpufreq = {
+    enable = true;
+    settings = {
+      charger = {
+        governor = "performance";
+        turbo = "auto";
+      };
+      battery = {
+        governor = "powersave";
+        turbo = "never";
+      };
+    };
+  };
+
+  # Auto-nice configurations
+  #  services.ananicy = {
+  #    enable = true;
+  #    package = pkgs.ananicy-cpp;
+  #  };
+
+  # This machine's state version
   system.stateVersion = "26.05";
 }

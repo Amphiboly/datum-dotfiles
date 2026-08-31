@@ -6,6 +6,7 @@
     #   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -58,7 +59,9 @@
     nixosConfigurations.datum = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {inherit inputs;};
-      modules = [./hosts/datum];
+      modules = [
+        ./hosts/datum
+      ];
     };
 
     # Standalone per-user configs: `home-manager switch --flake .#<user>`

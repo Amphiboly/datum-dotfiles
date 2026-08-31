@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # File: deploy.sh
+# 2026-08-30: Added _LABEL
 # 2026-08-13: Converted to use nh
 # 2026-08-07: Added rsync of secrets.dec.yaml
 # 2026-08-07: Removed z option from first rsync
@@ -56,7 +57,7 @@ echo "🚀 Switching live system tracks to new generation..."
 if [[ -z "$build_label" ]]; then
   nh os switch .
 else
-  NIXOS_LABEL="$build_label" nh os switch .
+  _LABEL="$build_label" nh os switch .
 fi
 
 # =========================================================================
