@@ -7,12 +7,10 @@
     mdbook
     naps2
     pandoc
-    (texlive.withPackages (ps:
-      with ps; [
-        scheme-infraonly
-        context
-        collection-luatex
-      ]))
+    # Real ConTeXt LMTX, fetched from upstream at build time -- see
+    # ../../../pkgs/context-lmtx for why this replaces texlive.context
+    # (frozen to TeX Live's yearly release) and how to update it.
+    (pkgs.callPackage ../../../pkgs/context-lmtx {})
     typst
     zathura
     zettlr

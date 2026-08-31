@@ -82,5 +82,9 @@
       rik = mkHome ./home.nix;
       guest = mkHome ./home-guest.nix;
     };
+
+    # `nix build .#context-lmtx` -- see pkgs/context-lmtx for what this is
+    # and how to update its pin when upstream ships a new ConTeXt.
+    packages.${system}.context-lmtx = pkgs.callPackage ./pkgs/context-lmtx {};
   };
 }
