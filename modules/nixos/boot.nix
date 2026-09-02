@@ -1,9 +1,5 @@
 # modules/nixos/boot.nix
-{
-  pkgs,
-  inputs,
-  ...
-}: {
+{pkgs, ...}: {
   boot = {
     # Forces your architecture to compile and track the absolute latest
     # stable upstream Linux release branch instead of standard LTS lines.
@@ -14,7 +10,7 @@
     # kernelPackages = pkgs.linuxPackages_latest;
 
     # Alternative option to track the optimized cachyos kernel
-    kernelPackages = inputs.nix-cachyos-kernel.legacyPackages.${pkgs.system}.linuxPackages-cachyos-latest-x86_64-v3;
+    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
 
     loader = {
       systemd-boot.enable = true;

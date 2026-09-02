@@ -6,7 +6,8 @@
     #   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel";
+    # /release (below) ensures precompiled kernel
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -42,6 +43,7 @@
 
   outputs = {
     nixpkgs,
+    nix-cachyos-kernel,
     home-manager,
     nur,
     zen-browser,
@@ -61,6 +63,11 @@
       specialArgs = {inherit inputs;};
       modules = [
         ./hosts/datum
+        {
+          nixpkgs.overlays = [
+            nix-cachyos-kernel.overlays.pinned
+          ];
+        }
       ];
     };
 
