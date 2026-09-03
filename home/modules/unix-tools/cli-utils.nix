@@ -23,6 +23,7 @@
     btop
     e2fsprogs
     file
+    gnumake
     tree
     unzip
     wget
