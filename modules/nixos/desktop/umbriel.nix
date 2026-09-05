@@ -11,6 +11,9 @@
 #
 # The Noctalia shell that runs on top of Umbriel is per-user, so it lives in
 # home/modules/desktop-integration/noctalia.nix rather than here.
+#
+# Should separate config files per user be needed for Umbriel this should be split
+# and part or all moved to home/modules/desktop-integration
 {
   inputs,
   pkgs,
@@ -21,5 +24,6 @@
   programs.umbriel = {
     enable = true;
     package = pkgs.umbriel;
+    settings = ../../../assets/umbriel.toml;
   };
 }
