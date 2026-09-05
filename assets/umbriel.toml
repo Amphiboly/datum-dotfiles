@@ -365,7 +365,7 @@ follows_mouse = true                            # Focus the pointer target after
 "Mod+Shift+C" = "window-center"
 "Mod+Ctrl+T" = "workspace-set-layout:toggle"
 "Mod+MouseMiddle" = "layout-scroll-drag"
-"Mod+Alt+K" = "keyboard-layout-next"
+# "Mod+Alt+K" = "keyboard-layout-next"
 
 # Submaps temporarily replace the active keybind layer and can nest. Entry
 # binds must not repeat. A table-form bind can run an action and then reset one
