@@ -44,6 +44,7 @@
     ../../modules/nixos/dropbox-sync.nix
     ../../modules/nixos/system-environment.nix
     ../../modules/nixos/fastfetch.nix
+    ../../modules/nixos/monitoring.nix
 
     # Users
     ../../modules/nixos/users/default.nix
