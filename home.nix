@@ -32,6 +32,7 @@
     ./home/modules/desktop-integration/onepassword.nix
     ./home/modules/desktop-integration/compose-key.nix
     ./home/modules/desktop-integration/wallpapers.nix
+    ./home/modules/desktop-integration/noctalia.nix
   ];
 
   home = {

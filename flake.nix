@@ -39,6 +39,19 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Noctalia desktop shell + its Umbriel compositor: an alternative to
+    # COSMIC. Umbriel is registered as a selectable session alongside COSMIC
+    # (see modules/nixos/desktop/umbriel.nix) rather than replacing it, so
+    # cosmic-greeter stays the login/lock PAM service pam_gaze is wired
+    # into (facial-auth.nix).
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    umbriel = {
+      url = "github:noctalia-dev/umbriel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

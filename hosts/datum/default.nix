@@ -51,11 +51,15 @@
     ../../modules/nixos/users/rik.nix
     ../../modules/nixos/users/guest.nix
 
-    # Desktop environment — choose one. Gnome was a stopgap for when Cosmic's
-    # heavy update cadence outran this laptop's rebuild speed; removed since
-    # it was never wanted on its own merits. Noctalia is the candidate for a
-    # real second option here, once its supporting infra is ready.
+    # Desktop environment. Gnome was a stopgap for when Cosmic's heavy update
+    # cadence outran this laptop's rebuild speed; removed since it was never
+    # wanted on its own merits. COSMIC remains the default DE and owns the
+    # login/lock greeter (cosmic-greeter), which is where facial-auth.nix's
+    # pam_gaze wiring lives. Umbriel (Noctalia's compositor) is added
+    # alongside it as a selectable session rather than a replacement, so
+    # trying it out doesn't touch the greeter or face auth.
     ../../modules/nixos/desktop/cosmic.nix
+    ../../modules/nixos/desktop/umbriel.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
     # For rebuild-free per-user switches, see flake.nix's homeConfigurations.
@@ -63,7 +67,11 @@
   ];
 
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [inputs.nur.overlays.default];
+  nixpkgs.overlays = [
+    inputs.nur.overlays.default
+    inputs.noctalia.overlays.default
+    inputs.umbriel.overlays.default
+  ];
 
   home-manager = {
     useGlobalPkgs = true;
