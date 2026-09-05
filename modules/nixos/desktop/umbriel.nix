@@ -9,11 +9,10 @@
 # needs no changes: it is wired to the cosmic-greeter PAM service, which
 # still fronts login and lock regardless of which session gets picked.
 #
-# The Noctalia shell that runs on top of Umbriel is per-user, so it lives in
-# home/modules/desktop-integration/noctalia.nix rather than here.
-#
-# Should separate config files per user be needed for Umbriel this should be split
-# and part or all moved to home/modules/desktop-integration
+# The Noctalia shell and Umbriel's own config.toml are both per-user, so they
+# live in home/modules/desktop-integration/{noctalia,umbriel}.nix rather than
+# here. programs.umbriel here only exposes enable/package/portalPackage --
+# there's no NixOS-level settings option to hang config on.
 {
   inputs,
   pkgs,
@@ -24,6 +23,5 @@
   programs.umbriel = {
     enable = true;
     package = pkgs.umbriel;
-    settings = ../../../assets/umbriel.toml;
   };
 }
