@@ -24,7 +24,7 @@
     };
 
     # added 2026-09-06
-    autosuggestions = {
+    autosuggestion = {
       enable = true;
       async = false;
     };
