@@ -24,10 +24,8 @@
     };
 
     # added 2026-09-06
-    autosuggestion = {
-      enable = true;
-      async = false;
-    };
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
 
     initContent = ''
       export FZF_DEFAULT_COMMAND="${pkgs.fd}/bin/fd --type f --hidden --strip-cwd-prefix"
@@ -82,6 +80,7 @@
           fastfetch_dynamic
 
           # added 2026-09-06
+          unset ZSH_AUTOSUGGEST_USE_ASYNC
           if [[ "$TERM" == "xterm-ghostty" || -n "$GHOSTTY_BIN_DIR" ]]; then
             export TERM=xterm-256color
           fi
