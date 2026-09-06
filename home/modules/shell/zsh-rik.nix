@@ -22,6 +22,13 @@
       ssh = "kitty +kitten ssh";
       ollama = "OLLAMA_NUM_PARALLEL=1 ollama";
     };
+
+    # added 2026-09-06
+    autosuggestions = {
+      enable = true;
+      async = false;
+    };
+
     initContent = ''
       export FZF_DEFAULT_COMMAND="${pkgs.fd}/bin/fd --type f --hidden --strip-cwd-prefix"
       export FZF_DEFAULT_OPTS="--height=60% --layout=reverse --border=rounded --prompt=\"  \" --pointer=\"  \" --preview-window=right:65%:wrap:border-left"
@@ -73,6 +80,15 @@
       if [[ -o interactive ]]; then
           alias fastfetch="fastfetch_dynamic"
           fastfetch_dynamic
+
+          # added 2026-09-06
+          if [[ "$TERM" == "xterm-ghostty" || -n "$GHOSTTY_BIN_DIR" ]]; then
+            export TERM=xterm-256color
+          fi
+          if [[ -n "$KITTY_PID" || -n "$KITTY_WINDOW_ID" ]]; then
+            export KITTY_SHELL_INTEGRATION=none
+          fi
+
       fi
 
       # Commented out 2026-08-24 -- kitty should be sufficient
