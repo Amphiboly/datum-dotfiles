@@ -215,7 +215,8 @@ track_layout = "global"                         # global, or window for per-surf
 
 [input.touchpad]
 tap = true                                      # Tap-to-click
-natural_scroll = true                         # Omit to preserve the libinput default
+# next set true by rik 2026-06-05
+natural_scroll = true                           # Omit to preserve the libinput default
 # accel_profile = "adaptive"                    # flat, adaptive, or custom <step> <points...>
 # sensitivity = 0.5                             # Pointer speed, -1.0 to 1.0
 # scroll_factor = 1.5                           # Two-finger scroll multiplier, 0.1-10.0
@@ -304,6 +305,7 @@ follows_mouse = true                            # Focus the pointer target after
 
 # Overview
 "Mod+O" = { action = "overview-toggle", repeat = false }
+"Mod+Shift+O" = "cheatsheet-toggle" # added by rik 2026-06-06
 
 # These useful bindings are built in already. They stay commented here so an
 # included keybind file can override them without this main file winning again.

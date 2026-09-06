@@ -19,6 +19,7 @@
       ffetch = "fastfetch -c all.jsonc";
       grep = "rg --color=auto";
       diff = "diff --color=auto";
+      ssh = "kitty +kitten ssh";
       ollama = "OLLAMA_NUM_PARALLEL=1 ollama";
     };
     initContent = ''
