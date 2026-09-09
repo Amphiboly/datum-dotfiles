@@ -19,3 +19,4 @@ rsync -auv \
   ../secrets.dec.yaml "rik@${NOSTRUM_IP}:~/Projects/datum/secrets.dec.yaml"  
 
 echo "✓ Synchronization complete! Repositories are in a perfect 1:1 state."
+echo "  But once these changes are pushed, please do a git pull from nostrum."
