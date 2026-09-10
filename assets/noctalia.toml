@@ -63,14 +63,14 @@ widget_order = [ "lockscreen-login-box@Virtual-1" ]
         show_caps_lock = true
         show_keyboard_layout = true
         show_login_button = true
-        show_password_hint = true
+        # unknown setting show_password_hint = true
 
 [shell]
 corner_radius_scale = 0.2500000037252903
 font_family = "JetBrainsMonoNL NFP Medium"
 settings_show_advanced = true
 telemetry_enabled = true
-ui_scale = 0.7500000037252903
+# unknown setting ui_scale = 0.7500000037252903
 
     [shell.animation]
     enabled = false
@@ -102,7 +102,7 @@ directory = "/home/rik/Pictures/wallpapers"
 [weather]
 unit = "imperial"
 
-[widget.weather]
-latitude = 42.192999999999998
-longitude = -73.358999999999995
-name = "Great Barrington, MA, USA"
+#[widget.weather]
+# unknown setting latitude = 42.192999999999998
+# unknown setting longitude = -73.358999999999995
+# unknown setting name = "Great Barrington, MA, USA"

@@ -417,8 +417,8 @@ bottom = 0
 # direction = "horizontal"                      # horizontal or vertical strip axis
 default_width_fraction = 0.5                    # Initial width for new columns, 0.1-1.0
 center_underfull_strip = true                   # Center a strip narrower than the viewport
-center_focused = false                          # Always center the focused column
-expand_single_column = true                     # Let a lone column fill the viewport
+center_focused = "never"                        # Always center the focused column if true
+# invalid with newer version expand_single_column = true                     # Let a lone column fill the viewport
 
 [layout.dwindle]
 # preserve_split = false                        # Keep every split direction fixed after creation
