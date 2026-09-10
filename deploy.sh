@@ -49,16 +49,9 @@ rm -f ./result
 # =========================================================================
 # 4. Switch Live System Generations Natively via nh
 # =========================================================================
-echo "📝 Enter a descriptive boot label message."
-read -rp "   or press  Enter  for standard grub generation label: " build_label </dev/tty
-
 echo "🚀 Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
-if [[ -z "$build_label" ]]; then
-  nh os switch .
-else
-  _LABEL="$build_label" nh os switch .
-fi
+nh os switch .
 
 # =========================================================================
 # 5. Storage Profile Management
