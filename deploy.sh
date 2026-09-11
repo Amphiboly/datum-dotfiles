@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # File: deploy.sh
+# 2026-09-11: Removed _LABEL processing, removed most emojis,  minor cleanups
 # 2026-08-30: Added _LABEL
 # 2026-08-13: Converted to use nh
 # 2026-08-07: Added rsync of secrets.dec.yaml
@@ -13,15 +14,15 @@ set -euo pipefail
 # =========================================================================
 NOSTRUM_IP="192.168.5.58"
 
-echo "🎨 NixOS Workstation Deployment Engine Triggered..."
+echo "NixOS Workstation Deployment Engine Triggered..."
 echo "=================================================="
 
 # =========================================================================
 # 2. Update Flake Inputs
 # =========================================================================
-read -rp "🔄 Check for upstream package updates? (y/N): " check_updates </dev/tty
+read -rp "Check for upstream package updates? (y/N): " check_updates </dev/tty
 if [[ "$check_updates" =~ ^[Yy]$ ]]; then
-    echo "⚡ Refreshing upstream flake input hashes..."
+    echo "Refreshing upstream flake input hashes..."
     # nh 4.x dropped the standalone `flake` subcommand — input updates are now
     # a flag on `nh os build/switch` (-u/--update) rather than a separate
     # lock-file-only action, so we call plain `nix flake update` here instead.
@@ -31,7 +32,7 @@ fi
 # =========================================================================
 # 3. Dry-Run Environment Mapping
 # =========================================================================
-echo "📦 Generating dry-run system environment preview mapping..."
+echo "Generating dry-run system environment preview mapping..."
 nh os build
 
 if command -v nvd &> /dev/null; then
@@ -49,34 +50,42 @@ rm -f ./result
 # =========================================================================
 # 4. Switch Live System Generations Natively via nh
 # =========================================================================
-echo "🚀 Switching live system tracks to new generation..."
+echo "Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
 nh os switch .
 
 # =========================================================================
 # 5. Storage Profile Management
 # =========================================================================
-echo -e "\n🧹 STORAGE CLEANUP SUITE"
+echo -e "\nSTORAGE CLEANUP SUITE"
 echo "--------------------------------------------------"
-read -rp "🗑️  Purge obsolete configurations? (y/N): " clean_old </dev/tty
+read -rp "Purge obsolete configurations? (y/N): " clean_old </dev/tty
 if [[ "$clean_old" =~ ^[Yy]$ ]]; then
-    echo "♻️  Garbage collecting loose profiles and historical links..."
+    echo "Garbage collecting loose profiles and historical links..."
     nh clean all --keep 5
 fi
 
 # =========================================================================
 # 6. Remote Repository Mirror Array
 # =========================================================================
-echo -e "\n📡 NOSTRUM REPOSITORY MIRROR"
+echo -e "\nNOSTRUM REPOSITORY MIRROR"
 echo "--------------------------------------------------"
-read -rp "📤 Sync validated files to nostrum (Fedora)? (y/N): " sync_fedora </dev/tty
-if [[ "$sync_fedora" =~ ^[Yy]$ ]]; then
-    echo "🚀 Mirroring repository across secure network lanes..."
-    rsync -av --delete --exclude='.git/' --exclude='result*' --exclude='*.backup' --exclude='secrets.yaml' ./ "rik@${NOSTRUM_IP}:~/Projects/datum/datum-config/"
-    rsync -auv ../secrets.dec.yaml "rik@${NOSTRUM_IP}:~/Projects/datum/secrets.dec.yaml"
-    echo "✓ Synchronization complete!"
+read -rp "Sync validated files to nostrum? (y/N): " sync_nostrum </dev/tty
+if [[ "$sync_nostrum" =~ ^[Yy]$ ]]; then
+    echo "Mirroring repository across secure network lanes..."
+    rsync -av --delete \
+      --exclude='.git/' \
+      --exclude='result*' \
+      --exclude='*.backup' \
+      --exclude='secrets.yaml' \
+      ./ "rik@${NOSTRUM_IP}:~/Projects/datum/datum-config/"
+    rsync -auv \
+      ../secrets.dec.yaml "rik@${NOSTRUM_IP}:~/Projects/datum/secrets.dec.yaml"
+    echo "Synchronization complete!"
+    echo "But once these changes are pushed, please do a git pull from nostrum."
 else
-    echo "⏭️  Skipping Fedora sync pass."
+    echo "Skipping nostrum sync pass."
 fi
 
-echo -e "\n✨ All systems fully deployed and verified operational! ✨"
+echo -e "\nAll systems fully deployed and verified operational!"
+echo    " Remember to commit and push the changes!"
