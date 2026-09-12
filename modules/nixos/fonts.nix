@@ -3,11 +3,12 @@
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
-      nerd-fonts.jetbrains-mono
       cascadia-code
+      dejavu_fonts
+      intel-one-mono
+      nerd-fonts.jetbrains-mono
       noto-fonts
       noto-fonts-cjk-sans
-      dejavu_fonts
       (stdenv.mkDerivation {
         pname = "unifrakturmaguntia";
         version = "2017-03-19";
