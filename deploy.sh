@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # File: deploy.sh
+# 2026-09-12: Added optional fwupd firmware update check/apply step
 # 2026-09-11: Removed _LABEL processing, removed most emojis,  minor cleanups
 # 2026-08-30: Added _LABEL
 # 2026-08-13: Converted to use nh
@@ -44,9 +45,6 @@ else
     echo "⚠️ Warning: 'nvd' package not found in paths. Skipping diff tables."
 fi
 
-# Clean up local dry-run symlink cleanly right after the comparison pass
-rm -f ./result
-
 # =========================================================================
 # 4. Switch Live System Generations Natively via nh
 # =========================================================================
@@ -54,8 +52,47 @@ echo "Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
 nh os switch .
 
+# ./result is left alone until the switch above has actually succeeded. It's
+# the only GC root for whatever this dry-run just built (freshly-fetched
+# rolling-upstream packages like context-lmtx included) until the new
+# generation itself is durably registered. Deleting it right after the diff,
+# before switch confirms the generation, left a window where a build that
+# only just got fetched+verified could be swept by an unrelated `nix store
+# gc` before anything else pinned it -- forcing a refetch (and, for a rolling
+# upstream with no dated releases, a fresh hash mismatch) on the next
+# unrelated update, with no local edit to explain why.
+rm -f ./result
+
 # =========================================================================
-# 5. Storage Profile Management
+# 5. Firmware Update Check (fwupd/LVFS)
+# =========================================================================
+echo -e "\nFIRMWARE UPDATE CHECK"
+echo "--------------------------------------------------"
+if command -v fwupdmgr &> /dev/null; then
+    read -rp "Check for UEFI/device firmware updates? (y/N): " check_firmware </dev/tty
+    if [[ "$check_firmware" =~ ^[Yy]$ ]]; then
+        echo "Refreshing firmware metadata from LVFS..."
+        fwupdmgr refresh || echo "Metadata refresh failed (offline?) — continuing with cached data."
+
+        # get-updates exits non-zero when there's simply nothing to install;
+        # don't let that trip set -e.
+        if fwupdmgr get-updates; then
+            read -rp "Apply available firmware updates now? (y/N): " apply_firmware </dev/tty
+            if [[ "$apply_firmware" =~ ^[Yy]$ ]]; then
+                echo "Applying firmware updates. Some devices (notably UEFI/BIOS) will require a reboot to complete."
+                fwupdmgr update
+            fi
+        else
+            echo "No firmware updates available."
+        fi
+    fi
+else
+    echo "fwupdmgr not found on PATH — nothing to check yet."
+    echo "(services.fwupd.enable needs a rebuild before this step does anything.)"
+fi
+
+# =========================================================================
+# 6. Storage Profile Management
 # =========================================================================
 echo -e "\nSTORAGE CLEANUP SUITE"
 echo "--------------------------------------------------"
@@ -66,7 +103,7 @@ if [[ "$clean_old" =~ ^[Yy]$ ]]; then
 fi
 
 # =========================================================================
-# 6. Remote Repository Mirror Array
+# 7. Remote Repository Mirror Array
 # =========================================================================
 echo -e "\nNOSTRUM REPOSITORY MIRROR"
 echo "--------------------------------------------------"
