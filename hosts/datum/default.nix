@@ -26,6 +26,7 @@
     # Core system modules
     ../../modules/nixos/secrets.nix
     ../../modules/nixos/boot.nix
+    ../../modules/nixos/firmware.nix
     ../../modules/nixos/networking.nix
     ../../modules/nixos/bluetooth.nix
     ../../modules/nixos/backups.nix
