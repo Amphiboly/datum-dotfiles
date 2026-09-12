@@ -54,12 +54,11 @@
 }: let
   raw = stdenv.mkDerivation {
     pname = "context-lmtx-raw";
-    version = "2026-09-07";
+    version = "2026-09-10";
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-SqNcavt29BHv8lf1DSE1O3APR3XXB7scLgsWVDty93Y=";
-
+    outputHash = "sha256-5QtgiyUp4rln7e1ZDCYedMPzQ5RtFM9UZA4XeeO5Gqg=";
     nativeBuildInputs = [autoPatchelfHook curl cacert unzip];
 
     dontUnpack = true;
