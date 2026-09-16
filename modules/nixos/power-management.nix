@@ -1,4 +1,13 @@
 # modules/nixos/power-management.nix
+#
+# Noctalia's NixOS module offers `programs.noctalia.recommendedServices`,
+# which turns on NetworkManager, Bluetooth, UPower, and power-profiles-daemon
+# in one go. Deliberately not used: NetworkManager/Bluetooth/UPower are
+# already handled by networking.nix/bluetooth.nix (and UPower transitively),
+# and recommendedServices would re-enable power-profiles-daemon, fighting
+# TLP for control of the CPU governor below. inputs.noctalia.nixosModules
+# stays unimported system-wide for this reason -- Noctalia here is purely the
+# per-user Home Manager shell (see home/modules/desktop-integration/).
 _: {
   # Block the default desktop power module to clear system locks
   services.power-profiles-daemon.enable = false;
