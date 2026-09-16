@@ -44,10 +44,17 @@
     # (see modules/nixos/desktop/umbriel.nix) rather than replacing it, so
     # cosmic-greeter stays the login/lock PAM service pam_gaze is wired
     # into (facial-auth.nix).
-    noctalia = {
-      url = "github:noctalia-dev/noctalia";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    #
+    # Pinned to the `cachix` branch (not `main`) and deliberately NOT
+    # following our nixpkgs: per docs.noctalia.dev/noctalia/getting-started/
+    # nixos, overriding any of Noctalia's inputs -- inputs.nixpkgs.follows
+    # included -- changes the derivation hash and misses noctalia.cachix.org
+    # entirely, forcing a from-source Qt/QML rebuild on every change. The
+    # `cachix` branch always points at the latest commit CI has actually
+    # finished caching, so this pin trades one extra nixpkgs copy (fetched
+    # under a different store path from our own) for guaranteed prebuilt
+    # binaries. The substituter + key are in modules/nixos/nix-settings.nix.
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
     umbriel = {
       url = "github:noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs";

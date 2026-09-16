@@ -24,6 +24,10 @@ _: {
       "https://cosmic.cachix.org"
       # lantian is for the cachyos kernel only
       "https://attic.xuyh0120.win/lantian"
+      # Noctalia (desktop shell): only hits if flake.nix's noctalia input
+      # stays on the `cachix` branch with no follows override -- see the
+      # comment there.
+      "https://noctalia.cachix.org"
     ];
 
     # Public keys used to verify downloaded binaries
@@ -31,6 +35,7 @@ _: {
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "cosmic.cachix.org-1:Dya9IyXD4xdBehWjrkPv6rtxpmMdRel02smYzA85dPE="
       "lantian:EeAUQ+W+6r7EtwnmYjeVwx5kOGEBpjlBfPlzGlTNvHc="
+      "noctalia.cachix.org-1:pCOR47nnMEo5thcxNDtzWpOxNFQsBRglJzxWPp3dkU4="
     ]; # Establish the immutable global public keys needed to verify downloads
 
     # Secure administrative parameters to ensure smooth transitions
