@@ -9,6 +9,10 @@ _: {
     ./home/modules/terminal/kitty.nix
     ./home/modules/terminal/kitty-guest.nix
     ./home/modules/browsers/firefox.nix
+    ./home/modules/desktop-integration/wallpapers.nix
+    ./home/modules/desktop-integration/noctalia.nix
+    ./home/modules/desktop-integration/noctalia-guest.nix
+    ./home/modules/desktop-integration/umbriel-guest.nix
   ];
 
   home = {

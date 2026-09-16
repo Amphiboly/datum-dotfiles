@@ -33,7 +33,8 @@
     ./home/modules/desktop-integration/compose-key.nix
     ./home/modules/desktop-integration/wallpapers.nix
     ./home/modules/desktop-integration/noctalia.nix
-    ./home/modules/desktop-integration/umbriel.nix
+    ./home/modules/desktop-integration/noctalia-rik.nix
+    ./home/modules/desktop-integration/umbriel-rik.nix
   ];
 
   home = {
