@@ -12,6 +12,17 @@ _: {
   # Block the default desktop power module to clear system locks
   services.power-profiles-daemon.enable = false;
 
+  # As of the 2026-09-16 nixpkgs bump, services.desktopManager.cosmic sets
+  # `hardware.system76.power-daemon.enable = mkDefault (!power-profiles-daemon
+  # && !tuned)`, on the assumption that without one of those two you must
+  # want system76-power as the org.freedesktop.UPower.PowerProfiles provider.
+  # It doesn't know about TLP's own `pd.enable` shim below, which already
+  # claims that D-Bus name -- so system76-power crash-loops fighting TLP for
+  # it, and it's actively wrong hardware detection anyway (this is an HP, not
+  # a System76 machine; "does not have switchable graphics" in its own log).
+  # `mkDefault` means a plain assignment here wins over it.
+  hardware.system76.power-daemon.enable = false;
+
   # Enable the core TLP configuration profile
   services.tlp = {
     enable = true;

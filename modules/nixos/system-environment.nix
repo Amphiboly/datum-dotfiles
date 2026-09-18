@@ -11,14 +11,16 @@
   };
 
   environment.systemPackages = with pkgs; [
-    wl-clipboard # native wayland clipboard manager
+    bind.dnsutils
+    cifs-utils # mount helper binaries required by your windows smb share
+    comma
     curl
     git
     home-manager
-    cifs-utils # mount helper binaries required by your windows smb share
-    tailscale # client cli companion for your mesh vpn daemon
+    rclone
     rustic
-    comma
+    tailscale # client cli companion for your mesh vpn daemon
     v4l-utils # camera debugging; face auth itself comes from facial-auth.nix
+    wl-clipboard # native wayland clipboard manager
   ];
 }

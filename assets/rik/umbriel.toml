@@ -1,5 +1,10 @@
-# Umbriel configuration
-# Copied from Umbriel example configuration, q.v. for detailed comments
+# ────────────────────────────────────────────────────────────────────────────
+# Umbriel example configuration
+
+# Distribution packages normally install this file as
+# /usr/share/umbriel/config.toml. Copy it to ~/.config/umbriel/config.toml
+# before making personal changes. Creating the user file and saving later edits
+# both apply live, so a logout is not needed.
 
 # Validate the standard config without starting or disturbing the compositor:
 #   umbriel validate
@@ -9,14 +14,20 @@
 # Complete documentation: https://docs.noctalia.dev/umbriel/
 
 # ─────────────────────────────── Includes ───────────────────────────────────
-# Split large configurations into smaller files. Included files are applied in
-# list order, then values in this main file take precedence over every include.
-# Relative paths start from the directory containing this file.
+# Split large configurations into smaller files. Required files are applied in
+# list order, followed by optional files, then values in this main file.
+# Missing optional files are silently ignored and remain watched. Relative
+# paths start from the directory containing this file. Rule lists such as
+# [[window_rule]] collect entries from every file; any other value is replaced
+# by the last file that sets it.
 # Documentation: https://docs.noctalia.dev/umbriel/configuration/#include
 # ────────────────────────────────────────────────────────────────────────────
 
 [include]
-files = []                                      # Example: ["noctalia.toml", "outputs.toml"]
+files = []                                      # Example: ["appearance.toml", "outputs.toml"]
+
+[include.optional]
+files = []                                      # Example: ["~/.config/umbriel/noctalia.toml"]
 
 # ─────────────────────────────── General ────────────────────────────────────
 # Configure startup commands, session behavior, environment variables, and
@@ -32,14 +43,23 @@ show_cheatsheet = true                          # Show the keybind overlay on st
 focus_on_activate = false                       # Do not let unsolicited requests steal focus
 honor_restored_maximize = false                 # Honor restored maximized state
 
+# Native GPU exclusions
+# Changes require a restart. Use a PCI address if the GPU may start bound to vfio-pci.
+# Device paths must resolve at startup or Umbriel refuses to start.
+# Documentation: https://docs.noctalia.dev/umbriel/configuration/#drm-devices
+# [drm]
+# ignored_devices = ["/dev/dri/by-path/pci-0000:01:00.0-card"]
+# ignored_pci_addresses = ["0000:01:00.0"]
+
 # Session environment
-# Values apply only at session startup. Native sessions also publish them to
-# newly started systemd user services. Add or uncomment values as needed.
+# Native launcher sessions first load the user's supported login profile.
+# Values here override inherited values and are published to new systemd user
+# services. They apply only at session startup. Add or uncomment as needed.
 # Documentation: https://docs.noctalia.dev/umbriel/configuration/#environment
 
 [environment]
-# GTK_THEME = "Adwaita:dark"
-# QT_QPA_PLATFORMTHEME = "qt5ct"
+# ELECTRON_OZONE_PLATFORM_HINT = "auto"
+# SDL_VIDEODRIVER = "wayland"
 
 # Hardware events
 # These commands run when a laptop lid opens or closes. Uncomment either hook
@@ -73,7 +93,8 @@ honor_restored_maximize = false                 # Honor restored maximized state
 # direct_scanout = true                         # False forces composition on this output
 # hdr = "auto"                                  # off, on, auto, or fullscreen
 # sdr_white = 203                               # SDR reference white in cd/m2 during HDR
-# workspaces = 5                                # Omit for dynamic workspaces
+# workspaces = 5                                # Anonymous fixed positions; omit for dynamic
+# workspace_axis = "horizontal"                 # vertical or horizontal workspace arrangement
 
 [output.eDP-1]
 enabled = true                                  # False removes the output but preserves its state
@@ -87,6 +108,7 @@ direct_scanout = true                           # False forces composition on th
 hdr = "off"                                     # off, on, auto, or fullscreen
 sdr_white = 203                                 # SDR reference white in cd/m2 during HDR
 workspaces = 5                                  # Omit for dynamic workspaces
+workspace_axis = "vertical"                     # vertical or horizontal workspace arrangement
 
 # Replace the count with ["WEB", "CHAT", "MEDIA"] for named static workspaces,
 # or with "dynamic" to state the dynamic default explicitly. A dynamic output
@@ -98,7 +120,7 @@ workspaces = 5                                  # Omit for dynamic workspaces
 # affects new columns only; existing columns keep their current size.
 # Documentation: https://docs.noctalia.dev/umbriel/outputs/#initial-scrolling-width
 # [output.DP-1.layout.scrolling]
-# default_width_fraction = 0.4
+# default_extent_fraction = 0.4
 
 # ────────────────────────────── Workspaces ──────────────────────────────────
 # Choose global workspace behavior. Each output uses dynamic workspaces unless
@@ -107,13 +129,16 @@ workspaces = 5                                  # Omit for dynamic workspaces
 # ────────────────────────────────────────────────────────────────────────────
 
 [workspaces]
+# Each output supports at most 64 workspaces, including empty ones.
 back_and_forth = false                          # Re-select active workspace to switch back
+# next set true by rik 2026-06-05
 empty_above = true                              # Keep one empty workspace above active range
 
-# Workspace rules customize layout without creating workspaces. Select exactly
-# one `index` or `name`; `output` is optional. This recipe works with dynamic
-# inventories and static inventories that contain workspace 2. Uncomment the
-# complete block.
+# Workspace entries customize layout. An `index` follows the current position
+# without creating a workspace. A `name` also materializes a persistent named
+# member on matching dynamic outputs. On a static output, the rule applies only
+# when that inventory already has the selected member. Select exactly one, and
+# optionally scope by `output`.
 # Documentation: https://docs.noctalia.dev/umbriel/workspaces/#workspace-rules
 
 # [[workspace]]
@@ -125,12 +150,12 @@ empty_above = true                              # Keep one empty workspace above
 # layout.scrolling.center_underfull_strip = false
 # layout.dwindle.preserve_split = true
 
-# A name selector must exist in a static output inventory, for example
-# `workspaces = ["WEB", "CHAT"]` in the matching output block.
+# Without `output`, every dynamic output gets its own case-sensitive CHAT
+# workspace. Add `output = "DP-1"` to materialize it only there. A numeric
+# string such as name = "2" remains distinct from index = 2.
 
 # [[workspace]]
 # name = "CHAT"
-# output = "DP-1"
 # layout.mode = "master"
 
 # ─────────────────────────────── Colors ─────────────────────────────────────
@@ -189,6 +214,8 @@ contrast = 0.9                                  # 0.0-2.0
 saturation = 1.1                                # 0.0-2.0
 
 [appearance.shadow]
+# Custom window shaders automatically shape the shadow from their output alpha.
+# Shadows stay beneath windows and follow closing snapshots as well.
 enabled = true                                  # Draw shadows behind non-fullscreen windows
 softness = 10                                   # Gaussian softness, 0-200; 0 is a hard edge
 offset_x = 2                                    # Horizontal offset, -200 to 200
@@ -220,14 +247,18 @@ natural_scroll = true                           # Omit to preserve the libinput 
 # accel_profile = "adaptive"                    # flat, adaptive, or custom <step> <points...>
 # sensitivity = 0.5                             # Pointer speed, -1.0 to 1.0
 # scroll_factor = 1.5                           # Two-finger scroll multiplier, 0.1-10.0
+# scroll_factor = { horizontal = 2.0, vertical = 1.5 }   # or per axis instead of the line above, 0.1-10.0
 # disable_while_typing = true                   # Omit to preserve the libinput default
 # disable_on_external_mouse = true              # Native sessions only
+# click_method = "clickfinger"                  # button_areas or clickfinger; omit for the device default
 
 [input.mouse]
 # natural_scroll = false                        # Omit to preserve the libinput default
 # accel_profile = "flat"                        # Omit to preserve the libinput default
 sensitivity = 0.0                               # Pointer speed, -1.0 to 1.0
 scroll_wheel_step = 60                          # Logical pixels per layout-scroll action, 1-1000
+# scroll_button = "MouseBack"                   # Hold to scroll with pointer motion; omit to leave the device alone
+# scroll_button_lock = false                    # One press latches scrolling instead of holding
 
 [input.tablet]
 enabled = true                                  # False disables tablet tools and pads
@@ -246,7 +277,7 @@ hide_when_typing = false                        # Keep visible while typing
 hide_timeout_ms = 0                             # Idle hide timeout, 0 disables; maximum is 3600000
 
 [input.focus]
-follows_mouse = true                            # Focus the pointer target after pointer motion
+follows_mouse = false                           # Focus on motion after scene changes, client fullscreen exits, and closes
 # Refuse hover focus when revealing a window would scroll farther than this
 # many viewport widths. Omit the key for no limit.
 # follows_mouse_max_scroll = 0.5
@@ -269,15 +300,36 @@ follows_mouse = true                            # Focus the pointer target after
 # accel_profile = "flat"
 # sensitivity = 0.0
 # disable_while_typing = false
+# click_method = "clickfinger"
 
 # [[input.device]]
 # name = "Acme Gaming Mouse"
 # accel_profile = "flat"
 # sensitivity = 0.0
+# scroll_button = "MouseBack"
+# scroll_button_lock = false
+
+# ────────────────────────────── Scratchpads ─────────────────────────────────
+# With no entries below, Umbriel creates one implicit scratchpad named
+# `default`, and bare scratchpad actions select it. Defining any named
+# scratchpad disables that implicit default and requires a name suffix on every
+# scratchpad action. Names must be unique, and `default` is reserved.
+# Documentation: https://docs.noctalia.dev/umbriel/scratchpads/
+# ────────────────────────────────────────────────────────────────────────────
+
+# [[scratchpad]]
+# name = "terminal"
+
+# [[scratchpad]]
+# name = "music"
+
+# A `default_scratchpad` window rule can store new matching windows
+# automatically. Use "default" while the definitions above remain commented,
+# or an exact configured name after enabling named mode.
 
 # ─────────────────────────────── Keybinds ───────────────────────────────────
-# Bind chords to compositor actions. Configured chords replace matching
-# built-ins; built-in chords not mentioned here remain active.
+# Bind chords to compositor actions. A configuration file replaces the built-in
+# keybind set, so define every chord that should remain available.
 # Syntax: https://docs.noctalia.dev/umbriel/keybinds/
 # Actions: https://docs.noctalia.dev/umbriel/actions/
 # ────────────────────────────────────────────────────────────────────────────
@@ -293,9 +345,9 @@ follows_mouse = true                            # Focus the pointer target after
 # traverse stacks in the default horizontal layout. Bare Up/Down move between
 # workspace rows.
 "Mod+Left" = "window-focus-left"
+"Mod+Right" = "window-focus-right"
 "Mod+Down" = "window-focus-down"
 "Mod+Up" = "window-focus-up"
-"Mod+Right" = "window-focus-right"
 
 # Window state and layout
 "Mod+T" = "window-toggle-floating"
@@ -307,11 +359,14 @@ follows_mouse = true                            # Focus the pointer target after
 "Mod+O" = { action = "overview-toggle", repeat = false }
 "Mod+Shift+O" = "cheatsheet-toggle" # added by rik 2026-06-06
 
-# These useful bindings are built in already. They stay commented here so an
-# included keybind file can override them without this main file winning again.
-# Uncomment a chord only when this file should own that override.
+# Toggle layout, added by rik 20260917
+"Mod+F2" = "workspace-set-layout:toggle"
 
+# Common keybinds
 "Mod+Escape" = "session-quit"
+# Keep one escape binding available when a game or remote desktop client asks
+# Umbriel to pass ordinary compositor shortcuts through.
+"Mod+Shift+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
 "Mod+F1" = "window-focus-next"
 "Mod+H" = "window-focus-left"
 "Mod+J" = "window-focus-down"
@@ -321,64 +376,120 @@ follows_mouse = true                            # Focus the pointer target after
 "Mod+Shift+Down" = "window-move-down"
 "Mod+Shift+Up" = "window-move-up"
 "Mod+Shift+Right" = "column-move-right"
-"Mod+F" = "window-toggle-fullscreen"
+"Mod+F" = "window-toggle-fullscreen"             # Exit restores the previous layout size immediately
 "Mod+Ctrl+F" = "window-toggle-maximize"
-"Mod+R" = "window-cycle-width"
-"Mod+Shift+R" = "window-cycle-width-back"
+"Mod+R" = "window-cycle-primary-extent"
+"Mod+Shift+R" = "window-cycle-primary-extent-back"
 "Mod+Comma" = "window-consume-left"
 "Mod+Period" = "window-consume-right"
 "Mod+WheelUp" = "window-focus-left"
 "Mod+WheelDown" = "window-focus-right"
-# Mod+1 through Mod+9 switch workspaces. Adding Shift moves the focused window;
-# keypad digits provide the same built-in actions.
+
+# Workspaces. Bare digits are positions on the output under the pointer.
+"Mod+1" = "workspace-switch:1"
+"Mod+2" = "workspace-switch:2"
+"Mod+3" = "workspace-switch:3"
+"Mod+4" = "workspace-switch:4"
+"Mod+5" = "workspace-switch:5"
+"Mod+6" = "workspace-switch:6"
+"Mod+7" = "workspace-switch:7"
+"Mod+8" = "workspace-switch:8"
+"Mod+9" = "workspace-switch:9"
+"Mod+Shift+1" = "window-move-to-workspace:1"
+"Mod+Shift+2" = "window-move-to-workspace:2"
+"Mod+Shift+3" = "window-move-to-workspace:3"
+"Mod+Shift+4" = "window-move-to-workspace:4"
+"Mod+Shift+5" = "window-move-to-workspace:5"
+"Mod+Shift+6" = "window-move-to-workspace:6"
+"Mod+Shift+7" = "window-move-to-workspace:7"
+"Mod+Shift+8" = "window-move-to-workspace:8"
+"Mod+Shift+9" = "window-move-to-workspace:9"
+# Quote an all-digit name to distinguish it from a position.
+# "Mod+Ctrl+2" = 'workspace-switch:"2"/DP-2'
 
 # Scratchpads
-# Each output owns a separate scratchpad. Bare actions target the output under
-# the pointer; append `:DP-1` or a monitor Config name to target one explicitly.
+# These bare actions use the implicit `default` scratchpad because no named
+# definitions are active above. A scratchpad is global: toggling it summons all
+# its windows to the output under the pointer. Only outputs with a visible
+# scratchpad receive its dim and blur backdrop.
+# Resize, maximize, fullscreen, and close actions target a scratchpad that owns
+# keyboard focus. Layout-relative window actions leave the workspace behind it
+# unchanged.
+# Parented dialogs, including portal file choosers from another process, join a
+# visible parent window's scratchpad unless an explicit placement rule wins.
+# `window-focus:<window-id>` and `window-focus-warp:<window-id>` also summon a
+# hidden scratchpad target to the output under the pointer. The first form
+# follows `input.cursor.follows_focus`; the `-warp` form always moves the cursor.
 # Documentation: https://docs.noctalia.dev/umbriel/scratchpads/
 "Mod+Shift+Space" = "window-move-to-scratchpad"
 "Mod+Space" = "scratchpad-toggle"
 "Mod+Ctrl+Space" = "window-restore-from-scratchpad"
 "Mod+Tab" = "scratchpad-focus-next"
 
+# Named mode recipe: uncomment the definitions above, then replace the four
+# action values with named forms such as these. Every scratchpad action needs a
+# configured name once named mode is active.
+# "Mod+Shift+Space" = "window-move-to-scratchpad:terminal"
+# "Mod+Space" = "scratchpad-toggle:terminal"
+# "Mod+Ctrl+Space" = "window-restore-from-scratchpad:terminal"
+# "Mod+Tab" = "scratchpad-focus-next:terminal"
+# "Mod+Ctrl+Shift+M" = "window-toggle-scratchpad:music"
+# "Mod+Ctrl+M" = "scratchpad-toggle:music"
+
 # Optional navigation and sizing recipes. These chords do not replace active
 # bindings above when uncommented.
-"Mod+Page_Up" = "workspace-previous"
-"Mod+Page_Down" = "workspace-next"
-"Mod+Shift+Page_Up" = "window-move-to-workspace-previous"
-"Mod+Shift+Page_Down" = "window-move-to-workspace-next"
-"Mod+Home" = "column-focus-first"
-"Mod+End" = "column-focus-last"
-"Mod+Shift+Home" = "column-move-to-first"
-"Mod+Shift+End" = "column-move-to-last"
-"Mod+Bracketright" = "window-focus-next"
-"Mod+Bracketleft" = "window-focus-previous"
-"Mod+Shift+Bracketright" = "window-swap-next"
-"Mod+Shift+Bracketleft" = "window-swap-previous"
-"Mod+Minus" = "window-modify-width:-0.1"
-"Mod+Equal" = "window-modify-width:0.1"
-"Mod+Alt+Minus" = "window-modify-height:-0.1"
-"Mod+Alt+Equal" = "window-modify-height:0.1"
-"Mod+Alt+R" = "window-cycle-height"
-"Mod+Alt+Shift+R" = "window-cycle-height-back"
-"Mod+Grave" = "window-focus-last"
-"Mod+BackSpace" = "window-consume-or-expel-left"
-"Mod+C" = "column-center"
-"Mod+Shift+C" = "window-center"
-"Mod+Ctrl+T" = "workspace-set-layout:toggle"
-"Mod+MouseMiddle" = "layout-scroll-drag"
+# "Mod+Page_Up" = "workspace-previous"
+# "Mod+Page_Down" = "workspace-next"
+# "Mod+Shift+Page_Up" = "window-move-to-workspace-previous"
+# "Mod+Shift+Page_Down" = "window-move-to-workspace-next"
+# "Mod+Home" = "column-focus-first"
+# "Mod+End" = "column-focus-last"
+# "Mod+Shift+Home" = "column-move-to-first"
+# "Mod+Shift+End" = "column-move-to-last"
+# "Mod+Bracketright" = "window-focus-next"
+# "Mod+Bracketleft" = "window-focus-previous"
+# "Mod+Shift+Bracketright" = "window-swap-next"
+# "Mod+Shift+Bracketleft" = "window-swap-previous"
+# "Mod+Minus" = "window-modify-primary-extent:-0.1"
+# "Mod+Equal" = "window-modify-primary-extent:0.1"
+# "Mod+Alt+Minus" = "window-modify-secondary-extent:-0.1"
+# "Mod+Alt+Equal" = "window-modify-secondary-extent:0.1"
+# "Mod+Ctrl+H" = "window-modify-width-left:0.1"
+# "Mod+Ctrl+L" = "window-modify-width-right:0.1"
+# "Mod+Ctrl+K" = "window-modify-height-up:0.1"
+# "Mod+Ctrl+J" = "window-modify-height-down:0.1"
+# "Mod+Alt+R" = "window-cycle-secondary-extent"
+# "Mod+Alt+Shift+R" = "window-cycle-secondary-extent-back"
+# "Mod+Grave" = "window-focus-last"
+# "Mod+BackSpace" = "window-consume-or-expel-left"
+# "Mod+C" = "column-center"
+# "Mod+Shift+C" = "window-center"
+# "Mod+Ctrl+T" = "workspace-set-layout:toggle"
+# "Mod+MouseMiddle" = "layout-scroll-drag"
 # "Mod+Alt+K" = "keyboard-layout-next"
+# "Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 }
+# "Mod+WheelDown" = { action = "workspace-next", cooldown_ms = 150 }
+# "Mod+Alt+Left" = "workspace-swap-active-output-left"
+# "Mod+Alt+Right" = "workspace-swap-active-output-right"
+# "Mod+Alt+Up" = "workspace-swap-active-output-up"
+# "Mod+Alt+Down" = "workspace-swap-active-output-down"
+
+# The -next and -previous output actions wrap, so one bind each reaches the
+# other screen of a two-monitor setup.
+# "Mod+Tab" = "output-focus-next"
+# "Mod+Shift+Tab" = "window-move-to-output-next"
+# "Mod+Alt+Tab" = "workspace-swap-active-output-next"
 
 # Submaps temporarily replace the active keybind layer and can nest. Entry
 # binds must not repeat. A table-form bind can run an action and then reset one
 # level, while a global reset provides an emergency exit from any layer.
 # Submaps: https://docs.noctalia.dev/umbriel/keybinds/#submaps
 # "Mod+S" = { action = "submap:resize", repeat = false }
-# "submap[resize],1" = { action = "window-set-width:0.5", submap = "reset" }
+# "submap[resize],1" = { action = "window-set-primary-extent:0.5", submap = "reset" }
 # "submap[resize],N" = { action = "submap:nudge", repeat = false }
 # "submap[resize],Escape" = "submap:reset"
-# "submap[nudge],Left" = "window-modify-width:-0.1"
-# "submap[nudge],Right" = "window-modify-width:0.1"
+# "submap[nudge],Left" = "window-modify-primary-extent:-0.1"
+# "submap[nudge],Right" = "window-modify-primary-extent:0.1"
 # "submap[nudge],Escape" = "submap:reset"
 # "Escape" = "submap:reset"
 
@@ -403,7 +514,7 @@ follows_mouse = true                            # Focus the pointer target after
 [layout]
 mode = "scrolling"                              # scrolling, dwindle, or master
 gap = 8                                         # Logical pixels between tiles, 0-500
-width_presets = [0.333, 0.5, 0.667]             # Width and height cycling fractions
+extent_presets = [0.333, 0.5, 0.667]             # Primary and secondary extent fractions
 
 [layout.struts]
 # Signed logical pixels reserved after panel exclusive zones. Negative values
@@ -414,19 +525,21 @@ top = 0
 bottom = 0
 
 [layout.scrolling]
-# direction = "horizontal"                      # horizontal or vertical strip axis
-default_width_fraction = 0.5                    # Initial width for new columns, 0.1-1.0
+# The strip axis is perpendicular to the output's workspace_axis.
+default_extent_fraction = 0.5                   # Initial extent for new columns, 0.1-1.0
 center_underfull_strip = true                   # Center a strip narrower than the viewport
-center_focused = "never"                        # Always center the focused column if true
-# invalid with newer version expand_single_column = true                     # Let a lone column fill the viewport
+center_focused = "never"                        # never, always, or on_overflow
 
 [layout.dwindle]
 # preserve_split = false                        # Keep every split direction fixed after creation
+new_exits_fullscreen = false                    # Exits fullscreen when a new window is opened in the workspace
 
 [layout.master]
-position = "left"                               # left or right master area
+position = "left"                               # left, right, or center master area
 default_width_fraction = 0.55                   # Initial master area fraction, 0.1-0.9
 new_on_top = true                               # Put new windows at the top of the stack
+new_becomes_master = false                      # New windows take the master slot
+new_exits_fullscreen = false                    # Exits fullscreen when a new window is opened in the workspace
 
 # ───────────────────────────── Window Rules ─────────────────────────────────
 # Match windows by application ID, title, XDG tag, content type, or focus state.
@@ -444,13 +557,13 @@ blur_optimized = false
 [[window_rule]]
 match.app_id = "^dev.noctalia.Noctalia$"
 default_floating = true
-default_size = [1020, 900]
+default_floating_size_px = { width = 1020, height = 900 }
 
 # Noctalia share picker
 [[window_rule]]
 match.app_id = "^dev.noctalia.UmbrielSharePicker$"
 default_floating = true
-default_size = [800, 600]
+default_floating_size_px = { width = 800, height = 600 }
 
 # Browsers expose no semantic PiP role or global position control.
 [[window_rule]]
@@ -467,15 +580,40 @@ default_position = { x = 0, y = 0, anchor = "bottom_right" }
 default_focused = false
 default_pinned = true
 
-# Optional placement recipe. Output names follow the same rules as [output.*].
+# Optional positional placement recipe. Output names follow the same rules as
+# [output.*]. `default_output` scopes the workspace lookup to that output, and
+# integer workspace selectors are 1-based positions.
 
 # [[window_rule]]
-# match.app_id = "^org[.]example[.]Chat$"
+# match.app_id = "^org[.]example[.]Editor$"
 # default_output = "DP-1"
 # default_workspace = 2
 # default_focused = false
 
-# Open an application maximized while keeping its parented dialogs natural-sized.
+# A string workspace selector is an exact, case-sensitive name, so `"2"`
+# selects the workspace named `"2"` instead of position 2. The workspace can
+# come from a static name list or a name-based [[workspace]] entry on a dynamic
+# output. The window rule itself never creates a workspace.
+
+# [[window_rule]]
+# match.app_id = "^org[.]example[.]Chat$"
+# default_output = "DP-1"
+# default_workspace = "CHAT"
+# default_focused = false
+
+# Store a dedicated terminal in the named `terminal` scratchpad. Enable its
+# [[scratchpad]] definition above, then launch
+# `foot --app-id scratchpad-terminal`. The output and workspace remain
+# its restore destination.
+
+# [[window_rule]]
+# match.app_id = "^scratchpad-terminal$"
+# default_scratchpad = "terminal"
+# default_output = "DP-1"
+# default_workspace = 2
+# default_floating = true
+# default_floating_size = { width = 0.6, height = 0.5 }
+# default_position = { x = 0, y = 8, anchor = "top" }
 
 # [[window_rule]]
 # match.app_id = "^example-app$"
@@ -504,16 +642,14 @@ default_pinned = true
 
 # [[window_rule]]
 # match.app_id = "^org[.]example[.]Wide$"
-# default_size = [1200, 600]
+# default_scrolling_extent_px = 1200
 
-# Size a floating window as fractions of the usable area. `default_size` wins
-# on both axes if it is also present.
+# Size a floating window as fractions of the usable area.
 
 # [[window_rule]]
 # match.app_id = "^org[.]example[.]Utility$"
 # default_floating = true
-# default_width = 0.5
-# default_height = 0.6
+# default_floating_size = { width = 0.5, height = 0.6 }
 
 # Dynamic effects and output policies can be combined in one matching rule.
 
@@ -538,7 +674,8 @@ default_pinned = true
 # default_scrolling_column = "browsers"
 # default_scrolling_column_order = 10
 
-# Focus-aware rules update as focus changes.
+# State-aware rules update as focus, floating, pinned, and scratchpad state
+# change. Pinned and scratchpad windows are floating too.
 
 # [[window_rule]]
 # match.is_focused = false
@@ -547,6 +684,21 @@ default_pinned = true
 # [[window_rule]]
 # match.is_focused = true
 # opacity = 1.0
+
+# [[window_rule]]
+# match.is_floating = true
+# match.is_scratchpad = false
+# blur = false
+
+# Fill the viewport for a workspace's lone tiled column.
+# [[window_rule]]
+# match.is_alone = true
+# default_maximize = true
+
+# 75% width when the window is alone, the default width when another window opens.
+# [[window_rule]]
+# match.is_alone = true
+# default_scrolling_extent = 0.75
 
 # ────────────────────────────── Layer Rules ─────────────────────────────────
 # Match layer-shell surfaces such as panels, launchers, notifications, and
@@ -565,6 +717,12 @@ blur_optimized = false
 # Parent values provide defaults for every event table. Nested values override
 # only that event. Disable one event to make just that transition instant.
 # Documentation: https://docs.noctalia.dev/umbriel/animation/
+# Every event accepts shader = "path/to/effect.glsl". Inline GLSL is not supported.
+# File paths are relative to this config, including configs loaded via include.
+# Bundled reveal.glsl and squash.glsl can be referenced by their installed absolute paths.
+# Shaders can use umbriel_sample_previous(uv) for target-local feedback.
+# umbriel_random_seed is a stable vec4 that changes for each transition.
+# Copy examples/shaders beside your config only if you want editable local versions.
 # ────────────────────────────────────────────────────────────────────────────
 
 [animation]
@@ -579,6 +737,7 @@ duration_ms = 150
 curve = "easeout"
 style = "popin"                                 # popin, zoom, slide, fade, or none
 scale = 0.85                                    # Popin start scale, 0.1-1.0
+# shader = "shaders/reveal.glsl"      # Replaces the built-in opening style
 
 # Window closing
 [animation.windows_out]
@@ -586,12 +745,15 @@ enabled = true
 duration_ms = 150
 curve = "easeout"
 style = "fade"                                  # fade or slide
+# shader = "shaders/reveal.glsl"
 
-# Window movement, resizing, and floating maximize
+# Window movement, resizing, and floating maximize. Visible scratchpad keybind
+# resizing uses this event too.
 [animation.windows_move]
 enabled = true
 duration_ms = 250
 curve = "snappy"
+# shader = "shaders/squash.glsl"      # Subtle compression and settle during move/resize
 
 # Workspace switching
 [animation.workspaces]
@@ -599,11 +761,15 @@ enabled = true
 duration_ms = 250
 curve = "easeout"
 
-# Overview opening, closing, and row settling
+# Overview opening and closing
 [animation.overview]
 enabled = true
 duration_ms = 250
 curve = "easeout"
+# Filmstrip movement between workspace previews: wheel, keyboard, and touchpad
+# release alike. A spring curve keeps the release velocity; its final few pixels
+# stay monotonic on the logical layout grid.
+workspace_curve = "spring:1,1000"
 
 # Scratchpad show, hide, and backdrop
 [animation.scratchpad]
@@ -648,10 +814,13 @@ curve = "easeout"
 # Configure the all-workspaces overview and pointer-triggered corner actions.
 # Overview: https://docs.noctalia.dev/umbriel/workspaces-overview/
 # Hot corners: https://docs.noctalia.dev/umbriel/keybinds/#hot-corners
+# Corners pause only while the keyboard-focused window on their output is fullscreen.
 # ────────────────────────────────────────────────────────────────────────────
 
 [overview]
 zoom = 0.5                                      # Workspace scale in overview, 0.1-0.75
+scroll_factor_horizontal = 1.0                  # Overview gesture/wheel multiplier, left and right, 0.1-10.0
+scroll_factor_vertical = 1.0                    # Overview gesture/wheel multiplier, up and down, 0.1-10.0
 # Pinned windows stay hidden until overview closes; visible scratchpads are dismissed.
 # background_blur = true                        # Blur the wallpaper behind overview rows
 # workspace_wallpaper = true                    # Mirror wallpapers inside workspace previews

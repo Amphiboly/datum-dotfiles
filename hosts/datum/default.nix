@@ -77,6 +77,16 @@
     # on `package` in home/modules/desktop-integration/noctalia.nix, which
     # takes the package straight from inputs.noctalia.packages instead.
     inputs.umbriel.overlays.default
+
+    # TEMPORARY: nixpkgs removed the EOL `buildGo125Module` attribute, but
+    # sops-nix's own sops-install-secrets package (config.sops.package's
+    # default) still asks for it by name via callPackage, so evaluating
+    # system.activationScripts.setupSecrets throws "Go 1.25 is end-of-life".
+    # Not fixed upstream as of 2026-09-17: github.com/Mic92/sops-nix/issues/983
+    # (issue still open; workaround below confirmed by a sops-nix
+    # contributor in that thread). Remove once sops-nix points its Go
+    # builder at a supported version.
+    (_final: prev: {buildGo125Module = prev.buildGoModule;})
   ];
 
   home-manager = {
