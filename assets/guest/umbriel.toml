@@ -108,7 +108,7 @@ direct_scanout = true                           # False forces composition on th
 hdr = "off"                                     # off, on, auto, or fullscreen
 sdr_white = 203                                 # SDR reference white in cd/m2 during HDR
 workspaces = 5                                  # Omit for dynamic workspaces
-workspace_axis = "horizontal"                   # vertical or horizontal workspace arrangement
+workspace_axis = "vertical"                     # vertical or horizontal workspace arrangement
 
 # Replace the count with ["WEB", "CHAT", "MEDIA"] for named static workspaces,
 # or with "dynamic" to state the dynamic default explicitly. A dynamic output
@@ -248,7 +248,8 @@ natural_scroll = true                           # Omit to preserve the libinput 
 # sensitivity = 0.5                             # Pointer speed, -1.0 to 1.0
 # scroll_factor = 1.5                           # Two-finger scroll multiplier, 0.1-10.0
 # scroll_factor = { horizontal = 2.0, vertical = 1.5 }   # or per axis instead of the line above, 0.1-10.0
-# disable_while_typing = true                   # Omit to preserve the libinput default
+# next set true by rik 2026-09-18
+disable_while_typing = true                     # Omit to preserve the libinput default
 # disable_on_external_mouse = true              # Native sessions only
 # click_method = "clickfinger"                  # button_areas or clickfinger; omit for the device default
 
@@ -345,7 +346,7 @@ follows_mouse = false                           # Focus on motion after scene ch
 # traverse stacks in the default horizontal layout. Bare Up/Down move between
 # workspace rows.
 "Mod+Left" = "window-focus-left"
-"Mod+Right" = "window-focus-rigt"
+"Mod+Right" = "window-focus-right"
 "Mod+Down" = "window-focus-down"
 "Mod+Up" = "window-focus-up"
 
@@ -359,8 +360,8 @@ follows_mouse = false                           # Focus on motion after scene ch
 "Mod+O" = { action = "overview-toggle", repeat = false }
 "Mod+Shift+O" = "cheatsheet-toggle" # added by rik 2026-06-06
 
-# Toggle layout, added by rik 2026-09-17
-"Mod+F2" = "window-set-layout:toggle"
+# Toggle layout, added by rik 20260917
+"Mod+F2" = "workspace-set-layout:toggle"
 
 # Common keybinds
 "Mod+Escape" = "session-quit"
