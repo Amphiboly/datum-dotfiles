@@ -36,7 +36,8 @@
       bindkey '^?' backward-delete-char
       bindkey '^H' backward-delete-char
       bindkey '^w' backward-kill-word
-      bindkey '^r' history-incremental-search-backward
+      # Atuin replaces the following, left here in case atuin gets removed
+      # bindkey '^r' history-incremental-search-backward
 
       # ---------------------------------------------------------
       #   Custom Shell Functions & Initializations
