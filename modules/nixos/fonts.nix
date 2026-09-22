@@ -7,6 +7,7 @@
       dejavu_fonts
       intel-one-mono
       nerd-fonts.jetbrains-mono
+      nerd-fonts.lilex
       noto-fonts
       noto-fonts-cjk-sans
       (stdenv.mkDerivation {
