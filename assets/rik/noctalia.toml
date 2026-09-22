@@ -138,7 +138,7 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
 panel_open_near_click = false
 panel_placement = "floating"
 show_update_check_notification = true
-update_command = "cd /home/rik/Projects/datum/datum-config/ && ./deploy.sh"
+update_command = "cd /home/rik/Projects/datum/datum-config/ && ./deploy.sh --pause"
 
 [plugin_settings."mindnbytes/nix-status"]
 details_position = "center"

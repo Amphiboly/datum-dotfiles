@@ -10,6 +10,13 @@
 
 set -euo pipefail
 
+# Pause at the end is only useful for invokers whose terminal/panel would
+# otherwise vanish before the output can be read (e.g. the noctalia
+# nix-monitor widget's update_command). Interactive runs from an
+# already-open shell don't need it, so it's opt-in via --pause.
+PAUSE=0
+[[ "${1:-}" == "--pause" ]] && PAUSE=1
+
 # =========================================================================
 # 1. Establish structural network endpoints
 # =========================================================================
@@ -126,4 +133,6 @@ fi
 
 echo -e "\nAll systems fully deployed and verified operational!"
 echo    " Remember to commit and push the changes!"
-read -p "Press [Enter] to continue..."
+if [[ "$PAUSE" -eq 1 ]]; then
+    read -p "Press [Enter] to continue..." </dev/tty
+fi
