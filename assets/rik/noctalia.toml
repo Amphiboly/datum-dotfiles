@@ -1,35 +1,49 @@
-[bar.default]
-end = [
-    "group:g1",
-    "tray",
-    "notifications",
-    "clipboard",
-    "network",
-    "bluetooth",
-    "volume",
-    "brightness",
-    "battery",
-    "control-center",
-    "weather",
-    "session"
-]
-margin_edge = 6
-margin_ends = 10
-radius = 4
-scale = 1.0000000074505806
-shadow = false
-start = [ "launcher", "wallpaper", "workspaces", "taskbar" ]
-thickness = 25
+[bar]
+order = [ "default", "Nix" ]
 
-    [[bar.default.capsule_group]]
-    accordion = false
-    accordion_direction = "end"
+    [bar.Nix]
+    capsule = true
+    center = [ "status_2", "spacer_2", "nix_monitor_2" ]
+    concave_edge_corners = false
     enabled = true
-    fill = "surface_variant"
-    id = "g1"
-    members = [ "nix-monitor", "status", "media" ]
-    opacity = 1.0
-    padding = 6.0
+    end = []
+    margin_ends = 10
+    position = "bottom"
+    smart_auto_hide = true
+    start = []
+
+    [bar.default]
+    end = [
+        "group:g1",
+        "tray",
+        "notifications",
+        "clipboard",
+        "network",
+        "bluetooth",
+        "volume",
+        "brightness",
+        "battery",
+        "control-center",
+        "weather",
+        "session"
+    ]
+    margin_edge = 6
+    margin_ends = 10
+    radius = 4
+    scale = 1.0000000074505806
+    shadow = false
+    start = [ "launcher", "wallpaper", "workspaces", "taskbar" ]
+    thickness = 25
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        enabled = true
+        fill = "surface_variant"
+        id = "g1"
+        members = [ "media" ]
+        opacity = 1.0
+        padding = 6.0
 
 [desktop_widgets]
 schema_version = 2
@@ -177,5 +191,14 @@ unit = "imperial"
 [widget.nix-monitor]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
 
+[widget.nix_monitor_2]
+type = "avivbintangaringga/nix-monitor:nix-monitor"
+
+[widget.spacer_2]
+type = "spacer"
+
 [widget.status]
+type = "mindnbytes/nix-status:status"
+
+[widget.status_2]
 type = "mindnbytes/nix-status:status"

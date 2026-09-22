@@ -3,10 +3,11 @@
   home.packages = with pkgs; [
     # Shell tools
     bat
+    dust
     eza
     fastfetch
     ripgrep
-    dust
+    yazi
 
     # Nix utilities
     alejandra
