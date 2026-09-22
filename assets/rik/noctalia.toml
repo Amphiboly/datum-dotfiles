@@ -9,6 +9,7 @@ order = [ "default", "Nix" ]
     end = []
     margin_ends = 10
     position = "bottom"
+    reserve_space = false
     smart_auto_hide = true
     start = []
 
@@ -138,7 +139,7 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
 panel_open_near_click = false
 panel_placement = "floating"
 show_update_check_notification = true
-update_command = "cd /home/rik/Projects/datum/datum-config/ && ./deploy.sh --pause"
+update_command = "cd /home/rik/Projects/datum/datum-config/ && ./deploy.sh"
 
 [plugin_settings."mindnbytes/nix-status"]
 details_position = "center"
