@@ -148,7 +148,7 @@
       export RUSTIC_REPOSITORY="$DST"
       export RUSTIC_NON_INTERACTIVE=true
 
-      if rustic check --quick; then
+      if rustic check --read-data; then
         echo "Verified: SSD repository copy is healthy."
       else
         echo "Validation failed on the SSD copy." >&2
