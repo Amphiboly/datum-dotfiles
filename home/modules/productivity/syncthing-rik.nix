@@ -3,15 +3,10 @@
 # This user's actual Syncthing wiring: ~/Projects shared bidirectionally
 # with nostrum.
 #
-# nostrum's device ID below is a placeholder -- Syncthing isn't set up on
-# nostrum yet. Once it is, grab its ID from that machine's GUI (Actions >
-# Show ID) and replace the value; until then this folder just sits local
-# and unshared, since Syncthing rejects a malformed device ID rather than
-# failing the build.
 _: {
   services.syncthing.settings = {
     devices.nostrum = {
-      id = "REPLACE-WITH-NOSTRUMS-DEVICE-ID";
+      id = "YC3LO7V-H6HNGB5-NU2DKBE-KCJATID-MFOTKJO-AQZG6RU-HCBYG4P-RZ3J5QO";
     };
 
     folders.projects = {
