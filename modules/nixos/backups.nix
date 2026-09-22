@@ -37,6 +37,13 @@
   # How long to keep retrying before giving up and alerting.
   mountDeadlineSecs = 300;
 
+  # NTFS volume label of the offsite backup SSD, kept the same across a
+  # physical drive swap (the original 1TB was replaced by a 2TB, label
+  # carried over on purpose) so this matches either one by design -- do not
+  # switch this to a UUID, that would only match whichever physical disk
+  # happens to be plugged in right now.
+  offsiteSsdLabel = "+19177016463-2";
+
   # Single source of truth for the CIFS options: reuse the ones declared on
   # /mnt/5CDbackup, minus the pseudo-options that are directives to systemd's
   # fstab generator rather than arguments mount(8) understands.
@@ -77,6 +84,79 @@
       export RUSTIC_REPOSITORY=${interactiveRepo}
       export RUSTIC_NON_INTERACTIVE=true
       exec rustic "$@"
+    '';
+  };
+
+  # Occasional manual copy of the repository onto the offsite SSD, for
+  # whenever it's physically brought home or visited.
+  #
+  # Mounts the drive itself by label rather than relying on desktop
+  # auto-mount (nothing here actually triggers one -- gvfs-udisks2-volume-
+  # monitor sits dead and /run/media never gets created on insert), same
+  # "acquire your own dependency" approach the CIFS mount above takes rather
+  # than assuming pre-mounted state. rclone does the copy since rustic, unlike
+  # kopia, has no repository-to-repository sync of its own; `rustic check`
+  # afterwards is what actually confirms the copy is usable, not just present.
+  backupSsdSync = pkgs.writeShellApplication {
+    name = "backup-ssd-sync";
+    runtimeInputs = [pkgs.rclone pkgs.rustic pkgs.udisks];
+    text = ''
+      if [ "$(id -u)" -ne 0 ]; then
+        echo "backup-ssd-sync: the repository password is root-only." >&2
+        echo "Try: sudo backup-ssd-sync" >&2
+        exit 1
+      fi
+
+      SRC=${interactiveRepo}
+      LABEL_DEV=/dev/disk/by-label/${offsiteSsdLabel}
+
+      if [ ! -d "$SRC" ]; then
+        echo "Error: no repository at $SRC -- is the share reachable?" >&2
+        exit 1
+      fi
+
+      if [ ! -e "$LABEL_DEV" ]; then
+        echo "Error: no drive labelled '${offsiteSsdLabel}' is attached." >&2
+        exit 1
+      fi
+
+      DST_MOUNT=$(lsblk -no MOUNTPOINT "$LABEL_DEV" | head -n1)
+      if [ -z "$DST_MOUNT" ]; then
+        echo "Mounting $LABEL_DEV..."
+        udisksctl mount -b "$LABEL_DEV"
+        DST_MOUNT=$(lsblk -no MOUNTPOINT "$LABEL_DEV" | head -n1)
+      fi
+
+      if [ -z "$DST_MOUNT" ]; then
+        echo "Error: could not determine a mountpoint for $LABEL_DEV." >&2
+        exit 1
+      fi
+
+      DST="$DST_MOUNT/${repoSubdir}-copy"
+      mkdir -p "$DST"
+
+      echo "Syncing $SRC -> $DST"
+      rclone sync --transfers 4 --progress "$SRC/" "$DST/"
+
+      echo "Sync complete. Verifying repository integrity on the SSD copy..."
+
+      set -a
+      # shellcheck disable=SC1091  # sops secret; only exists at runtime
+      . ${config.sops.secrets."restic-vault-password".path}
+      set +a
+
+      export RUSTIC_REPOSITORY="$DST"
+      export RUSTIC_NON_INTERACTIVE=true
+
+      if rustic check --quick; then
+        echo "Verified: SSD repository copy is healthy."
+      else
+        echo "Validation failed on the SSD copy." >&2
+        exit 1
+      fi
+
+      echo "Unmounting $DST_MOUNT -- safe to disconnect the drive now."
+      udisksctl unmount -b "$LABEL_DEV"
     '';
   };
 
@@ -157,7 +237,7 @@ in {
   # /mnt/5CDbackup/restic-repo in a second place, which is precisely the
   # drift that produced two separate repositories once already.
   # ======================================================================
-  environment.systemPackages = [backupStatus backupRustic];
+  environment.systemPackages = [backupStatus backupRustic backupSsdSync];
 
   # ======================================================================
   # 1. LOCAL BTRFS AUTOMATED SNAPSHOT MATRIX (BTRBK)
