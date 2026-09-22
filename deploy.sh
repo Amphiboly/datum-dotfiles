@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # File: deploy.sh
+# 2026-09-22: Removed the nostrum rsync mirror step -- Syncthing now keeps
+#   ~/Projects (this repo included) current on nostrum on its own.
 # 2026-09-12: Added optional fwupd firmware update check/apply step
 # 2026-09-11: Removed _LABEL processing, removed most emojis,  minor cleanups
 # 2026-08-30: Added _LABEL
@@ -17,16 +19,11 @@ set -euo pipefail
 PAUSE=0
 [[ "${1:-}" == "--pause" ]] && PAUSE=1
 
-# =========================================================================
-# 1. Establish structural network endpoints
-# =========================================================================
-NOSTRUM_IP="192.168.5.58"
-
 echo "NixOS Workstation Deployment Engine Triggered..."
 echo "=================================================="
 
 # =========================================================================
-# 2. Update Flake Inputs
+# 1. Update Flake Inputs
 # =========================================================================
 read -rp "Check for upstream package updates? (y/N): " check_updates </dev/tty
 if [[ "$check_updates" =~ ^[Yy]$ ]]; then
@@ -38,7 +35,7 @@ if [[ "$check_updates" =~ ^[Yy]$ ]]; then
 fi
 
 # =========================================================================
-# 3. Dry-Run Environment Mapping
+# 2. Dry-Run Environment Mapping
 # =========================================================================
 echo "Generating dry-run system environment preview mapping..."
 nh os build
@@ -53,7 +50,7 @@ else
 fi
 
 # =========================================================================
-# 4. Switch Live System Generations Natively via nh
+# 3. Switch Live System Generations Natively via nh
 # =========================================================================
 echo "Switching live system tracks to new generation..."
 # This single command safely compiles your system and both user profiles simultaneously!
@@ -71,7 +68,7 @@ nh os switch .
 rm -f ./result
 
 # =========================================================================
-# 5. Firmware Update Check (fwupd/LVFS)
+# 4. Firmware Update Check (fwupd/LVFS)
 # =========================================================================
 echo -e "\nFIRMWARE UPDATE CHECK"
 echo "--------------------------------------------------"
@@ -99,7 +96,7 @@ else
 fi
 
 # =========================================================================
-# 6. Storage Profile Management
+# 5. Storage Profile Management
 # =========================================================================
 echo -e "\nSTORAGE CLEANUP SUITE"
 echo "--------------------------------------------------"
@@ -107,28 +104,6 @@ read -rp "Purge obsolete configurations? (y/N): " clean_old </dev/tty
 if [[ "$clean_old" =~ ^[Yy]$ ]]; then
     echo "Garbage collecting loose profiles and historical links..."
     nh clean all --keep 5
-fi
-
-# =========================================================================
-# 7. Remote Repository Mirror Array
-# =========================================================================
-echo -e "\nNOSTRUM REPOSITORY MIRROR"
-echo "--------------------------------------------------"
-read -rp "Sync validated files to nostrum? (y/N): " sync_nostrum </dev/tty
-if [[ "$sync_nostrum" =~ ^[Yy]$ ]]; then
-    echo "Mirroring repository across secure network lanes..."
-    rsync -av --delete \
-      --exclude='.git/' \
-      --exclude='result*' \
-      --exclude='*.backup' \
-      --exclude='secrets.yaml' \
-      ./ "rik@${NOSTRUM_IP}:~/Projects/datum/datum-config/"
-    rsync -auv \
-      ../secrets.dec.yaml "rik@${NOSTRUM_IP}:~/Projects/datum/secrets.dec.yaml"
-    echo "Synchronization complete!"
-    echo "But once these changes are pushed, please do a git pull from nostrum."
-else
-    echo "Skipping nostrum sync pass."
 fi
 
 echo -e "\nAll systems fully deployed and verified operational!"
