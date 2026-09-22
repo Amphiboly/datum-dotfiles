@@ -126,3 +126,4 @@ fi
 
 echo -e "\nAll systems fully deployed and verified operational!"
 echo    " Remember to commit and push the changes!"
+read -p "Press [Enter] to continue..."

@@ -1,6 +1,6 @@
 [bar.default]
 end = [
-    "media",
+    "group:g1",
     "tray",
     "notifications",
     "clipboard",
@@ -16,10 +16,20 @@ end = [
 margin_edge = 6
 margin_ends = 10
 radius = 4
-scale = 0.7500000037252903
+scale = 1.0000000074505806
 shadow = false
 start = [ "launcher", "wallpaper", "workspaces", "taskbar" ]
-thickness = 20
+thickness = 25
+
+    [[bar.default.capsule_group]]
+    accordion = false
+    accordion_direction = "end"
+    enabled = true
+    fill = "surface_variant"
+    id = "g1"
+    members = [ "nix-monitor", "status", "media" ]
+    opacity = 1.0
+    padding = 6.0
 
 [desktop_widgets]
 schema_version = 2
@@ -32,13 +42,32 @@ widget_order = []
 
     [desktop_widgets.widget]
 
+[idle]
+behavior_order = [ "screen-off", "lock", "lock-and-suspend" ]
+pre_action_fade_seconds = 10
+
+    [idle.behavior.lock]
+    action = "lock"
+    enabled = false
+    timeout = 600.0
+
+    [idle.behavior.lock-and-suspend]
+    action = "lock_and_suspend"
+    enabled = false
+    timeout = 900.0
+
+    [idle.behavior.screen-off]
+    action = "screen_off"
+    enabled = true
+    timeout = 300.0
+
 [location]
 address = "Great Barrington, MA, USA"
 
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
-widget_order = [ "lockscreen-login-box@Virtual-1" ]
+widget_order = [ "lockscreen-login-box@eDP-1" ]
 
     [lockscreen_widgets.grid]
     cell_size = 16
@@ -63,14 +92,54 @@ widget_order = [ "lockscreen-login-box@Virtual-1" ]
         show_caps_lock = true
         show_keyboard_layout = true
         show_login_button = true
-        # unknown setting show_password_hint = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 196.0
+    box_width = 720.0
+    cx = 960.0
+    cy = 961.0
+    output = "eDP-1"
+    placement_height = 1080.0
+    placement_width = 1920.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[plugin_settings."avivbintangaringga/nix-monitor"]
+panel_open_near_click = false
+panel_placement = "floating"
+show_update_check_notification = true
+update_command = "cd /home/rik/Projects/datum/datum-config/ && ./deploy.sh"
+
+[plugin_settings."mindnbytes/nix-status"]
+details_position = "center"
+flake_dir = "/home/rik/Projects/datum/datum-config"
+nixos_configuration = "datum"
+
+[plugins]
+enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status" ]
 
 [shell]
 corner_radius_scale = 0.2500000037252903
 font_family = "JetBrainsMonoNL NFP Medium"
 settings_show_advanced = true
+settings_window_translucent = true
 telemetry_enabled = true
-# unknown setting ui_scale = 0.7500000037252903
 
     [shell.animation]
     enabled = false
@@ -94,15 +163,19 @@ mode = "auto"
 directory = "/home/rik/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/rik/Pictures/wallpapers/flexoki.png"
+    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
 
     [wallpaper.last]
-    path = "/home/rik/Pictures/wallpapers/flexoki.png"
+    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+
+    [wallpaper.monitors.eDP-1]
+    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
 
 [weather]
 unit = "imperial"
 
-#[widget.weather]
-# unknown setting latitude = 42.192999999999998
-# unknown setting longitude = -73.358999999999995
-# unknown setting name = "Great Barrington, MA, USA"
+[widget.nix-monitor]
+type = "avivbintangaringga/nix-monitor:nix-monitor"
+
+[widget.status]
+type = "mindnbytes/nix-status:status"
