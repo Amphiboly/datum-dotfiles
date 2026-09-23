@@ -58,7 +58,7 @@
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-5QtgiyUp4rln7e1ZDCYedMPzQ5RtFM9UZA4XeeO5Gqg=";
+    outputHash = "sha256-Xwo1irzQZGOk5rZi6EevU2iOHWFmY/XzY7CDgkJ/Wg0=";
     nativeBuildInputs = [autoPatchelfHook curl cacert unzip];
 
     dontUnpack = true;
