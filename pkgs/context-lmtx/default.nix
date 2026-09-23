@@ -54,7 +54,7 @@
 }: let
   raw = stdenv.mkDerivation {
     pname = "context-lmtx-raw";
-    version = "2026-09-10";
+    version = "2026-09-22";
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
