@@ -14,6 +14,7 @@
     comma
     deadnix
     nil
+    nix-olde
     nvd
     statix
 
