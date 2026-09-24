@@ -34,6 +34,10 @@ _: {
       #   allowedUDPPorts = [ 5353 ];
       # };
     };
+    # TEMPORARY OVERRIDE WHILE REPOLOGY.ORG DNS IS OFFLINE
+    extraHosts = ''
+      92.63.176.157 repology.org
+    '';
   };
 
   # TAILSCALE MESH VPN DAEMON INTEGRATION SERVICE
