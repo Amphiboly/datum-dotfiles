@@ -29,8 +29,16 @@
     gnumake
     tree
     unzip
-    wget
     which
+
+    # wget2: faster/HTTP2-capable successor to wget. Nixpkgs only installs
+    # the wget2 binary, so symlink it as `wget` too -- scripts and muscle
+    # memory both key on that name, and a shellAlias wouldn't cover scripts.
+    (wget2.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        ln -s $out/bin/wget2 $out/bin/wget
+      '';
+    }))
 
     # Just for fun (or the animal names)
     cmatrix
