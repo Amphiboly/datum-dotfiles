@@ -6,6 +6,7 @@
     dust
     eza
     fastfetch
+    jq
     ripgrep
     yazi
 
