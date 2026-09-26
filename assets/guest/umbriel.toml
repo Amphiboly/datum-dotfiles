@@ -278,7 +278,8 @@ hide_when_typing = false                        # Keep visible while typing
 hide_timeout_ms = 0                             # Idle hide timeout, 0 disables; maximum is 3600000
 
 [input.focus]
-follows_mouse = false                           # Focus on motion after scene changes, client fullscreen exits, and closes
+#changed (back) by rik 20260921
+follows_mouse = true                            # Focus on motion after scene changes, client fullscreen exits, and closes
 # Refuse hover focus when revealing a window would scroll farther than this
 # many viewport widths. Omit the key for no limit.
 # follows_mouse_max_scroll = 0.5
@@ -360,10 +361,6 @@ follows_mouse = false                           # Focus on motion after scene ch
 "Mod+O" = { action = "overview-toggle", repeat = false }
 "Mod+Shift+O" = "cheatsheet-toggle" # added by rik 2026-06-06
 
-# Toggle layout, added by rik 20260917
-"Mod+F2" = "workspace-set-layout:toggle"
-
-# Common keybinds
 "Mod+Escape" = "session-quit"
 # Keep one escape binding available when a game or remote desktop client asks
 # Umbriel to pass ordinary compositor shortcuts through.
@@ -439,10 +436,11 @@ follows_mouse = false                           # Focus on motion after scene ch
 
 # Optional navigation and sizing recipes. These chords do not replace active
 # bindings above when uncommented.
-# "Mod+Page_Up" = "workspace-previous"
-# "Mod+Page_Down" = "workspace-next"
-# "Mod+Shift+Page_Up" = "window-move-to-workspace-previous"
-# "Mod+Shift+Page_Down" = "window-move-to-workspace-next"
+# Next 4 enabled by rik 20260925
+"Mod+Page_Up" = "workspace-previous"
+"Mod+Page_Down" = "workspace-next"
+"Mod+Shift+Page_Up" = "window-move-to-workspace-previous"
+"Mod+Shift+Page_Down" = "window-move-to-workspace-next"
 # "Mod+Home" = "column-focus-first"
 # "Mod+End" = "column-focus-last"
 # "Mod+Shift+Home" = "column-move-to-first"
@@ -463,9 +461,10 @@ follows_mouse = false                           # Focus on motion after scene ch
 # "Mod+Alt+Shift+R" = "window-cycle-secondary-extent-back"
 # "Mod+Grave" = "window-focus-last"
 # "Mod+BackSpace" = "window-consume-or-expel-left"
-# "Mod+C" = "column-center"
-# "Mod+Shift+C" = "window-center"
-# "Mod+Ctrl+T" = "workspace-set-layout:toggle"
+# Next 3 enabled by rik 20260925
+"Mod+C" = "column-center"
+"Mod+Shift+C" = "window-center"
+"Mod+Ctrl+T" = "workspace-set-layout:toggle"
 # "Mod+MouseMiddle" = "layout-scroll-drag"
 # "Mod+Alt+K" = "keyboard-layout-next"
 # "Mod+WheelUp" = { action = "workspace-previous", cooldown_ms = 150 }
@@ -496,15 +495,15 @@ follows_mouse = false                           # Focus on motion after scene ch
 
 # Media and brightness
 # Documentation: https://docs.noctalia.dev/umbriel/keybinds/#example-media-and-brightness-keys
-# "XF86AudioRaiseVolume" = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-# "XF86AudioLowerVolume" = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-# "XF86AudioMute" = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-# "XF86AudioPlay" = "spawn:playerctl play-pause"
-# "XF86AudioNext" = "spawn:playerctl next"
-# "XF86AudioPrev" = "spawn:playerctl previous"
+"XF86AudioRaiseVolume" = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+"XF86AudioLowerVolume" = "spawn:wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+"XF86AudioMute" = "spawn:wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+"XF86AudioPlay" = "spawn:playerctl play-pause"
+"XF86AudioNext" = "spawn:playerctl next"
+"XF86AudioPrev" = "spawn:playerctl previous"
 # Binds intended to work while locked use the table form.
-# "XF86MonBrightnessDown" = { action = "spawn:noctalia msg brightness-down 10", allow_when_locked = true }
-# "XF86MonBrightnessUp" = { action = "spawn:noctalia msg brightness-up 10", allow_when_locked = true }
+"XF86MonBrightnessDown" = { action = "spawn:noctalia msg brightness-down 10", allow_when_locked = true }
+"XF86MonBrightnessUp" = { action = "spawn:noctalia msg brightness-up 10", allow_when_locked = true }
 
 # ─────────────────────────────── Layout ─────────────────────────────────────
 # Configure the default tiling mode and shared sizing behavior. Workspace rules
@@ -531,16 +530,11 @@ default_extent_fraction = 0.5                   # Initial extent for new columns
 center_underfull_strip = true                   # Center a strip narrower than the viewport
 center_focused = "never"                        # never, always, or on_overflow
 
-[layout.dwindle]
-# preserve_split = false                        # Keep every split direction fixed after creation
-new_exits_fullscreen = false                    # Exits fullscreen when a new window is opened in the workspace
-
 [layout.master]
 position = "left"                               # left, right, or center master area
 default_width_fraction = 0.55                   # Initial master area fraction, 0.1-0.9
 new_on_top = true                               # Put new windows at the top of the stack
 new_becomes_master = false                      # New windows take the master slot
-new_exits_fullscreen = false                    # Exits fullscreen when a new window is opened in the workspace
 
 # ───────────────────────────── Window Rules ─────────────────────────────────
 # Match windows by application ID, title, XDG tag, content type, or focus state.
