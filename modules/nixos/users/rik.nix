@@ -3,7 +3,11 @@
 # Single source of truth for this account — previously split (with
 # overlapping, redundant fields) across the root users.nix and
 # configuration.nix.
-{config, pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   users.users.rik = {
     isNormalUser = true;
     group = "rik";

@@ -19,14 +19,15 @@
   windowsFontsDir = config.home.homeDirectory + "/Projects/datum/datum-config/assets/fonts";
   windowsFontFiles = ["msjh.ttc" "times.ttf"];
 
-  unifrakturMaguntia = pkgs.runCommand "unifraktur-maguntia" {
-    nativeBuildInputs = [pkgs.unzip];
-  } ''
-    mkdir -p $out/share/fonts/truetype
-    unzip -j ${fontAssetsDir}/UnifrakturMaguntia.2017-03-19.zip \
-      'UnifrakturMaguntia.2017-03-19/UnifrakturMaguntia.ttf' \
-      -d $out/share/fonts/truetype
-  '';
+  unifrakturMaguntia =
+    pkgs.runCommand "unifraktur-maguntia" {
+      nativeBuildInputs = [pkgs.unzip];
+    } ''
+      mkdir -p $out/share/fonts/truetype
+      unzip -j ${fontAssetsDir}/UnifrakturMaguntia.2017-03-19.zip \
+        'UnifrakturMaguntia.2017-03-19/UnifrakturMaguntia.ttf' \
+        -d $out/share/fonts/truetype
+    '';
 in {
   fonts.fontconfig.enable = true;
 
