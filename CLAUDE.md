@@ -80,4 +80,8 @@ can load it` as an error. This is a FALSE POSITIVE — it probes FHS paths like
 - Validate incrementally with `nix eval` or `nix flake check` before rebuilding.
 - Follow idiomatic module structure using `options`, `config`, and `imports`.
 - Statix and deadnix are installed and should be used.
+  - Known, accepted statix warning: W20 (repeated `systemd` key) in
+    `modules/nixos/backups.nix`. Ignore it. The separate `systemd.*`
+    assignments are intentional (each unit sits with its section), and the
+    reason is commented at the first one. Don't merge them to silence statix.
 - Use the `mcp-nixos` tool to query accurate package names, options, and Home Manager attributes before suggesting changes.

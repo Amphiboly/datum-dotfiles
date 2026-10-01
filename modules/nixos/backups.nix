@@ -279,6 +279,11 @@ in {
   # wire the notifier onto the generated unit by name. Without this a broken
   # btrbk fails silently every hour -- which is exactly how the lockfile
   # EACCES above went unnoticed for 15 days.
+  #
+  # statix W20 ("The key `systemd` is first assigned here ... repeated
+  # here") is deliberately ignored for this file: the separate systemd.*
+  # assignments keep each unit next to the section it belongs to, which
+  # reads better than one merged `systemd = { ... }` block. Reviewed by Rik.
   systemd.services.btrbk-local.onFailure = ["status-email-alert@%n.service"];
 
   # =========================================================================
@@ -427,11 +432,17 @@ in {
         fi
 
         # Administrator profile backup pipeline (rik)
+        #
+        # --exclude-if-present skips any directory holding a CACHEDIR.TAG
+        # (bford.info/cachedir), e.g. Cargo's target/ dirs, which tag
+        # themselves. Unlike Kopia, rustic only honours the tag when asked.
+        # The explicit .cache globs stay: ~/.cache itself isn't tagged here.
         if [ -d "/run/restic-atomic-home/rik" ]; then
           echo "Syncing profile dataset: rik..."
           rustic backup \
             --as-path=/home/rik \
             --tag="user:rik" \
+            --exclude-if-present=CACHEDIR.TAG \
             --glob="!/run/restic-atomic-home/rik/Downloads" \
             --glob="!/run/restic-atomic-home/rik/.cache" \
             --glob="!/run/restic-atomic-home/rik/Dropbox" \
@@ -444,6 +455,7 @@ in {
           rustic backup \
             --as-path=/home/guest \
             --tag="user:guest" \
+            --exclude-if-present=CACHEDIR.TAG \
             --glob="!/run/restic-atomic-home/guest/.cache" \
             /run/restic-atomic-home/guest
         fi
