@@ -16,6 +16,7 @@
     deadnix
     nil
     nix-olde
+    nix-search-tv
     nvd
     statix
 
