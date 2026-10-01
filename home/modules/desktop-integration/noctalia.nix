@@ -27,14 +27,15 @@
     # nixpkgs -- it only appears if something adds it via overlay -- and an
     # overlay build (`final.callPackage ./nix/package.nix {}`, see
     # noctalia's flake.nix) compiles against *our* stacked pkgs (NUR +
-    # whatever else), which is a different derivation than the one
-    # noctalia.cachix.org has binaries for. Pointing straight at the
-    # flake's own `packages.default` instead uses exactly the derivation
-    # CI built and cached, so `nh os switch` fetches it rather than
-    # rebuilding Qt/QML from source on every bump. Keep hosts/datum's
+    # whatever else). Pointing straight at the flake's own
+    # `packages.default` instead builds against plain nixpkgs -- ours,
+    # since flake.nix makes the noctalia input follow it (see the comment
+    # there for why that matters: the GPU driver comes from the system, so
+    # noctalia's glibc must keep up with ours). It's compiled locally;
+    # noctalia.cachix.org can't hit with that override. Keep hosts/datum's
     # nixpkgs.overlays free of noctalia's overlay -- reintroducing it would
-    # just leave a `pkgs.noctalia` sitting there for someone to reach for
-    # by accident and silently lose the cache hit.
+    # just leave a second, differently built `pkgs.noctalia` sitting there
+    # for someone to reach for by accident.
     package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
   };
 }

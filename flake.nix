@@ -45,16 +45,21 @@
     # cosmic-greeter stays the login/lock PAM service pam_gaze is wired
     # into (facial-auth.nix).
     #
-    # Pinned to the `cachix` branch (not `main`) and deliberately NOT
-    # following our nixpkgs: per docs.noctalia.dev/noctalia/getting-started/
-    # nixos, overriding any of Noctalia's inputs -- inputs.nixpkgs.follows
-    # included -- changes the derivation hash and misses noctalia.cachix.org
-    # entirely, forcing a from-source Qt/QML rebuild on every change. The
-    # `cachix` branch always points at the latest commit CI has actually
-    # finished caching, so this pin trades one extra nixpkgs copy (fetched
-    # under a different store path from our own) for guaranteed prebuilt
-    # binaries. The substituter + key are in modules/nixos/nix-settings.nix.
-    noctalia.url = "github:noctalia-dev/noctalia/cachix";
+    # Follows our nixpkgs, against docs.noctalia.dev/noctalia/getting-started/
+    # nixos, which says to leave noctalia's inputs alone so the derivation
+    # hash matches noctalia.cachix.org. Not following broke the shell on
+    # 2026-09-29: the GPU driver is never bundled -- libglvnd dlopens it from
+    # /run/opengl-driver, i.e. the *system's* Mesa -- so a noctalia built on
+    # an older nixpkgs (glibc 2.42) died with "eglGetDisplay failed" once our
+    # nixpkgs moved to glibc 2.44 and Mesa started requiring GLIBC_2.43. That
+    # recurs whenever unstable's glibc outruns noctalia's pin, so we compile
+    # locally instead; v5 is meson/C++ with no Qt, so it's a small build.
+    # Still on the `cachix` branch, which only advances to commits upstream
+    # CI has built and tested.
+    noctalia = {
+      url = "github:noctalia-dev/noctalia/cachix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     umbriel = {
       url = "github:noctalia-dev/umbriel";
       inputs.nixpkgs.follows = "nixpkgs";

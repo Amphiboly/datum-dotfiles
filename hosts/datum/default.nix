@@ -72,10 +72,10 @@
   nixpkgs.overlays = [
     inputs.nur.overlays.default
     # Noctalia's overlay is deliberately NOT applied here -- it would build
-    # `pkgs.noctalia` against this flake's own nixpkgs/overlay stack instead
-    # of noctalia's pinned one, missing noctalia.cachix.org. See the comment
-    # on `package` in home/modules/desktop-integration/noctalia.nix, which
-    # takes the package straight from inputs.noctalia.packages instead.
+    # `pkgs.noctalia` against this overlay stack (NUR etc.) rather than plain
+    # nixpkgs. See the comment on `package` in
+    # home/modules/desktop-integration/noctalia.nix, which takes the package
+    # straight from inputs.noctalia.packages instead.
     inputs.umbriel.overlays.default
 
     # TEMPORARY: nixpkgs removed the EOL `buildGo125Module` attribute, but
