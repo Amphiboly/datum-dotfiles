@@ -14,6 +14,10 @@
     typst
     zathura
     zettlr
+    # zotero: build broken on unstable since nixpkgs dropped Firefox ESR
+    # 140, which Zotero 10 requires (NixOS/nixpkgs#568692). Re-enable once
+    # NixOS/nixpkgs#569006 ("zotero: fix build by reviving Firefox 140")
+    # has merged and reached nixos-unstable.
     #  zotero
   ];
 }
