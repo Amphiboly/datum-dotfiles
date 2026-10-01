@@ -55,7 +55,9 @@
     # recurs whenever unstable's glibc outruns noctalia's pin, so we compile
     # locally instead; v5 is meson/C++ with no Qt, so it's a small build.
     # Still on the `cachix` branch, which only advances to commits upstream
-    # CI has built and tested.
+    # CI has built and tested. Reported upstream as
+    # github.com/noctalia-dev/noctalia/issues/4668; revisit `follows` if
+    # that's resolved.
     noctalia = {
       url = "github:noctalia-dev/noctalia/cachix";
       inputs.nixpkgs.follows = "nixpkgs";
