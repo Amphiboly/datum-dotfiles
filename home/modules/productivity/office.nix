@@ -14,6 +14,6 @@
     typst
     zathura
     zettlr
-    zotero
+    #  zotero
   ];
 }
