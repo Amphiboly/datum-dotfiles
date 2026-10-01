@@ -39,10 +39,11 @@ order = [ "default", "Nix" ]
         [[bar.default.capsule_group]]
         accordion = false
         accordion_direction = "end"
+        border_width = 1.0
         enabled = true
         fill = "surface_variant"
         id = "g1"
-        members = [ "media" ]
+        members = [ "bar", "media" ]
         opacity = 1.0
         padding = 6.0
 
@@ -147,7 +148,7 @@ flake_dir = "/home/rik/Projects/datum/datum-config"
 nixos_configuration = "datum"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status" ]
+enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status", "noctalia/umbriel-companion" ]
 
 [shell]
 corner_radius_scale = 0.2500000037252903
@@ -168,7 +169,10 @@ telemetry_enabled = true
 
 [theme]
 builtin = "Catppuccin"
-mode = "auto"
+community_palette = "GitHub Dark"
+mode = "dark"
+source = "community"
+wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "ghostty", "niri" ]
@@ -178,16 +182,19 @@ mode = "auto"
 directory = "/home/rik/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+    path = "/home/rik/Pictures/wallpapers/flexoki.png"
 
     [wallpaper.last]
-    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+    path = "/home/rik/Pictures/wallpapers/flexoki.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+    path = "/home/rik/Pictures/wallpapers/flexoki.png"
 
 [weather]
 unit = "imperial"
+
+[widget.bar]
+type = "noctalia/umbriel-companion:bar"
 
 [widget.nix-monitor]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
