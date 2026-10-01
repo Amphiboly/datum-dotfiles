@@ -16,6 +16,9 @@ _: {
       "w11-cifs-credentials" = {owner = "root";};
       "restic-vault-password" = {owner = "root";};
       "panix-smtp-password" = {owner = "root";};
+      # Private half of the key remote-builder.nix uses to reach nostrum.
+      # Root-owned because the nix-daemon (root) opens the SSH connection.
+      "nostrum-builder-ssh-key" = {owner = "root";};
 
       # User Email Keys (Declaratively owned by rik)
       "spectrum-smtp-password" = {owner = "rik";};

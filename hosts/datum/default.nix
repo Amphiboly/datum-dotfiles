@@ -34,6 +34,7 @@
     ../../modules/nixos/printing.nix
     ../../modules/nixos/fonts.nix
     ../../modules/nixos/nix-settings.nix
+    ../../modules/nixos/remote-builder.nix
     ../../modules/nixos/power-management.nix
     ../../modules/nixos/pipewire.nix
     ../../modules/nixos/session-daemons.nix
