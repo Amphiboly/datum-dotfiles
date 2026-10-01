@@ -34,7 +34,11 @@
 }: let
   repo = "/home/rik/Projects/datum/datum-config";
   user = "rik";
-  mailTo = "rik@panix.com";
+  # Delivered as rik+datum-build@panix.com, which procmail sorts on. The
+  # failure alert (status-email-alert@, backups.nix) routes this unit to the
+  # same address. Sender stays rik@panix.com: panix rejects a mismatched one.
+  mailTo = "datum-build@rik.users.panix.com";
+  mailFrom = "rik@panix.com";
 
   runner = pkgs.writeShellScript "nixos-nightly-upgrade" ''
     set -euo pipefail
@@ -48,7 +52,7 @@
     skip() {
       echo "SKIPPED: $1"
       msmtp --account=default ${mailTo} <<EOF || echo "warning: skip mail not sent"
-    From: datum systemd <${mailTo}>
+    From: datum systemd <${mailFrom}>
     To: ${mailTo}
     Subject: [datum] nightly update skipped: $1
 

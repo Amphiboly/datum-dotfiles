@@ -545,14 +545,28 @@ in {
 
         UNIT="$1"
 
+        # Recipient per unit, for procmail on panix: <tag>@rik.users.panix.com
+        # is delivered as rik+<tag>@panix.com and sorted on the tag. Only the
+        # recipient varies -- the sender must stay rik@panix.com (see the
+        # msmtp account below). Both tags are filed into one procmail folder
+        # (datum_advices). Untagged units fall back to the plain address so a
+        # new onFailure user still gets through before it's given a tag.
+        case "$UNIT" in
+          btrbk-local.service | rustic-atomic-backup.service)
+            TO=datum-backup@rik.users.panix.com ;;
+          nixos-nightly-upgrade.service)
+            TO=datum-build@rik.users.panix.com ;;
+          *) TO=rik@panix.com ;;
+        esac
+
         # Get the logs for the service that failed
         SERVICE_LOGS=$(journalctl -u "$UNIT" -n 50 --no-pager)
 
         # Construct a clean email payload
         # Note: msmtp looks for a blank line after headers to identify the message body
-        cat <<EOF | msmtp --account=default rik@panix.com
+        cat <<EOF | msmtp --account=default "$TO"
         From: datum systemd <rik@panix.com>
-        To: rik@panix.com
+        To: $TO
         Subject: [SYSTEMD ALERT] $UNIT has FAILED on datum-laptop
 
         The systemd service unit "$UNIT" has entered a failed state.
