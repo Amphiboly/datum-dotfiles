@@ -56,8 +56,12 @@
     # locally instead; v5 is meson/C++ with no Qt, so it's a small build.
     # Still on the `cachix` branch, which only advances to commits upstream
     # CI has built and tested. Reported upstream as
-    # github.com/noctalia-dev/noctalia/issues/4668; revisit `follows` if
-    # that's resolved.
+    # github.com/noctalia-dev/noctalia/issues/4668, closed 2026-10-02 by a
+    # one-off manual flake.lock bump, not a structural fix: upstream's
+    # update-flake workflow still refreshes their nixpkgs only weekly
+    # (Saturdays), while we update nightly, so the window reopens on every
+    # glibc bump in unstable. Keep `follows` unless upstream stops pinning
+    # nixpkgs independently of the consumer.
     noctalia = {
       url = "github:noctalia-dev/noctalia/cachix";
       inputs.nixpkgs.follows = "nixpkgs";
