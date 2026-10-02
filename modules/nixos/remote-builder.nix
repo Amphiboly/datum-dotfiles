@@ -13,8 +13,11 @@
 #   `restrict,command="/usr/bin/nix-daemon --stdio"`, so all it can do is
 #   speak the Nix daemon protocol -- no shell, no forwarding. rik is in
 #   nostrum's trusted-users, which ssh-ng needs to build and import paths.
-# - publicHostKey pins nostrum's host key (base64 of
-#   /etc/ssh/ssh_host_ed25519_key.pub), so root needs no known_hosts entry.
+# - nostrum's host key (/etc/ssh/ssh_host_ed25519_key.pub there) is in the
+#   system-wide /etc/ssh/ssh_known_hosts via programs.ssh.knownHosts, which
+#   every ssh client reads: root's, for the nix-daemon, and the users', for
+#   interactive logins. That is why buildMachines sets no publicHostKey; it
+#   would only be a second, base64-encoded copy of the same key.
 #
 # When nostrum is unreachable (asleep on battery, datum off the tailnet), the
 # connection fails after ConnectTimeout and Nix builds locally instead.
@@ -27,7 +30,6 @@
         protocol = "ssh-ng";
         sshUser = "rik";
         sshKey = config.sops.secrets."nostrum-builder-ssh-key".path;
-        publicHostKey = "c3NoLWVkMjU1MTkgQUFBQUMzTnphQzFsWkRJMU5URTVBQUFBSUpTaDJWRklWMmhrRHhaeHlUczBCWG90MzFubkNQeUpsaERoL0NNWTdFcEU=";
         system = "x86_64-linux";
         # nostrum is the daily driver: cap concurrent jobs from datum so a
         # daytime build leaves it usable. Each job still gets all its cores.
@@ -40,6 +42,12 @@
     # Let nostrum download dependencies from cache.nixos.org itself instead
     # of datum uploading them over the tailnet.
     settings.builders-use-substitutes = true;
+  };
+
+  # See the header: one host key entry for both root and interactive ssh.
+  programs.ssh.knownHosts.nostrum = {
+    hostNames = ["nostrum.taildad098.ts.net" "nostrum" "100.108.234.98"];
+    publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJSh2VFIV2hkDxZxyTs0BXot31nnCPyJlhDh/CMY7EpE";
   };
 
   # Fail over to local building quickly when nostrum is down. ssh's default
