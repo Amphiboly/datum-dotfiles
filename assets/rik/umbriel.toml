@@ -234,7 +234,9 @@ window_drag_toggle = "none"                     # Retarget a window drag: "none"
 # Physical keyboard XKB settings. Virtual keyboards provide their own keymaps.
 layout = ""                                     # Example: "us,de"; empty uses the system default
 variant = ""                                    # Example: ",nodeadkeys" for two layouts
-options = ""                                    # Example: "grp:alt_shift_toggle"
+# next set by rik 2026-10-04: Right Alt as Compose, matching COSMIC's
+# xkb_options in home/modules/desktop-integration/compose-key.nix
+options = "compose:ralt"                        # Example: "grp:alt_shift_toggle"
 repeat_rate = 25                                # Key repeats per second, 0-1000
 repeat_delay = 600                              # Delay before repeating, 0-10000 ms
 numlock_toggle = true                           # Enable on connect; false preserves the current state
