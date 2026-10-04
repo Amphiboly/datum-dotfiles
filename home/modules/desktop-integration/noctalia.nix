@@ -11,10 +11,10 @@
 #
 # This is per-user rather than system-wide, matching this repo's split
 # between system privileges and Home Manager config -- Noctalia starts via
-# this systemd user service; whether it also fires under COSMIC (not just
-# Umbriel) is unverified, see the systemd unit's WantedBy target.
+# this systemd user service, bound to Umbriel's session target (see below).
 {
   inputs,
+  lib,
   pkgs,
   ...
 }: {
@@ -37,5 +37,21 @@
     # just leave a second, differently built `pkgs.noctalia` sitting there
     # for someone to reach for by accident.
     package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  };
+
+  # The module hangs the unit off graphical-session.target, which every
+  # systemd-aware session reaches -- COSMIC included -- so Noctalia's bar
+  # and panels came up on top of COSMIC's own. Umbriel ships
+  # umbriel-session.target (BindsTo graphical-session.target, started only
+  # by start-umbriel), so binding to that instead confines Noctalia to
+  # Umbriel sessions. mkForce because the module sets these as lists, which
+  # would otherwise merge with ours rather than replace them; the module has
+  # no `systemd.target` option to do this more politely.
+  systemd.user.services.noctalia = {
+    Unit = {
+      After = lib.mkForce ["umbriel-session.target"];
+      PartOf = lib.mkForce ["umbriel-session.target"];
+    };
+    Install.WantedBy = lib.mkForce ["umbriel-session.target"];
   };
 }
