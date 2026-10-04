@@ -126,9 +126,15 @@
       guest = mkHome ./home-guest.nix;
     };
 
-    # `nix build .#context-lmtx` -- see pkgs/context-lmtx for what this is
-    # and how to update its pin when upstream ships a new ConTeXt.
-    packages.${system}.context-lmtx = pkgs.callPackage ./pkgs/context-lmtx {};
+    packages.${system} = {
+      # `nix build .#context-lmtx` -- see pkgs/context-lmtx for what this is
+      # and how to update its pin when upstream ships a new ConTeXt.
+      context-lmtx = pkgs.callPackage ./pkgs/context-lmtx {};
+
+      # `nix build .#cosmic-ext-applet-cheatsheet` -- see the package file
+      # for how to bump its pin.
+      cosmic-ext-applet-cheatsheet = pkgs.callPackage ./pkgs/cosmic-ext-applet-cheatsheet {};
+    };
 
     # `nix fmt` / `nix fmt -- --check .` -- reformats the whole tree with
     # alejandra (also used by Helix's LSP config, home/modules/editors/helix.nix).
