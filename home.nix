@@ -39,6 +39,8 @@
     ./home/modules/desktop-integration/noctalia.nix
     ./home/modules/desktop-integration/noctalia-rik.nix
     ./home/modules/desktop-integration/umbriel-rik.nix
+    ./home/modules/desktop-integration/sdl-freerdp.nix
+    ./home/modules/desktop-integration/sdl-freerdp-rik.nix
   ];
 
   home = {
@@ -57,12 +59,4 @@
   home.packages = with pkgs; [
     (writeScriptBin "mksecrets" (builtins.readFile ./mksecrets.sh))
   ];
-
-  # =========================================================================
-  # NATIVE INFRASTRUCTURE DEPLOYMENT: REMMINA WITH COUPLING PLUGINS
-  # =========================================================================
-  services.remmina = {
-    enable = true;
-    addRdpMimeTypeAssoc = true;
-  };
 }

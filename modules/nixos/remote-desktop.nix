@@ -1,8 +1,8 @@
 # modules/nixos/remote-desktop.nix
 #
-# System-wide install of the remote-desktop client binaries. Per-user mime
-# associations (which files launch Remmina) stay in home-manager — see
-# home.nix's services.remmina.
+# System-wide install of the FreeRDP client binaries (sdl-freerdp is the one
+# in use). The .rdp handler and per-user hotkeys live in home-manager — see
+# home/modules/desktop-integration/sdl-freerdp{,-rik}.nix.
 {pkgs, ...}: {
-  environment.systemPackages = with pkgs; [remmina freerdp];
+  environment.systemPackages = [pkgs.freerdp];
 }
