@@ -17,6 +17,7 @@
     nil
     nix-olde
     nix-search-tv
+    nixos-gen-diff
     nvd
     statix
 
