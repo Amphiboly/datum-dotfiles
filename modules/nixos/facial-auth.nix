@@ -121,8 +121,8 @@ in {
       #
       #   storage.encrypt_templates = true;
       #                              # Seals templates to the TPM. datum has
-      #                              # /dev/tpmrm0 and already boots through
-      #                              # lanzaboote, so this is worth turning on
+      #                              # /dev/tpmrm0 (sealing doesn't need
+      #                              # Secure Boot), so this is worth turning on
       #                              # once face auth works — but bring it up
       #                              # afterwards, not during, so a sealing
       #                              # failure isn't confused for a camera one.

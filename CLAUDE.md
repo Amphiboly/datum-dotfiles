@@ -5,8 +5,11 @@
   `/etc/nixos/` — the directory does not exist, so anything that falls back to
   channels or `<nixos-config>` will fail.
 - Host attribute: `datum` (`nixosConfigurations.datum`, defined in `flake.nix`).
-- Hardware: HP Spectre x360 13-ac076nr, i7-7500U, TPM 2.0, booting via
-  lanzaboote. Disk layout is managed by disko.
+- Hardware: HP Spectre x360 13-ac076nr, i7-7500U, TPM 2.0. Boots via
+  plain systemd-boot with Secure Boot off. That's deliberate: the disk is not
+  encrypted, so Secure Boot (lanzaboote) would protect little and cost key
+  management in HP's firmware. Revisit if LUKS is ever added. Disk layout is
+  managed by disko.
 - Desktop: COSMIC (`cosmic-greeter` via greetd). Note that `cosmic-greeter` is
   a single PAM service covering both the login screen and the session lock
   screen.

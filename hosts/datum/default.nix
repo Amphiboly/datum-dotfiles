@@ -12,10 +12,9 @@
     ./hardware-configuration.nix
     ./laptop-configuration.nix
 
-    # Disko & Lanzaboote
+    # Disko
     inputs.disko.nixosModules.disko
     ./disko-config.nix
-    inputs.lanzaboote.nixosModules.lanzaboote
 
     # Sops Secrets
     inputs.sops-nix.nixosModules.sops
