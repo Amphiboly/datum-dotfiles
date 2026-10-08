@@ -81,6 +81,12 @@
       fi
       to=''${2:-$current}
 
+      if (( from > to )); then
+        temp=$to
+        to=$from
+        from=$temp
+      fi
+
       # Resolve into variables first: a failing $(...) inside nix's argument
       # list would not trip errexit, and nix would run with an empty path.
       from_link=$(link "$from")
