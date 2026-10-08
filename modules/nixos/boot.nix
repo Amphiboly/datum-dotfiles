@@ -13,7 +13,13 @@
     kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
 
     loader = {
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        # Use the firmware's highest-resolution text mode. The glyphs are a
+        # fixed firmware bitmap font, so more pixels means more columns: the
+        # default ("keep") inherits a low-res mode that truncates entry titles.
+        consoleMode = "max";
+      };
       efi.canTouchEfiVariables = true;
     };
     supportedFilesystems = ["btrfs" "cifs"];
