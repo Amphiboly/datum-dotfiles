@@ -8,7 +8,8 @@
 #   gen-diff            previous generation -> current
 #   gen-diff N          generation N -> current
 #   gen-diff N M        generation N -> generation M
-#   gen-diff -l         list generations with dates
+#   gen-diff -l         list generations with dates (also --list)
+#   gen-diff -h         show purpose and usage (also --help)
 #
 # "Current" is the generation the system profile points at. That's normally
 # the running system, but after `nh os boot` it's the one staged for the next
@@ -21,10 +22,17 @@
     runtimeInputs = [pkgs.coreutils];
     text = ''
       profiles=/nix/var/nix/profiles
+      usage="usage: gen-diff [-h | -l | N [M]]"
 
-      usage() {
-        echo "usage: gen-diff [-l | N [M]]" >&2
+      usage_error() {
+        echo "$usage" >&2
         exit 2
+      }
+
+      usage_help() {
+        echo "Display differences between NixOS build generations"
+        echo "$usage"
+        exit
       }
 
       # Generation numbers, ascending.
@@ -46,7 +54,7 @@
       current=''${current%-link}
 
       case "''${1-}" in
-        -l)
+        -l | --list)
           for n in $(gens); do
             # stat the link itself: following it into the store gives 1970.
             when=$(date -d "@$(stat -c %Y "$profiles/system-$n-link")" '+%F %R')
@@ -56,11 +64,11 @@
           done
           exit 0
           ;;
-        -h | --help) usage ;;
+        -h | --help) usage_help ;;
         "" | [0-9]*) ;;
-        *) usage ;;
+        *) usage_error ;;
       esac
-      (( $# <= 2 )) || usage
+      (( $# <= 2 )) || usage_error
 
       if (( $# >= 1 )); then
         from=$1
