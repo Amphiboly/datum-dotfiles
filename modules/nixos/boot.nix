@@ -15,10 +15,12 @@
     loader = {
       systemd-boot = {
         enable = true;
-        # Use the firmware's highest-resolution text mode. The glyphs are a
-        # fixed firmware bitmap font, so more pixels means more columns: the
-        # default ("keep") inherits a low-res mode that truncates entry titles.
-        consoleMode = "max";
+        # Let systemd-boot pick a suitable firmware text mode. The glyphs are a
+        # fixed firmware bitmap font, so a higher-res mode means more columns:
+        # the default ("keep") inherits a low-res mode that truncates entry
+        # titles. On this HP "auto" selects mode 3, which fits them. (Mode 3
+        # can't be named directly: nixpkgs' enum omits it.)
+        consoleMode = "auto";
       };
       efi.canTouchEfiVariables = true;
     };
