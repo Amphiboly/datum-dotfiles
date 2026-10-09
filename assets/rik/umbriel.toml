@@ -285,6 +285,16 @@ radius = 3
  default_focused = false
  default_pinned = true
 
+# RDP sessions (sdl-freerdp, via Xwayland) open maximized to the edges, with
+# no gaps or borders, below the bar; dynamic resolution resizes the remote
+# desktop to fit. FreeRDP's Ctrl+Alt+Return then toggles real fullscreen
+# over the bar. default_fullscreen has no effect on this window:
+# https://github.com/noctalia-dev/umbriel/issues/422
+# (added by rik)
+[[window_rule]]
+ match.app_id = "^com[.]freerdp[.]client[.]sdl3$"
+ default_maximize_to_edges = true
+
 # Keep game menus inside their window; a focus or workspace keybind releases the pointer.
 # [[window_rule]]
 # match.app_id = "^steam_app_.*$"

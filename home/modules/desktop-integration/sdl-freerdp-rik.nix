@@ -26,14 +26,15 @@ in {
       username:s:5CD-RACK\5CD
       dynamic resolution:i:1
       redirectclipboard:i:1
-      desktopscalefactor:i:200
+      desktopscalefactor:i:100
     '';
   };
 
   xdg.desktopEntries."5cd-rack" = {
     name = "5CD-RACK";
     genericName = "Remote Desktop";
-    exec = "sdl-freerdp ${rackProfile}";
+    # Wrapper from sdl-freerdp.nix: opens on an empty workspace.
+    exec = "sdl-freerdp-new-workspace ${rackProfile}";
     icon = "network-server";
     categories = ["Network" "RemoteAccess"];
   };
