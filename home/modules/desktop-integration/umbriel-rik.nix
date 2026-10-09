@@ -4,8 +4,8 @@
 # -- programs.umbriel in modules/nixos/desktop/umbriel.nix only exposes
 # enable/package/portalPackage, nothing config-shaped -- so its config.toml is
 # placed directly via home.file. rik's config; see umbriel-guest.nix for
-# guest's independently-editable copy. Re-run `umbriel validate` after
-# changing assets/rik/umbriel.toml.
+# guest's independently-editable copy. After changing assets/rik/umbriel.toml,
+# re-run `umbriel config validate -c assets/rik/umbriel.toml`.
 _: {
   home.file.".config/umbriel/config.toml".source = ../../../assets/rik/umbriel.toml;
 }

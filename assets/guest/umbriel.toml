@@ -13,10 +13,10 @@
 # Optional split configuration
 # https://docs.noctalia.dev/umbriel/configuration/#include
 [include]
-files = []
+ files = []
 
 [include.optional]
-files = []
+ files = []
 
 # ==============================================================================
 # General
@@ -36,9 +36,9 @@ files = []
 # restore it when the lid opens. Replace eDP-1 with the name from
 # `umbriel outputs`.
 # https://docs.noctalia.dev/umbriel/configuration/#events
-# [events]
-# lid_close = "umbriel msg output-disable:eDP-1"
-# lid_open = "umbriel msg output-enable:eDP-1"
+[events]
+ lid_close = "umbriel msg output-disable:eDP-1"
+ lid_open = "umbriel msg output-enable:eDP-1"
 
 # ==============================================================================
 # Screencast
@@ -71,8 +71,8 @@ files = []
 radius = 3
 
 # Choose the background color shown if the lock screen takes too long to appear.
-# [colors]
-# backdrop = "#000000FF"
+[colors]
+ backdrop = "#000000FF"
 
 # ==============================================================================
 # Effects
@@ -106,18 +106,18 @@ radius = 3
 # Enable NumLock when a physical keyboard connects.
 # https://docs.noctalia.dev/umbriel/input/
 [input.keyboard]
-numlock_toggle = true
-# added by rik, RAlt as compose, matching my Cosmic setting
-options = "compose:ralt"
+ numlock_toggle = true
+ # added by rik, RAlt as compose, matching my Cosmic setting
+ options = "compose:ralt"
 
 #section added by rik
 [input.touchpad]
-natural_scroll = true
-disable_while_typing = true
+ natural_scroll = true
+ disable_while_typing = true
 
 # Focus can follow the pointer across tiled, floating, and pinned windows.
 [input.focus]
-follows_mouse = true
+ follows_mouse = true
 
 # Confine touch input to one display.
 # [input.touch]
@@ -176,7 +176,6 @@ follows_mouse = true
 "Mod+WheelUp" = "window-focus-left"
 "Mod+WheelDown" = "window-focus-right"
 "Mod+O" = { action = "overview-toggle", repeat = false }
-"Mod+Shift+O" = { action = "cheatsheet-toggle", repeat = false }
 
 # Workspaces
 "Mod+1" = "workspace-switch:1"
@@ -209,6 +208,19 @@ follows_mouse = true
 "Mod+Ctrl+Space" = { action = "window-restore-from-scratchpad", repeat = false }
 "Mod+Tab" = "scratchpad-focus-next"
 
+# Brightnesscontrols (added by rik)
+ "XF86MonBrightnessUp" = "spawn:noctalia msg brightness-up"
+ "XF86MonBrightnessDown" = "spawn:noctalia msg brightness-down"
+# Audio controls (added by rik)
+ "XF86AudioRaiseVolume" = "spawn:noctalia msg volume-up"
+ "XF86AudioLowerVolume" = "spawn:noctalia msg volume-down"
+ "XF86AudioMute" = "spawn:noctalia msg volume-mute"
+# Player controls (added by rik)
+ "XF86AudioPlay" = "spawn:noctalia msg media toggle"
+ "XF86AudioNext" = "spawn:noctalia msg media next"
+ "XF86AudioPrev" = "spawn:noctalia msg media previous"
+
+
 # ==============================================================================
 # Layout
 # New scrolling-layout windows start at half the output width. Without this
@@ -216,10 +228,10 @@ follows_mouse = true
 # their most recently focused row when focus leaves and later returns.
 # https://docs.noctalia.dev/umbriel/layout/
 [layout]
-extent_presets = [0.333, 0.5, 0.667]
+ extent_presets = [0.333, 0.5, 0.667]
 
 [layout.scrolling]
-default_extent_fraction = 0.5
+ default_extent_fraction = 0.5
 
 # A tab group shows one window at a time below a bar of titles, and stacks and
 # resizes like any row of its column. Mod+W tabs the focused window with the
@@ -248,30 +260,30 @@ default_extent_fraction = 0.5
 # Blur windows using the non-optimized path so translucent windows include
 # overlapping windows behind them.
 [[window_rule]]
-blur = true
-blur_optimized = false
+ blur = true
+ blur_optimized = false
 
 [[window_rule]]
-match.app_id = "^dev.noctalia.Noctalia$"
-default_floating = true
-default_floating_size_px = { width = 1020, height = 900 }
+ match.app_id = "^dev.noctalia.Noctalia$"
+ default_floating = true
+ default_floating_size_px = { width = 1020, height = 900 }
 
 [[window_rule]]
-match.app_id = "^dev.noctalia.UmbrielSharePicker$"
-default_floating = true
-default_floating_size_px = { width = 800, height = 600 }
+ match.app_id = "^dev.noctalia.UmbrielSharePicker$"
+ default_floating = true
+ default_floating_size_px = { width = 800, height = 600 }
 
 [[window_rule]]
-match.title = "^(Picture-in-Picture|Picture in picture)$"
-default_floating = true
-default_maximize = false
-default_position = { x = 20, y = 20, anchor = "bottom_right" }
+ match.title = "^(Picture-in-Picture|Picture in picture)$" 
+ default_floating = true
+ default_maximize = false
+ default_position = { x = 20, y = 20, anchor = "bottom_right" }
 
 [[window_rule]]
-match.title = "^notificationtoasts_.+_desktop"
-default_position = { x = 0, y = 0, anchor = "bottom_right" }
-default_focused = false
-default_pinned = true
+ match.title = "^notificationtoasts_.+_desktop"
+ default_position = { x = 0, y = 0, anchor = "bottom_right" }
+ default_focused = false
+ default_pinned = true
 
 # Keep game menus inside their window; a focus or workspace keybind releases the pointer.
 # [[window_rule]]
@@ -288,27 +300,27 @@ default_pinned = true
 # default_scratchpad = "music"
 
 # Give scratchpad windows their own border colors.
-# [[window_rule]]
-# match.is_scratchpad = true
-# border_color_focused = "#E5C07BFF"
-# border_color_unfocused = "#5C4A2AFF"
+[[window_rule]]
+ match.is_scratchpad = true
+ border_color_focused = "#E5C07BFF"
+ border_color_unfocused = "#5C4A2AFF"
 
 # Leave an application that draws its own corners and shadow undecorated.
-# [[window_rule]]
-# match.app_id = "^org[.]gnome[.]TextEditor$"
-# border_width = 0
-# corner_radius = 0
-# shadow = false
+[[window_rule]]
+ match.app_id = "^org[.]gnome[.]TextEditor$"
+ border_width = 0
+ corner_radius = 0
+ shadow = false
 
 # ==============================================================================
 # Layer rules
 # https://docs.noctalia.dev/umbriel/layer-rules/
 [[layer_rule]]
-match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$"
-blur = true
-blur_ignore_alpha = 0.5
-blur_popups = true
-blur_optimized = false
+ match.namespace = "^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd|desktop-widget-[^\"]*)$"
+ blur = true
+ blur_ignore_alpha = 0.5
+ blur_popups = true
+ blur_optimized = false
 
 # ==============================================================================
 # Overview
@@ -320,3 +332,11 @@ blur_optimized = false
 enabled = true
 delay_ms = 500
 action = "overview-open"
+
+# ==============================================================================
+# Cheatsheet (added by rik)
+[hot_corners.top_right]
+enabled = true
+delay_ms = 500
+action = "cheatsheet-toggle"
+
