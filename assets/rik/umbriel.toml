@@ -165,7 +165,7 @@ radius = 3
 "Mod+F" = { action = "window-toggle-fullscreen", repeat = false }
 "Mod+Ctrl+F" = { action = "window-toggle-maximize", repeat = false }
 "Mod+R" = "window-cycle-primary-extent"
-"Mod+Shift+R" = "window-cycle-primary-extent-back"
+"Mod+Shift+R" = "window-cycle-secondary-extent"
 "Mod+Comma" = "window-consume-left"
 "Mod+Period" = "window-consume-right"
 "Mod+Ctrl+Comma" = "window-consume-from-left"
