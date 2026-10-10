@@ -34,7 +34,10 @@ _: {
       ];
     };
     "/mnt/btrfs-root" = {
-      device = "/dev/nvme0n1p3";
+      # By label, not partition: the same "main" pool sits on nvme0n1p3
+      # today and inside the LUKS mapping after a reinstall with
+      # disko-luks.nix.
+      device = "/dev/disk/by-label/main";
       fsType = "btrfs";
       options = ["subvolid=5" "noatime"];
     };
