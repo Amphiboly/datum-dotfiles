@@ -437,6 +437,12 @@ in {
         # (bford.info/cachedir), e.g. Cargo's target/ dirs, which tag
         # themselves. Unlike Kopia, rustic only honours the tag when asked.
         # The explicit .cache globs stay: ~/.cache itself isn't tagged here.
+        #
+        # Maestral's config and sync index go with Dropbox: restored
+        # without the (excluded) files, the index makes Maestral read the
+        # empty folder as local deletions and upload them, wiping the
+        # account. Without them, a restored home simply needs a fresh
+        # `maestral start` link and full download.
         if [ -d "/run/restic-atomic-home/rik" ]; then
           echo "Syncing profile dataset: rik..."
           rustic backup \
@@ -446,6 +452,8 @@ in {
             --glob="!/run/restic-atomic-home/rik/Downloads" \
             --glob="!/run/restic-atomic-home/rik/.cache" \
             --glob="!/run/restic-atomic-home/rik/Dropbox" \
+            --glob="!/run/restic-atomic-home/rik/.config/maestral" \
+            --glob="!/run/restic-atomic-home/rik/.local/share/maestral" \
             /run/restic-atomic-home/rik
         fi
 
