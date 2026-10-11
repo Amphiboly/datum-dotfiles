@@ -57,6 +57,11 @@
       };
     };
 
+    keys.normal.z = {
+      w = ":set soft-wrap.enable true";
+      W = ":set soft-wrap.enable false";
+    };
+
     keys.normal = {
       "tab" = ":buffer-next";
       "S-tab" = ":buffer-previous";
