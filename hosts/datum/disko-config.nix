@@ -3,8 +3,8 @@
 # ~/Projects/manage). disko generates the fileSystems entries and the
 # boot.initrd.luks.devices entry from this file.
 #
-# - ESP: 512M vfat on /boot, for systemd-boot on UEFI. There is no BIOS
-#   boot partition.
+# - ESP: 512M vfat on /boot, holding lanzaboote's signed systemd-boot and
+#   stubs (secure-boot.nix). There is no BIOS boot partition.
 # - The rest is LUKS2, opened as "crypted" (partlabel disk-main-luks).
 #   Keyslot 0 holds the passphrase, keyslot 1 a systemd-cryptenroll
 #   recovery key; both are in 1Password.
@@ -15,8 +15,8 @@
 # Only run disko against this file to reinstall: its destroy/format modes
 # wipe the disk. TPM2 unlock would be an extra keyslot added with
 # systemd-cryptenroll (no reformat), and needs boot.initrd.systemd.enable;
-# it's only worth it with Secure Boot (lanzaboote) on, a separate decision
-# (CLAUDE.md, Hardware).
+# it's only worth it with Secure Boot on, which it has been since
+# 2026-10-13 (secure-boot.nix).
 {
   disko.devices = {
     disk.main = {

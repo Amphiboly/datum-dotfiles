@@ -5,11 +5,20 @@
   `/etc/nixos/` — the directory does not exist, so anything that falls back to
   channels or `<nixos-config>` will fail.
 - Host attribute: `datum` (`nixosConfigurations.datum`, defined in `flake.nix`).
-- Hardware: HP Spectre x360 13-ac076nr, i7-7500U, TPM 2.0. Boots via
-  plain systemd-boot with Secure Boot off. That's deliberate: the disk is not
-  encrypted, so Secure Boot (lanzaboote) would protect little and cost key
-  management in HP's firmware. Revisit if LUKS is ever added. Disk layout is
-  managed by disko.
+- Hardware: HP Spectre x360 15-ch00x (since 2026-10-12), i7-8550U, NVIDIA
+  MX150, 16 GB, 1 TB NVMe, TPM 2.0. Disk layout is managed by disko: LUKS
+  around btrfs, unlocked by passphrase at boot (recovery key in
+  1Password). No TPM2 unlock yet; that decision is open, and it would
+  need `boot.initrd.systemd.enable`, which isn't set.
+- Boot: Secure Boot ON, via lanzaboote (`modules/nixos/secure-boot.nix`)
+  with our own sbctl keys in `/var/lib/sbctl` plus Microsoft's. Lanzaboote
+  replaces systemd-boot (`boot.loader.systemd-boot.enable` is mkForced
+  off). The ESP holds signed stubs; the kernel itself shows as unsigned in
+  `sbctl verify`, which is expected (the stubs check it by hash). The
+  firmware is AMI Aptio with HP consumer menus: Secure Boot lives under
+  System Configuration → Boot Options. Never "Clear All Secure Boot Keys"
+  casually; it wipes dbx too. If it won't boot, turning Secure Boot off in
+  the BIOS is the safe fallback.
 - Desktop: COSMIC (`cosmic-greeter` via greetd). Note that `cosmic-greeter` is
   a single PAM service covering both the login screen and the session lock
   screen.

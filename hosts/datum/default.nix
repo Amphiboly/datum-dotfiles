@@ -20,12 +20,16 @@
     # Sops Secrets
     inputs.sops-nix.nixosModules.sops
 
+    # Secure Boot: lanzaboote replaces systemd-boot (see secure-boot.nix)
+    inputs.lanzaboote.nixosModules.lanzaboote
+
     # Gaze (facial authentication): daemon, D-Bus/polkit, PAM wiring
     inputs.gaze.nixosModules.default
 
     # Core system modules
     ../../modules/nixos/secrets.nix
     ../../modules/nixos/boot.nix
+    ../../modules/nixos/secure-boot.nix
     ../../modules/nixos/firmware.nix
     ../../modules/nixos/networking.nix
     ../../modules/nixos/bluetooth.nix

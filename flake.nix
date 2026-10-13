@@ -12,6 +12,12 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Secure Boot (modules/nixos/secure-boot.nix). Pinned to a release tag,
+    # as upstream recommends; bump the tag by hand.
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v1.2.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
