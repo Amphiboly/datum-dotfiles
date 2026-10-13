@@ -1,6 +1,6 @@
 # flake.nix
 {
-  description = "Modern Wayland NixOS Flake for HP Spectre Kaby Lake";
+  description = "Modern Wayland NixOS Flake for HP Spectre Kaby Lake R";
 
   inputs = {
     #   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";

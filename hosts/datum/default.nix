@@ -1,6 +1,7 @@
 # hosts/datum/default.nix
 #
-# The complete module composition for this one machine (i7-7500U laptop).
+# The complete module composition for this one machine (HP Spectre x360
+# 15-ch, i7-8550U laptop, since 2026-10-12).
 # Cross-machine-reusable capability lives in ../../modules/nixos/; this file
 # only decides which of those + hardware modules apply to "datum".
 {inputs, ...}: {

@@ -1,26 +1,22 @@
-# DRAFT, not imported anywhere. Layout for reinstalling datum on the
-# Spectre x360 15-ch (1 TB NVMe) with the btrfs pool inside LUKS. See
-# ~/Projects/manage/laptop-swap.md, phase 5.
+# datum's disk layout: Spectre x360 15-ch, 1 TB NVMe, a btrfs pool
+# inside LUKS2. Installed with it 2026-10-12 (laptop-swap.md, phase 5, in
+# ~/Projects/manage). disko generates the fileSystems entries and the
+# boot.initrd.luks.devices entry from this file.
 #
-# At install time this replaces disko-config.nix: copy it over that file
-# (keeping the import in default.nix as it is), then run disko against it.
-# Applying it to the current, unencrypted install would generate
-# fileSystems that point at a LUKS mapping which doesn't exist, and the
-# machine wouldn't boot.
+# - ESP: 512M vfat on /boot, for systemd-boot on UEFI. There is no BIOS
+#   boot partition.
+# - The rest is LUKS2, opened as "crypted" (partlabel disk-main-luks).
+#   Keyslot 0 holds the passphrase, keyslot 1 a systemd-cryptenroll
+#   recovery key; both are in 1Password.
+# - Inside it, btrfs labelled "main" with @, @home, @nix and @dropbox.
+#   /mnt/btrfs-root (by-label/main in filesystems.nix) and btrbk depend on
+#   the label and the subvolume names.
 #
-# Differences from disko-config.nix:
-# - The btrfs pool sits inside a LUKS2 container named "crypted"; disko
-#   also emits the matching boot.initrd.luks.devices entry.
-# - The 1M EF02 partition is gone: it only served GRUB on BIOS boot, and
-#   datum boots with systemd-boot on UEFI.
-# Subvolumes, labels and mount options are unchanged, so /mnt/btrfs-root
-# (by-label/main in filesystems.nix) and btrbk keep working.
-#
-# Unlocking: disko prompts for a passphrase when it formats the disk.
-# That stays the boot-time unlock. A TPM2 keyslot can be added later with
-# systemd-cryptenroll without reformatting; that also needs
-# boot.initrd.systemd.enable, and is only meaningful with Secure Boot
-# (lanzaboote) on, so it's a separate decision (CLAUDE.md, Hardware).
+# Only run disko against this file to reinstall: its destroy/format modes
+# wipe the disk. TPM2 unlock would be an extra keyslot added with
+# systemd-cryptenroll (no reformat), and needs boot.initrd.systemd.enable;
+# it's only worth it with Secure Boot (lanzaboote) on, a separate decision
+# (CLAUDE.md, Hardware).
 {
   disko.devices = {
     disk.main = {

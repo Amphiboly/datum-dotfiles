@@ -1,9 +1,12 @@
 # modules/nixos/remote-builder.nix
 #
 # Offload builds to nostrum (Fedora 44, Nix from Fedora's RPM), reached over
-# Tailscale. datum's i7-7500U takes ages on anything uncached (e.g. noctalia,
-# which builds from source now that its input follows our nixpkgs);
-# nostrum's i7-1355U has 3x the threads and 4x the RAM.
+# Tailscale. datum's i7-8550U (4C/8T, 16 GB) is slow on anything uncached
+# (e.g. noctalia, which builds from source now that its input follows our
+# nixpkgs); nostrum's i7-1355U has 1.5x the threads and 4x the RAM.
+# This only applies once datum is installed: nixos-install from the ISO
+# neither offloads nor uses nix-settings.nix's caches (laptop-swap.md,
+# phase 5, step 6).
 #
 # How the pieces fit:
 # - The nix-daemon (root) opens the SSH connection, so it can't use rik's

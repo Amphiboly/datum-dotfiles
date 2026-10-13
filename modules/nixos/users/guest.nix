@@ -2,6 +2,7 @@
 {pkgs, ...}: {
   users.users.guest = {
     isNormalUser = true;
+    uid = 1001; # pinned alongside rik's, see rik.nix
     group = "guest";
     description = "Guest User";
     # Essential desktop groups without administrative access:
@@ -11,7 +12,7 @@
     shell = pkgs.zsh;
   };
 
-  users.groups.guest = {};
+  users.groups.guest.gid = 993; # pinned alongside rik's, see rik.nix
 
   systemd.tmpfiles.rules = [
     "d /home/guest 0755 guest guest -"
