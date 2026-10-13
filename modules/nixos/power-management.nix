@@ -37,19 +37,14 @@ _: {
       START_CHARGE_THRESH_BAT0 = 75;
       STOP_CHARGE_THRESH_BAT0 = 80;
 
-      # Keep USB autosuspend away from the webcam. On 2026-08-14 the module
-      # stopped enumerating as an HP TrueVision FHD RGB-IR (064e:3401) and has
-      # come up as the bare SunplusIT controller (1bcf:0b09) ever since — it is
-      # booting from ROM instead of loading its HP firmware. The breakage
-      # followed a suspend/resume, though 88 earlier suspends were harmless, so
-      # power management is a suspect rather than a proven cause. This is cheap
-      # insurance either way.
-      #
-      # Both IDs are listed deliberately: 064e:3401 protects the camera once
-      # it's recovered, and 1bcf:0b09 protects it in the state it is in today.
-      # TLP matches these as a space-separated word list, so a stale entry
-      # simply never matches and costs nothing.
-      USB_DENYLIST = "064e:3401 1bcf:0b09";
+      # Keep USB autosuspend away from the built-in RGB+IR camera (HP Wide
+      # Vision FHD, 0408:5251), which Gaze depends on (facial-auth.nix).
+      # Insurance, not a known fault: the previous datum hardware's camera
+      # broke after a suspend/resume on 2026-08-14 (its firmware stopped
+      # loading; see commit c2c5199), and power management was a suspect,
+      # never a proven cause. Its IDs (064e:3401, 1bcf:0b09) were listed here
+      # until the 2026-10-12 hardware swap.
+      USB_DENYLIST = "0408:5251";
     };
   };
 }
