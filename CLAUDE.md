@@ -7,9 +7,14 @@
 - Host attribute: `datum` (`nixosConfigurations.datum`, defined in `flake.nix`).
 - Hardware: HP Spectre x360 15-ch00x (since 2026-10-12), i7-8550U, NVIDIA
   MX150, 16 GB, 1 TB NVMe, TPM 2.0. Disk layout is managed by disko: LUKS
-  around btrfs, unlocked by passphrase at boot (recovery key in
-  1Password). No TPM2 unlock yet; that decision is open, and it would
-  need `boot.initrd.systemd.enable`, which isn't set.
+  around btrfs, unlocked at boot by TPM2 + PIN (PCR 7, so it depends on
+  Secure Boot), with the passphrase and a recovery key as fallbacks; all
+  three are in 1Password. The initrd is systemd-based (nixpkgs' default;
+  the repo doesn't set `boot.initrd.systemd.enable`), so systemd-cryptsetup
+  does the unlock. Its crypttab options (`tpm2-device=auto`, `tries=0`)
+  live in `hosts/datum/disko-config.nix`; `tries=0` matters, see the
+  comment there. After a BIOS or dbx update the PIN may stop working: use
+  the passphrase once, then re-enroll (command in the disko header).
 - Boot: Secure Boot ON, via lanzaboote (`modules/nixos/secure-boot.nix`)
   with our own sbctl keys in `/var/lib/sbctl` plus Microsoft's. Lanzaboote
   replaces systemd-boot (`boot.loader.systemd-boot.enable` is mkForced
