@@ -26,14 +26,9 @@
     };
     supportedFilesystems = ["btrfs" "cifs"];
 
-    # No uvcvideo quirks. A previous `options uvcvideo quirks=0x102` lived here
-    # to coax more modes out of what presents itself as an SPCA2085 webcam; it
-    # never could, for two reasons. 0x102 is PROBE_DEF|PROBE_MINMAX, which only
-    # alters stream *probe* negotiation, and the kernel logs "Forcing device
-    # quirks ... for testing purpose" on every boot when it is set. More to the
-    # point, the fault is below the driver entirely: the camera module is
-    # enumerating under the wrong USB identity. A modprobe option cannot change
-    # a device's VID:PID. See modules/nixos/facial-auth.nix for the details.
+    # No uvcvideo quirks; the 15-ch's built-in camera needs none. (A
+    # `quirks=0x102` once lived here for the previous hardware's broken
+    # camera and never helped; see commit c2c5199.)
   };
 
   time.timeZone = "America/New_York";

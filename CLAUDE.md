@@ -45,18 +45,19 @@ mode and dies looking for `<nixos-config>`.
 
 ## Cameras
 
-- Built-in camera is BROKEN and unusable. It should be an HP TrueVision FHD
-  RGB-IR (`064e:3401`) but since 2026-08-14 it enumerates as a bare SunplusIT
-  SPCA2085 (`1bcf:0b09`) offering one 160x120 YUY2 mode and no IR, with corrupt
-  UVC control metadata. The driver is `uvcvideo` (not `gspca`). Diagnosed to
-  exhaustion — do not re-litigate it; the full history is in
-  `modules/nixos/facial-auth.nix` and commit c2c5199.
-- Face auth therefore runs off an external USB webcam, an AVerMedia Live
-  Streamer CAM 313, pinned by VID:PID as `usb:07ca:313a`. It is only
-  occasionally connected; its absence must stay fast, which is why the camera
-  is pinned rather than left at Gaze's `"primary"` default.
-- No IR anywhere, so software liveness is the only anti-spoofing. Known and
-  accepted; datum is a backup laptop.
+- Built-in HP Wide Vision FHD (SunplusIT, `0408:5251`), RGB + IR, and it
+  works. One USB device, two UVC functions: colour MJPEG up to 1080p
+  (`/dev/video0`) and IR 352x352 GREY (`/dev/video2`). Gaze uses it for both
+  spectra: IR pinned as `usb:0408:5251`, RGB as `/dev/video0`, because
+  Gaze 0.3.9's `usb:` resolver skips MJPEG-only nodes (see facial-auth.nix).
+- The IR emitter strobes on alternate frames by itself whenever the IR stream
+  starts (Microsoft camera XU, unit 7, selector 6, already in mode 2), so Gaze
+  needs no emitter profile and `emitter_enabled` stays off. Details and
+  measurements are in `modules/nixos/facial-auth.nix`.
+- History, for this file's older commits: the previous datum hardware (the
+  13-ac, until 2026-10-12) had a built-in camera with broken firmware and ran
+  face auth off an external AVerMedia CAM 313 (`usb:07ca:313a`) with no IR.
+  None of that applies now; see commit c2c5199 if it ever matters.
 
 # Technical Constraints & Guidelines
 
