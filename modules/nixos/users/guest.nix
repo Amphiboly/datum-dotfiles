@@ -7,7 +7,10 @@
     description = "Guest User";
     # Essential desktop groups without administrative access:
     extraGroups = ["networkmanager" "video" "audio"];
-    # Sets an initial default password (e.g. "guest") so they can log in
+    # A known password on purpose: this is the account anyone at the
+    # keyboard may use. It only applies when the account is created
+    # (mutableUsers), and SSH takes keys only (ssh.nix), so it's good at the
+    # console and nowhere else.
     initialPassword = "guest";
     shell = pkgs.zsh;
   };
