@@ -63,6 +63,10 @@
 # vrr = "fullscreen"
 # hdr = "auto"
 
+# next section added by rik
+[output.eDP-1]
+  scale = 1.75
+
 # ==============================================================================
 # Appearance
 # Blur uses a smaller radius than the built-in default.
@@ -114,6 +118,10 @@ radius = 3
 [input.touchpad]
  natural_scroll = true
  disable_while_typing = true
+
+#section added by rik
+[input.cursor]
+ size = 48
 
 # Focus can follow the pointer across tiled, floating, and pinned windows.
 [input.focus]
