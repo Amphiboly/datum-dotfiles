@@ -145,12 +145,27 @@ in {
     config.environment.etc."gaze/config.toml".source
   ];
 
-  # COSMIC uses one PAM service, "cosmic-greeter", for both the greetd login
-  # screen and the session lock screen, so this single line covers both. It is
-  # not in upstream's defaults, so it needs saying explicitly.
+  # COSMIC's login screen and lock screen use different PAM services, and
+  # neither is in upstream's defaults:
   #
-  # Whenever this is on, pam_unix stays behind the gaze rule: the module
-  # inserts face auth as `sufficient` ahead of pam_unix, so a password remains
-  # a working fallback whenever the camera doesn't cooperate.
+  #   - "cosmic-greeter" is the lock screen only.
+  #   - The login screen is cosmic-greeter acting as a greetd client; greetd
+  #     itself runs the PAM conversation, as service "greetd" (which pulls in
+  #     the "login" stack via substack). Until 2026-10-14 this file assumed
+  #     cosmic-greeter covered both, so login never had face auth.
+  #
+  # Whenever this is on, the password stays a fallback: the module inserts
+  # face auth as `sufficient` ahead of pam_unix. In greetd's stack there is no
+  # unix rule of its own, so gaze lands ahead of `substack login`; a face
+  # match skips the login stack, and a miss falls through to its password
+  # prompt.
+  #
+  # Keyring: a face login gives pam_gnome_keyring no password, so the
+  # "login" keyring (Maestral's Dropbox token is in it) can't be unlocked by
+  # PAM. It has a blank password instead, set by hand in Seahorse on
+  # 2026-10-14, so it opens without one; LUKS and file permissions protect it
+  # at rest. If it ever gets a password again, face logins leave it locked and
+  # Maestral stalls or prompts.
   security.pam.services.cosmic-greeter.gaze.enable = activeInAuthStack;
+  security.pam.services.greetd.gaze.enable = activeInAuthStack;
 }

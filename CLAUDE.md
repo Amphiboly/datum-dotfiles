@@ -24,9 +24,10 @@
   System Configuration → Boot Options. Never "Clear All Secure Boot Keys"
   casually; it wipes dbx too. If it won't boot, turning Secure Boot off in
   the BIOS is the safe fallback.
-- Desktop: COSMIC (`cosmic-greeter` via greetd). Note that `cosmic-greeter` is
-  a single PAM service covering both the login screen and the session lock
-  screen.
+- Desktop: COSMIC (`cosmic-greeter` via greetd). The login screen and the
+  lock screen are different PAM services: login is `greetd` (greetd runs the
+  PAM conversation for cosmic-greeter, and its stack substacks `login`); the
+  lock screen is `cosmic-greeter`. Both have face auth (facial-auth.nix).
 - Authentication: GunduLabs Gaze (`gazed` daemon + `pam_gaze.so`), see
   `modules/nixos/facial-auth.nix`.
 
