@@ -121,7 +121,8 @@ radius = 3
 
 #section added by rik
 [input.cursor]
- size = 36
+ size = 24
+ hardware_cursor = true
 
 # Focus can follow the pointer across tiled, floating, and pinned windows.
 [input.focus]
