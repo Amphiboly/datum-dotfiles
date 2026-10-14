@@ -39,7 +39,7 @@ order = [ "default", "Nix" ]
     margin_edge = 6
     margin_ends = 10
     radius = 4
-    scale = 1.0000000074505806
+    scale = 1.0
     shadow = false
     start = [ "launcher", "wallpaper", "workspaces", "taskbar" ]
     thickness = 25
@@ -159,7 +159,7 @@ nixos_configuration = "datum"
 enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status", "noctalia/umbriel-companion" ]
 
 [shell]
-corner_radius_scale = 0.2500000037252903
+corner_radius_scale = 0.25
 font_family = "Lilex Nerd Font Medium"
 settings_show_advanced = true
 settings_window_translucent = true
