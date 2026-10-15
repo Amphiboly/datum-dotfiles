@@ -77,12 +77,10 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
     inputs.nur.overlays.default
-    # Noctalia's overlay is deliberately NOT applied here -- it would build
-    # `pkgs.noctalia` against this overlay stack (NUR etc.) rather than plain
-    # nixpkgs. See the comment on `package` in
-    # home/modules/desktop-integration/noctalia.nix, which takes the package
-    # straight from inputs.noctalia.packages instead.
-    inputs.umbriel.overlays.default
+    # Noctalia's and Umbriel's overlays are deliberately NOT applied here --
+    # they would build `pkgs.noctalia`/`pkgs.umbriel` against this overlay
+    # stack (NUR etc.), which no binary cache matches. Both packages come
+    # straight from the flakes instead (noctalia.nix, umbriel.nix).
 
     # TEMPORARY: nixpkgs removed the EOL `buildGo125Module` attribute, but
     # sops-nix's own sops-install-secrets package (config.sops.package's

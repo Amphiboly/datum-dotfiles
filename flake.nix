@@ -47,34 +47,32 @@
     # cosmic-greeter stays the login/lock PAM service pam_gaze is wired
     # into (facial-auth.nix).
     #
-    # Follows our nixpkgs, against docs.noctalia.dev/noctalia/getting-started/
-    # nixos, which says to leave noctalia's inputs alone so the derivation
-    # hash matches noctalia.cachix.org. Not following broke the shell on
-    # 2026-09-29: the GPU driver is never bundled -- libglvnd dlopens it from
-    # /run/opengl-driver, i.e. the *system's* Mesa -- so a noctalia built on
-    # an older nixpkgs (glibc 2.42) died with "eglGetDisplay failed" once our
-    # nixpkgs moved to glibc 2.44 and Mesa started requiring GLIBC_2.43. That
-    # recurs whenever unstable's glibc outruns noctalia's pin, so we compile
-    # locally instead; v5 is meson/C++ with no Qt, so it's a small build.
-    # Still on the `cachix` branch, which only advances to commits upstream
-    # CI has built and tested. Reported upstream as
-    # github.com/noctalia-dev/noctalia/issues/4668. Upstream's fix (e639a87e,
-    # 2026-10-03): update-flake now checks hourly whether nixos-unstable's
-    # glibc differs from their lock and bumps nixpkgs if so; CI then builds
-    # it and advances `cachix`. That shrinks the window from a week to
-    # roughly an hour plus CI time, but doesn't close it -- a glibc bump just
-    # before our 03:00 nightly could still lock a stale noctalia. Since
-    # nostrum builds it anyway, `follows` costs little and removes the race
-    # entirely; keep it unless upstream stops pinning nixpkgs independently
-    # of the consumer.
-    noctalia = {
-      url = "github:noctalia-dev/noctalia/cachix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    umbriel = {
-      url = "github:noctalia-dev/umbriel";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Neither follows our nixpkgs, as docs.noctalia.dev/noctalia/getting-
+    # started/nixos asks: with their own pinned nixpkgs the derivations match
+    # what upstream CI pushes to noctalia.cachix.org and umbriel.cachix.org
+    # (both in nix-settings.nix), so updates download instead of compiling.
+    # Following ours made every nixpkgs bump -- i.e. most nights -- rebuild
+    # both on nostrum.
+    #
+    # The risk this accepts, and the guard on it: the GPU driver is never
+    # bundled -- libglvnd dlopens it from /run/opengl-driver, i.e. the
+    # *system's* Mesa -- so a build on an older glibc than ours dies with
+    # "eglGetDisplay failed" once Mesa needs newer glibc symbols. That broke
+    # the shell on 2026-09-29 (noctalia on glibc 2.42, us on 2.44), and we
+    # followed nixpkgs from then until 2026-10-15. Reported upstream as
+    # github.com/noctalia-dev/noctalia/issues/4668; their fix (e639a87e,
+    # 2026-10-03) checks hourly whether nixos-unstable's glibc differs from
+    # their lock and bumps nixpkgs if so, which shrinks the window from a
+    # week to about an hour plus CI time. The remaining race (a glibc bump
+    # just before our 03:00 nightly) is caught at evaluation: noctalia.nix
+    # and umbriel.nix assert that each one's glibc is at least ours, so a
+    # stale pin fails the nightly build (flake.lock restored, mail sent)
+    # instead of booting into a broken shell.
+    #
+    # noctalia tracks the `cachix` branch, which only advances to commits
+    # upstream CI has built and tested.
+    noctalia.url = "github:noctalia-dev/noctalia/cachix";
+    umbriel.url = "github:noctalia-dev/umbriel";
   };
 
   outputs = {

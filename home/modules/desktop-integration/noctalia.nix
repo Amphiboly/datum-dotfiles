@@ -28,16 +28,32 @@
     # overlay build (`final.callPackage ./nix/package.nix {}`, see
     # noctalia's flake.nix) compiles against *our* stacked pkgs (NUR +
     # whatever else). Pointing straight at the flake's own
-    # `packages.default` instead builds against plain nixpkgs -- ours,
-    # since flake.nix makes the noctalia input follow it (see the comment
-    # there for why that matters: the GPU driver comes from the system, so
-    # noctalia's glibc must keep up with ours). It's compiled locally;
-    # noctalia.cachix.org can't hit with that override. Keep hosts/datum's
-    # nixpkgs.overlays free of noctalia's overlay -- reintroducing it would
-    # just leave a second, differently built `pkgs.noctalia` sitting there
-    # for someone to reach for by accident.
+    # `packages.default` instead builds on noctalia's own pinned nixpkgs,
+    # the exact derivation upstream CI pushes to noctalia.cachix.org, so it
+    # downloads rather than compiles. Keep hosts/datum's nixpkgs.overlays
+    # free of noctalia's overlay -- reintroducing it would just leave a
+    # second, differently built `pkgs.noctalia` sitting there for someone to
+    # reach for by accident.
     package = inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default;
   };
+
+  # The shell loads the system's Mesa, so noctalia's glibc must not be older
+  # than ours (the 2026-09-29 "eglGetDisplay failed" breakage; see the
+  # comment on the noctalia input in flake.nix). A stale upstream pin fails
+  # evaluation here, and with it the nightly build, instead of the session.
+  assertions = let
+    theirGlibc = inputs.noctalia.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system}.glibc.version;
+  in [
+    {
+      assertion = lib.versionAtLeast theirGlibc pkgs.glibc.version;
+      message = ''
+        noctalia's pinned nixpkgs has glibc ${theirGlibc}, older than ours
+        (${pkgs.glibc.version}); the shell would fail to load the system's
+        Mesa ("eglGetDisplay failed"). Wait for upstream to bump its nixpkgs
+        (checked hourly), then update the noctalia input again.
+      '';
+    }
+  ];
 
   # The module hangs the unit off graphical-session.target, which every
   # systemd-aware session reaches -- COSMIC included -- so Noctalia's bar
