@@ -257,11 +257,15 @@ radius = 3
 # Rules combine in order, with later values overriding earlier ones.
 # https://docs.noctalia.dev/umbriel/window-rules/
 
-# Blur windows using the non-optimized path so translucent windows include
-# overlapping windows behind them.
+# Blur windows using the optimized path: the blurred wallpaper is computed
+# once and reused, so translucent windows show it rather than the windows
+# underneath. The non-optimized path re-blurs everything behind each window
+# on every frame, and on the 15-ch's 4K panel (UHD 620, scale 1.75) that made
+# the cursor lag badly, since the cursor moves with frame commits
+# (2026-10-15). Keep it optimized here and in the layer rule below.
 [[window_rule]]
  blur = true
- blur_optimized = false
+ blur_optimized = true
 
 [[window_rule]]
  match.app_id = "^dev.noctalia.Noctalia$"
@@ -330,7 +334,7 @@ radius = 3
  blur = true
  blur_ignore_alpha = 0.5
  blur_popups = true
- blur_optimized = false
+ blur_optimized = true
 
 # ==============================================================================
 # Overview
