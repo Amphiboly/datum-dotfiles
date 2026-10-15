@@ -18,6 +18,15 @@
 #   never mixed into an automatic generation, and the lock commit never
 #   lands under a working tree that's mid-edit.
 # - Build fails: flake.lock is restored, status-email-alert@ mails the log.
+# - CachyOS kernel not in any binary cache (added 2026-10-15): hold back
+#   just the nix-cachyos-kernel input, update the rest, mail a notice. Its
+#   `release` branch only advances once upstream CI has pushed the kernel
+#   to the lantian attic cache, so this only happens when that cache is
+#   unreachable or has dropped the build -- and then the night would
+#   otherwise compile a kernel for hours on nostrum (or datum). The kernel
+#   is built against cachyos' own pinned nixpkgs (overlays.pinned), so no
+#   other input changes it, and holding that one input is enough. If even
+#   the held kernel would have to be built, skip the night.
 # - Success: flake.lock is committed to local main as "flake lock
 #   (nightly)", naming the system it produced. Never pushed.
 #
@@ -40,6 +49,13 @@
   mailTo = "datum-build@rik.users.panix.com";
   mailFrom = "rik@panix.com";
 
+  toplevel = "${repo}#nixosConfigurations.${config.networking.hostName}.config.system.build.toplevel";
+  kernelInput = "nix-cachyos-kernel";
+  # Store paths of the kernel and its companions look like
+  # /nix/store/<hash>-linux-cachyos-latest-7.2.8.drv. Taken from config so
+  # a switch to another cachyos flavour doesn't silently disarm the check.
+  kernelPattern = "-${config.boot.kernelPackages.kernel.pname}-";
+
   runner = pkgs.writeShellScript "nixos-nightly-upgrade" ''
     set -euo pipefail
 
@@ -57,8 +73,9 @@
     Subject: [datum] nightly update skipped: $1
 
     The nightly flake update on datum did not run: $1.
-    Nothing was changed. Commit or stash, then either wait for tomorrow
-    night or run: sudo systemctl start nixos-nightly-upgrade.service
+    Nothing was changed. Once the cause is dealt with (for uncommitted
+    work: commit or stash), either wait for tomorrow night or run:
+    sudo systemctl start nixos-nightly-upgrade.service
     EOF
       exit 0
     }
@@ -85,9 +102,46 @@
     echo "== nix flake update"
     as_user nix flake update --flake "$REPO"
 
+    # Derivations the build would compile rather than download. Captured
+    # into a variable before grepping: `grep -q` in a pipeline exits early,
+    # and under pipefail the resulting SIGPIPE upstream would read as "no
+    # match".
+    to_build() {
+      as_user nix build --dry-run "${toplevel}" 2>&1 \
+        | awk '/will be built:$/ { f = 1; next } /^[^ ]/ { f = 0 } f { print $1 }'
+    }
+    kernel_would_build() {
+      local list
+      list=$(to_build)
+      grep -qF -- "${kernelPattern}" <<<"$list"
+    }
+
+    echo "== kernel cache check"
+    kernel_note=""
+    if kernel_would_build; then
+      echo "The new CachyOS kernel is in no cache; holding ${kernelInput}"
+      git_ checkout -- flake.lock
+      mapfile -t others < <(as_user nix flake metadata --json "$REPO" \
+        | jq -r '.locks.nodes.root.inputs | keys[] | select(. != "${kernelInput}")')
+      as_user nix flake update --flake "$REPO" "''${others[@]}"
+      kernel_would_build \
+        && skip "the CachyOS kernel would be compiled even with ${kernelInput} held"
+      kernel_note="${kernelInput} held back: its new kernel was not in any binary cache."
+      msmtp --account=default ${mailTo} <<EOF || echo "warning: notice mail not sent"
+    From: datum systemd <${mailFrom}>
+    To: ${mailTo}
+    Subject: [datum] nightly update: CachyOS kernel held back
+
+    The nightly update found a new CachyOS kernel that no binary cache
+    has (the lantian attic cache is probably down), so building it would
+    have meant compiling a kernel. ${kernelInput} was left at its
+    current revision; everything else was updated as usual. Nothing to
+    do: the kernel is retried every night until the cache has it.
+    EOF
+    fi
+
     echo "== build"
-    out=$(as_user nix build --no-link --print-out-paths \
-      "$REPO#nixosConfigurations.${config.networking.hostName}.config.system.build.toplevel")
+    out=$(as_user nix build --no-link --print-out-paths "${toplevel}")
     echo "built: $out"
 
     echo "== changes vs running system"
@@ -107,6 +161,7 @@
       git_ commit --quiet \
         -m "flake lock (nightly)" \
         -m "Updated, built and staged for next boot by nixos-nightly-upgrade on $(date -I). System: $out" \
+        ''${kernel_note:+-m "$kernel_note"} \
         -- flake.lock
       committed=1
       echo "Committed: $(git_ log --oneline -1)"
@@ -115,7 +170,7 @@
 in {
   systemd.services.nixos-nightly-upgrade = {
     description = "Nightly flake update, build, and stage for next boot";
-    path = [config.nix.package config.systemd.package pkgs.git pkgs.nvd pkgs.coreutils pkgs.util-linux pkgs.msmtp];
+    path = [config.nix.package config.systemd.package pkgs.git pkgs.nvd pkgs.coreutils pkgs.util-linux pkgs.msmtp pkgs.gawk pkgs.gnugrep pkgs.jq];
     wants = ["network-online.target"];
     after = ["network-online.target"];
     onFailure = ["status-email-alert@%n.service"];
