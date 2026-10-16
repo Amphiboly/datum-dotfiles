@@ -1,3 +1,6 @@
+[accessibility]
+ui_scale = 1.75
+
 [bar]
 order = [ "default", "Nix" ]
 
@@ -21,6 +24,7 @@ order = [ "default", "Nix" ]
     capsule_border_width = 0.5
     capsule_fill = "on_primary"
     capsule_foreground = "secondary"
+    center = []
     contact_shadow = true
     end = [
         "group:g1",
@@ -32,16 +36,15 @@ order = [ "default", "Nix" ]
         "volume",
         "brightness",
         "battery",
-        "control-center",
         "weather",
         "session"
     ]
     margin_edge = 6
     margin_ends = 10
     radius = 4
-    scale = 1.0
+    scale = 1.00
     shadow = false
-    start = [ "launcher", "wallpaper", "workspaces", "taskbar" ]
+    start = [ "group:g2", "wallpaper", "workspaces", "taskbar" ]
     thickness = 25
 
         [[bar.default.capsule_group]]
@@ -55,16 +58,41 @@ order = [ "default", "Nix" ]
         opacity = 1.0
         padding = 6.0
 
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "tertiary"
+        border_width = 0.5
+        enabled = true
+        fill = "on_primary"
+        foreground = "secondary"
+        id = "g2"
+        members = [ "control-center", "launcher" ]
+        opacity = 1.0
+        padding = 6.0
+
 [desktop_widgets]
 schema_version = 2
-widget_order = []
+widget_order = [ "desktop-widget-0000000000000001" ]
 
     [desktop_widgets.grid]
     cell_size = 8
     major_interval = 4
     visible = true
 
-    [desktop_widgets.widget]
+    [desktop_widgets.widget.desktop-widget-0000000000000001]
+    box_height = 72.0
+    box_width = 144.0
+    cx = 2100.5
+    cy = 93.5
+    output = "eDP-1"
+    placement_height = 1234.0
+    placement_width = 2194.0
+    rotation = 0.0
+    type = "clock"
+
+        [desktop_widgets.widget.desktop-widget-0000000000000001.settings]
+        clock_style = "digital"
 
 [idle]
 behavior_order = [ "screen-off", "lock", "lock-and-suspend" ]
@@ -120,11 +148,11 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
     [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
     box_height = 196.0
     box_width = 720.0
-    cx = 960.0
-    cy = 961.0
+    cx = 1097.0
+    cy = 1097.0
     output = "eDP-1"
-    placement_height = 1080.0
-    placement_width = 1920.0
+    placement_height = 1234.0
+    placement_width = 2194.0
     rotation = 0.0
     type = "login_box"
 
@@ -143,6 +171,15 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
         show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
+
+[osd]
+scale = 0.5
+
+    [osd.kinds]
+    dnd = false
+    keyboard_backlight = false
+    nightlight = false
+    privacy = false
 
 [plugin_settings."avivbintangaringga/nix-monitor"]
 panel_open_near_click = false
@@ -183,20 +220,20 @@ source = "community"
 wallpaper_scheme = "m3-content"
 
     [theme.templates]
-    builtin_ids = [ "ghostty", "niri" ]
-    community_ids = [ "yazi" ]
+    builtin_ids = [ "btop", "helix", "kitty", "starship", "umbriel" ]
+    community_ids = [ "zen-browser", "zed", "zathura", "yazi" ]
 
 [wallpaper]
 directory = "/home/rik/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/rik/Pictures/wallpapers/flexoki.png"
+    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
 
     [wallpaper.last]
-    path = "/home/rik/Pictures/wallpapers/flexoki.png"
+    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/rik/Pictures/wallpapers/flexoki.png"
+    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
 
 [weather]
 unit = "imperial"
