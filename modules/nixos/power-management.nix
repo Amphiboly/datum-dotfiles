@@ -30,6 +30,22 @@ _: {
     pd.enable = true;
 
     settings = {
+      # TLP's three profiles use the _AC (performance), _BAT (balanced) and
+      # _SAV (power-saver) settings. datum is nearly always on AC, so the
+      # profile doesn't follow the power source: it boots in performance and
+      # stays there, and balanced/power-saver are picked by hand (panel
+      # power-profile switch via tlp-pd, or `tlp balanced` / `tlp
+      # power-saver`).
+      TLP_AUTO_SWITCH = 0;
+      TLP_PROFILE_DEFAULT = "PRF";
+
+      # Turbo: always allowed in performance, allowed in balanced (where the
+      # "power" EPP below keeps it to bursts), off in power-saver. TLP has no
+      # default here and leaves the kernel's setting alone unless told.
+      CPU_BOOST_ON_AC = 1;
+      CPU_BOOST_ON_BAT = 1;
+      CPU_BOOST_ON_SAV = 0;
+
       CPU_SCALING_GOVERNOR_ON_AC = "performance";
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
       CPU_ENERGY_PERF_POLICY_ON_AC = "performance";

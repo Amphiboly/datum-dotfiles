@@ -25,21 +25,6 @@
     memoryPercent = 38;
   };
 
-  # Automatically set performance level based on battery/ac
-  services.auto-cpufreq = {
-    enable = true;
-    settings = {
-      charger = {
-        governor = "performance";
-        turbo = "auto";
-      };
-      battery = {
-        governor = "powersave";
-        turbo = "never";
-      };
-    };
-  };
-
   # Auto-nice configurations
   services.ananicy = {
     enable = true;
