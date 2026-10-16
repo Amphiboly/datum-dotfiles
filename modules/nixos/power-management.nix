@@ -50,8 +50,11 @@ _: {
       CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
       CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
       CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-      START_CHARGE_THRESH_BAT0 = 75;
-      STOP_CHARGE_THRESH_BAT0 = 80;
+
+      # No START/STOP_CHARGE_THRESH_BAT0: this HP's ACPI battery exposes no
+      # charge_control_*_threshold files (checked 2026-10-16, after the
+      # battery exchange), so TLP has nothing to write them to and the
+      # battery always charges to 100%.
 
       # Keep USB autosuspend away from the built-in RGB+IR camera (HP Wide
       # Vision FHD, 0408:5251), which Gaze depends on (facial-auth.nix).
