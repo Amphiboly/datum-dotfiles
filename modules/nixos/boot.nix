@@ -5,12 +5,11 @@
     # stable upstream Linux release branch instead of standard LTS lines.
     #kernelPackages = pkgs.linuxKernel.packages.linux_7_1;
 
-    # Alternative option to track whatever the absolute
-    # latest stable release is in nixpkgs automatically:
-    # kernelPackages = pkgs.linuxPackages_latest;
-
-    # Alternative option to track the optimized cachyos kernel
-    kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest;
+    # Track whatever the latest stable release is in nixpkgs, from
+    # cache.nixos.org. (The CachyOS kernel from xddxdd/nix-cachyos-kernel was
+    # used until 2026-10-15, when its binary cache was shut down after a
+    # compromise; see the commit that removed it.)
+    kernelPackages = pkgs.linuxPackages_latest;
 
     loader = {
       systemd-boot = {

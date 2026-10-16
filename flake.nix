@@ -6,8 +6,6 @@
     #   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    # /release (below) ensures precompiled kernel
-    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel/release";
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -77,7 +75,6 @@
 
   outputs = {
     nixpkgs,
-    nix-cachyos-kernel,
     home-manager,
     nur,
     ...
@@ -94,14 +91,7 @@
     nixosConfigurations.datum = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {inherit inputs;};
-      modules = [
-        ./hosts/datum
-        {
-          nixpkgs.overlays = [
-            nix-cachyos-kernel.overlays.pinned
-          ];
-        }
-      ];
+      modules = [./hosts/datum];
     };
 
     # Standalone per-user configs: `home-manager switch --flake .#<user>`
