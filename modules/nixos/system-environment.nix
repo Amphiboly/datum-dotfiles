@@ -6,7 +6,7 @@
 {pkgs, ...}: {
   environment.sessionVariables = {
     ZED_ALLOW_EMULATED_GPU = "1";
-    NIXOS_OZONE_HLWM = "1"; # Forces Chromium/Electron apps to use native Wayland
+    NIXOS_OZONE_WL = "1"; # nixpkgs' Chromium/Electron wrappers then run them on native Wayland
     WLR_NO_HARDWARE_CURSORS = "1"; # Fixes invisible cursor rendering inside virtual machines
   };
 

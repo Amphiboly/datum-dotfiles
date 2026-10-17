@@ -248,11 +248,8 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
 
 None of these were documented as issues; they turned up while reading.
 
-- **Probable bug: `NIXOS_OZONE_HLWM`** at
-  `modules/nixos/system-environment.nix:9`. The variable NixOS knows is
-  `NIXOS_OZONE_WL`. As written it does nothing, so Chromium/Electron apps
-  aren't being pushed to Wayland by it.
-- **`WLR_NO_HARDWARE_CURSORS = "1"`**, same file, line 10. The comment says
+- **`WLR_NO_HARDWARE_CURSORS = "1"`** in
+  `modules/nixos/system-environment.nix:10`. The comment says
   it's for virtual machines; datum is bare metal. Check whether it's still
   wanted.
 - **Stale comment** at `modules/nixos/remote-builder.nix:5`. It says noctalia
