@@ -125,14 +125,6 @@ recent history.
 - **Upstream:** noctalia-dev/umbriel#422, **still open** (last activity
   2026-10-12).
 
-### repology.org pinned in `/etc/hosts` — probably stale
-- **Where:** `modules/nixos/networking.nix:37` (commit 06606bd)
-- **What:** "TEMPORARY OVERRIDE WHILE REPOLOGY.ORG DNS IS OFFLINE"; it pins
-  `92.63.176.157`. The comment has no date and no removal condition.
-- **Status (2026-10-17):** public DNS (1.1.1.1) answers again, with the same
-  address, and also returns AAAA records.
-- **Next:** remove it.
-
 ## 3. Accepted risks with a guard in place
 
 ### noctalia / umbriel on their own pinned nixpkgs
