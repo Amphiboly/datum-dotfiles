@@ -48,7 +48,7 @@ operation = "write"
 xdg_directory = "config"
 
 [operations.entries]
-autotile = "true"
+autotile = "false"
 autotile_behavior = "PerWorkspace"
 focus_follows_cursor = "true"
 input_touchpad = """
@@ -93,6 +93,17 @@ desktop = """
     show_content: true,
     show_mounted_drives: false,
     show_trash: false,
+)"""
+dialog = """
+(
+    folders_first: false,
+    icon_sizes: (
+        list: 100,
+        grid: 100,
+    ),
+    show_details: false,
+    show_hidden: false,
+    view: List,
 )"""
 
 [[operations]]
@@ -139,6 +150,7 @@ autohide_behavior = """
 autohover_delay_ms = "Some(500)"
 background = "ThemeDefault"
 border_radius = "8"
+border_width = "0.0"
 exclusive_zone = "false"
 expand_to_edges = "false"
 keep_style_on_maximize = "false"
@@ -229,6 +241,17 @@ operation = "write"
 xdg_directory = "config"
 
 [operations.entries]
+custom = """
+{
+    (
+        modifiers: [
+            Ctrl,
+            Shift,
+        ],
+        key: \"space\",
+        description: Some(\"1Password Quick Access\"),
+    ): Spawn(\"1password --quick-access\"),
+}"""
 system_actions = """
 {
     Terminal: \"kitty\",
@@ -1687,6 +1710,21 @@ operation = "write"
 xdg_directory = "config"
 
 [operations.entries]
+accent = """
+(
+    base: \"#63D0DFFF\",
+    hover: \"#63BAC6FF\",
+    pressed: \"#3C737AFF\",
+    selected: \"#63BAC6FF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#000000FF\",
+    on: \"#000000FF\",
+    disabled: \"#63D0DFFF\",
+    on_disabled: \"#326870FF\",
+    border: \"#63D0DFFF\",
+    disabled_border: \"#63D0DF80\",
+)"""
 accent_button = """
 (
     base: \"#63D0DFFF\",
@@ -1702,6 +1740,8 @@ accent_button = """
     border: \"#63D0DFFF\",
     disabled_border: \"#63D0DF80\",
 )"""
+accent_text = "None"
+active_hint = "3"
 alpha_map = """
 (
     extremely_low: 0.91999996,
@@ -1719,6 +1759,43 @@ alpha_map = """
     extremely_high: 0.64308,
     extremely_high_2: 0.62,
 )"""
+background = """
+(
+    base: \"#1B1B1BFF\",
+    component: (
+        base: \"#2E2E2EFF\",
+        hover: \"#434343FF\",
+        pressed: \"#585858FF\",
+        selected: \"#434343FF\",
+        selected_text: \"#63D0DFFF\",
+        focus: \"#63D0DFFF\",
+        divider: \"#FFFFFF33\",
+        on: \"#FFFFFFFF\",
+        disabled: \"#2E2E2E80\",
+        on_disabled: \"#FFFFFFA6\",
+        border: \"#BEBEBEFF\",
+        disabled_border: \"#BEBEBE80\",
+    ),
+    divider: \"#474747FF\",
+    on: \"#F5F5F5FF\",
+    small_widget: \"#27272740\",
+)"""
+button = """
+(
+    base: \"#9E9E9E40\",
+    hover: \"#63636366\",
+    pressed: \"#2B2B2B9F\",
+    selected: \"#63636366\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#FFFFFF33\",
+    on: \"#FFFFFFFF\",
+    disabled: \"#9E9E9E20\",
+    on_disabled: \"#FFFFFFA6\",
+    border: \"#BEBEBEFF\",
+    disabled_border: \"#BEBEBE80\",
+)"""
+control_tint = "None"
 corner_radii = """
 (
     radius_0: (0.0, 0.0, 0.0, 0.0),
@@ -1728,11 +1805,126 @@ corner_radii = """
     radius_l: (8.0, 8.0, 8.0, 8.0),
     radius_xl: (8.0, 8.0, 8.0, 8.0),
 )"""
+destructive = """
+(
+    base: \"#FFA09AFF\",
+    hover: \"#E0948FFF\",
+    pressed: \"#8A5B58FF\",
+    selected: \"#E0948FFF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#000000FF\",
+    on: \"#000000FF\",
+    disabled: \"#FFA09AFF\",
+    on_disabled: \"#80504DFF\",
+    border: \"#FFA09AFF\",
+    disabled_border: \"#FFA09A80\",
+)"""
+destructive_button = """
+(
+    base: \"#FFA09AFF\",
+    hover: \"#E0948FFF\",
+    pressed: \"#8A5B58FF\",
+    selected: \"#E0948FFF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#030303FF\",
+    on: \"#000000FF\",
+    disabled: \"#FFA09AFF\",
+    on_disabled: \"#00000080\",
+    border: \"#FFA09AFF\",
+    disabled_border: \"#FFA09A80\",
+)"""
 frosted = "ExtremelyLow2"
 frosted_applets = "true"
 frosted_panel = "true"
 frosted_system_interface = "true"
 frosted_windows = "true"
+gaps = "(0, 8)"
+icon_button = """
+(
+    base: \"#00000000\",
+    hover: \"#63636333\",
+    pressed: \"#16161680\",
+    selected: \"#63636333\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#BEBEBE33\",
+    on: \"#BEBEBEFF\",
+    disabled: \"#00000000\",
+    on_disabled: \"#BEBEBEA6\",
+    border: \"#BEBEBEFF\",
+    disabled_border: \"#BEBEBE80\",
+)"""
+is_dark = "true"
+is_high_contrast = "false"
+link_button = """
+(
+    base: \"#00000000\",
+    hover: \"#00000000\",
+    pressed: \"#00000000\",
+    selected: \"#00000000\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#63D0DF33\",
+    on: \"#63D0DFFF\",
+    disabled: \"#00000000\",
+    on_disabled: \"#32687080\",
+    border: \"#BEBEBEFF\",
+    disabled_border: \"#BEBEBE80\",
+)"""
+list_button = """
+(
+    base: \"#00000000\",
+    hover: \"#00000000\",
+    pressed: \"#16161680\",
+    selected: \"#00000000\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#FFFFFF33\",
+    on: \"#FFFFFFFF\",
+    disabled: \"#00000000\",
+    on_disabled: \"#FFFFFFA6\",
+    border: \"#BEBEBEFF\",
+    disabled_border: \"#BEBEBE80\",
+)"""
+name = "\"cosmic-dark\""
+palette = """
+(
+    name: \"cosmic-dark\",
+    bright_red: \"#FFA09AFF\",
+    bright_green: \"#5EDB8CFF\",
+    bright_orange: \"#FFA37DFF\",
+    gray_1: \"#1B1B1BFF\",
+    gray_2: \"#262626FF\",
+    neutral_0: \"#000000FF\",
+    neutral_1: \"#030303FF\",
+    neutral_2: \"#161616FF\",
+    neutral_3: \"#2E2E2EFF\",
+    neutral_4: \"#484848FF\",
+    neutral_5: \"#636363FF\",
+    neutral_6: \"#808080FF\",
+    neutral_7: \"#9E9E9EFF\",
+    neutral_8: \"#BEBEBEFF\",
+    neutral_9: \"#DEDEDEFF\",
+    neutral_10: \"#FFFFFFFF\",
+    accent_blue: \"#63D0DFFF\",
+    accent_indigo: \"#A1C0EBFF\",
+    accent_purple: \"#E79CFEFF\",
+    accent_pink: \"#FF9CB1FF\",
+    accent_red: \"#FDA1A0FF\",
+    accent_orange: \"#FFAD00FF\",
+    accent_yellow: \"#F7E062FF\",
+    accent_green: \"#92CF9CFF\",
+    accent_warm_grey: \"#CABAB4FF\",
+    ext_warm_grey: \"#9B8E8AFF\",
+    ext_orange: \"#FFAD00FF\",
+    ext_yellow: \"#FEDB40FF\",
+    ext_blue: \"#48B9C7FF\",
+    ext_purple: \"#CF7DFFFF\",
+    ext_pink: \"#F93A83FF\",
+    ext_indigo: \"#3E88FFFF\",
+)"""
 primary = """
 (
     base: \"#272727FF\",
@@ -1775,6 +1967,66 @@ secondary = """
     on: \"#C7C7C7FF\",
     small_widget: \"#41414140\",
 )"""
+shade = "\"#00000052\""
+spacing = """
+(
+    space_none: 0,
+    space_xxxs: 4,
+    space_xxs: 8,
+    space_xs: 12,
+    space_s: 16,
+    space_m: 24,
+    space_l: 32,
+    space_xl: 48,
+    space_xxl: 64,
+    space_xxxl: 128,
+)"""
+success = """
+(
+    base: \"#5EDB8CFF\",
+    hover: \"#5FC384FF\",
+    pressed: \"#3A7851FF\",
+    selected: \"#5FC384FF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#000000FF\",
+    on: \"#000000FF\",
+    disabled: \"#5EDB8CFF\",
+    on_disabled: \"#2F6E46FF\",
+    border: \"#5EDB8CFF\",
+    disabled_border: \"#5EDB8C80\",
+)"""
+success_button = """
+(
+    base: \"#5EDB8CFF\",
+    hover: \"#5FC384FF\",
+    pressed: \"#3A7851FF\",
+    selected: \"#5FC384FF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#030303FF\",
+    on: \"#000000FF\",
+    disabled: \"#5EDB8CFF\",
+    on_disabled: \"#00000080\",
+    border: \"#5EDB8CFF\",
+    disabled_border: \"#5EDB8C80\",
+)"""
+text_button = """
+(
+    base: \"#00000000\",
+    hover: \"#63636333\",
+    pressed: \"#16161680\",
+    selected: \"#63636333\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#63D0DF33\",
+    on: \"#63D0DFFF\",
+    disabled: \"#00000000\",
+    on_disabled: \"#63D0DFA6\",
+    border: \"#BEBEBEFF\",
+    disabled_border: \"#BEBEBE80\",
+)"""
+text_tint = "None"
 transparent_background = """
 (
     base: \"#1B1B1BC2\",
@@ -1838,6 +2090,37 @@ transparent_secondary = """
     on: \"#C7C7C7FF\",
     small_widget: \"#41414140\",
 )"""
+warning = """
+(
+    base: \"#FFA37DFF\",
+    hover: \"#E09678FF\",
+    pressed: \"#8A5C49FF\",
+    selected: \"#E09678FF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#000000FF\",
+    on: \"#000000FF\",
+    disabled: \"#FFA37DFF\",
+    on_disabled: \"#80523FFF\",
+    border: \"#FFA37DFF\",
+    disabled_border: \"#FFA37D80\",
+)"""
+warning_button = """
+(
+    base: \"#FFA37DFF\",
+    hover: \"#E09678FF\",
+    pressed: \"#8A5C49FF\",
+    selected: \"#E09678FF\",
+    selected_text: \"#63D0DFFF\",
+    focus: \"#63D0DFFF\",
+    divider: \"#FFFFFFFF\",
+    on: \"#000000FF\",
+    disabled: \"#FFA37DFF\",
+    on_disabled: \"#00000080\",
+    border: \"#FFA37DFF\",
+    disabled_border: \"#FFA37D80\",
+)"""
+window_hint = "None"
 
 [[operations]]
 component = "com.system76.CosmicTheme.Dark.Builder"
@@ -2085,6 +2368,8 @@ operation = "write"
 xdg_directory = "config"
 
 [operations.entries]
+accent = "None"
+active_hint = "3"
 alpha_map = """
 (
     extremely_low: 0.91999996,
@@ -2102,6 +2387,7 @@ alpha_map = """
     extremely_high: 0.64308,
     extremely_high_2: 0.62,
 )"""
+bg_color = "None"
 corner_radii = """
 (
     radius_0: (0.0, 0.0, 0.0, 0.0),
@@ -2111,11 +2397,69 @@ corner_radii = """
     radius_l: (8.0, 8.0, 8.0, 8.0),
     radius_xl: (8.0, 8.0, 8.0, 8.0),
 )"""
+destructive = "None"
 frosted = "ExtremelyLow2"
 frosted_applets = "true"
 frosted_panel = "true"
 frosted_system_interface = "true"
 frosted_windows = "true"
+gaps = "(0, 8)"
+neutral_tint = "None"
+palette = """
+Dark((
+    name: \"cosmic-dark\",
+    bright_red: \"#FFA09AFF\",
+    bright_green: \"#5EDB8CFF\",
+    bright_orange: \"#FFA37DFF\",
+    gray_1: \"#1B1B1BFF\",
+    gray_2: \"#262626FF\",
+    neutral_0: \"#000000FF\",
+    neutral_1: \"#030303FF\",
+    neutral_2: \"#161616FF\",
+    neutral_3: \"#2E2E2EFF\",
+    neutral_4: \"#484848FF\",
+    neutral_5: \"#636363FF\",
+    neutral_6: \"#808080FF\",
+    neutral_7: \"#9E9E9EFF\",
+    neutral_8: \"#BEBEBEFF\",
+    neutral_9: \"#DEDEDEFF\",
+    neutral_10: \"#FFFFFFFF\",
+    accent_blue: \"#63D0DFFF\",
+    accent_indigo: \"#A1C0EBFF\",
+    accent_purple: \"#E79CFEFF\",
+    accent_pink: \"#FF9CB1FF\",
+    accent_red: \"#FDA1A0FF\",
+    accent_orange: \"#FFAD00FF\",
+    accent_yellow: \"#F7E062FF\",
+    accent_green: \"#92CF9CFF\",
+    accent_warm_grey: \"#CABAB4FF\",
+    ext_warm_grey: \"#9B8E8AFF\",
+    ext_orange: \"#FFAD00FF\",
+    ext_yellow: \"#FEDB40FF\",
+    ext_blue: \"#48B9C7FF\",
+    ext_purple: \"#CF7DFFFF\",
+    ext_pink: \"#F93A83FF\",
+    ext_indigo: \"#3E88FFFF\",
+))"""
+primary_container_bg = "None"
+secondary_container_bg = "None"
+spacing = """
+(
+    space_none: 0,
+    space_xxxs: 4,
+    space_xxs: 8,
+    space_xs: 12,
+    space_s: 16,
+    space_m: 24,
+    space_l: 32,
+    space_xl: 48,
+    space_xxl: 64,
+    space_xxxl: 128,
+)"""
+success = "None"
+text_tint = "None"
+warning = "None"
+window_hint = "None"
 
 [[operations]]
 component = "com.system76.CosmicTheme.Light"
@@ -3600,6 +3944,8 @@ accent_button = """
     border: \"#00525AFF\",
     disabled_border: \"#00525A80\",
 )"""
+accent_text = "None"
+active_hint = "3"
 alpha_map = """
 (
     extremely_low: 0.91999996,
@@ -3653,6 +3999,7 @@ button = """
     border: \"#161616FF\",
     disabled_border: \"#16161680\",
 )"""
+control_tint = "Some(\"#777777FF\")"
 corner_radii = """
 (
     radius_0: (0.0, 0.0, 0.0, 0.0),
@@ -3697,6 +4044,7 @@ frosted_applets = "true"
 frosted_panel = "true"
 frosted_system_interface = "true"
 frosted_windows = "true"
+gaps = "(0, 8)"
 icon_button = """
 (
     base: \"#00000000\",
@@ -3712,6 +4060,8 @@ icon_button = """
     border: \"#161616FF\",
     disabled_border: \"#16161680\",
 )"""
+is_dark = "false"
+is_high_contrast = "false"
 link_button = """
 (
     base: \"#00000000\",
@@ -3726,6 +4076,58 @@ link_button = """
     on_disabled: \"#00292D80\",
     border: \"#161616FF\",
     disabled_border: \"#16161680\",
+)"""
+list_button = """
+(
+    base: \"#00000000\",
+    hover: \"#00000000\",
+    pressed: \"#BEBEBE80\",
+    selected: \"#00000000\",
+    selected_text: \"#B6174BFF\",
+    focus: \"#B6174BFF\",
+    divider: \"#00000033\",
+    on: \"#000000FF\",
+    disabled: \"#00000000\",
+    on_disabled: \"#000000A6\",
+    border: \"#161616FF\",
+    disabled_border: \"#16161680\",
+)"""
+name = "\"cosmic-light\""
+palette = """
+(
+    name: \"cosmic-light\",
+    bright_red: \"#890418FF\",
+    bright_green: \"#00572CFF\",
+    bright_orange: \"#792C00FF\",
+    gray_1: \"#DDDDDDFF\",
+    gray_2: \"#E8E8E8FF\",
+    neutral_0: \"#FFFFFFFF\",
+    neutral_1: \"#E2E2E2FF\",
+    neutral_2: \"#C6C6C6FF\",
+    neutral_3: \"#ABABABFF\",
+    neutral_4: \"#919191FF\",
+    neutral_5: \"#777777FF\",
+    neutral_6: \"#5E5E5EFF\",
+    neutral_7: \"#474747FF\",
+    neutral_8: \"#303030FF\",
+    neutral_9: \"#1B1B1BFF\",
+    neutral_10: \"#000000FF\",
+    accent_blue: \"#00525AFF\",
+    accent_indigo: \"#2E496DFF\",
+    accent_purple: \"#68217CFF\",
+    accent_pink: \"#86043AFF\",
+    accent_red: \"#78292EFF\",
+    accent_orange: \"#624000FF\",
+    accent_yellow: \"#534800FF\",
+    accent_green: \"#185529FF\",
+    accent_warm_grey: \"#554742FF\",
+    ext_warm_grey: \"#9B8E8AFF\",
+    ext_orange: \"#FBB86CFF\",
+    ext_yellow: \"#F7E062FF\",
+    ext_blue: \"#6ACAD8FF\",
+    ext_purple: \"#D58CFFFF\",
+    ext_pink: \"#FF9CDDFF\",
+    ext_indigo: \"#95C4FCFF\",
 )"""
 primary = """
 (
@@ -3769,6 +4171,20 @@ secondary = """
     on: \"#141414FF\",
     small_widget: \"#EEEEEE40\",
 )"""
+shade = "\"#00000014\""
+spacing = """
+(
+    space_none: 0,
+    space_xxxs: 4,
+    space_xxs: 8,
+    space_xs: 12,
+    space_s: 16,
+    space_m: 24,
+    space_l: 32,
+    space_xl: 48,
+    space_xxl: 64,
+    space_xxxl: 128,
+)"""
 success = """
 (
     base: \"#00572CFF\",
@@ -3783,6 +4199,21 @@ success = """
     on_disabled: \"#7FAB96FF\",
     border: \"#00572CFF\",
     disabled_border: \"#00572C80\",
+)"""
+success_button = """
+(
+    base: \"#185529FF\",
+    hover: \"#275835FF\",
+    pressed: \"#6B8973FF\",
+    selected: \"#275835FF\",
+    selected_text: \"#B6174BFF\",
+    focus: \"#B6174BFF\",
+    divider: \"#DEDEDEFF\",
+    on: \"#FFFFFFFF\",
+    disabled: \"#185529FF\",
+    on_disabled: \"#FFFFFF80\",
+    border: \"#185529FF\",
+    disabled_border: \"#18552980\",
 )"""
 text_button = """
 (
@@ -3799,6 +4230,7 @@ text_button = """
     border: \"#161616FF\",
     disabled_border: \"#16161680\",
 )"""
+text_tint = "Some(\"#213939FF\")"
 transparent_background = """
 (
     base: \"#D7D7D7E5\",
@@ -3892,6 +4324,7 @@ warning_button = """
     border: \"#792C00FF\",
     disabled_border: \"#792C0080\",
 )"""
+window_hint = "None"
 
 [[operations]]
 component = "com.system76.CosmicTheme.Light.Builder"
@@ -4139,6 +4572,8 @@ operation = "write"
 xdg_directory = "config"
 
 [operations.entries]
+accent = "Some(\"#B6174BFF\")"
+active_hint = "3"
 alpha_map = """
 (
     extremely_low: 0.91999996,
@@ -4156,6 +4591,7 @@ alpha_map = """
     extremely_high: 0.64308,
     extremely_high_2: 0.62,
 )"""
+bg_color = "Some(\"#E3D5C5FF\")"
 corner_radii = """
 (
     radius_0: (0.0, 0.0, 0.0, 0.0),
@@ -4165,11 +4601,69 @@ corner_radii = """
     radius_l: (8.0, 8.0, 8.0, 8.0),
     radius_xl: (8.0, 8.0, 8.0, 8.0),
 )"""
+destructive = "Some(\"#78292EFF\")"
 frosted = "ExtremelyLow2"
 frosted_applets = "true"
 frosted_panel = "true"
 frosted_system_interface = "true"
 frosted_windows = "true"
+gaps = "(0, 8)"
+neutral_tint = "Some(\"#777777FF\")"
+palette = """
+Light((
+    name: \"cosmic-light\",
+    bright_red: \"#890418FF\",
+    bright_green: \"#00572CFF\",
+    bright_orange: \"#792C00FF\",
+    gray_1: \"#DDDDDDFF\",
+    gray_2: \"#E8E8E8FF\",
+    neutral_0: \"#FFFFFFFF\",
+    neutral_1: \"#E2E2E2FF\",
+    neutral_2: \"#C6C6C6FF\",
+    neutral_3: \"#ABABABFF\",
+    neutral_4: \"#919191FF\",
+    neutral_5: \"#777777FF\",
+    neutral_6: \"#5E5E5EFF\",
+    neutral_7: \"#474747FF\",
+    neutral_8: \"#303030FF\",
+    neutral_9: \"#1B1B1BFF\",
+    neutral_10: \"#000000FF\",
+    accent_blue: \"#00525AFF\",
+    accent_indigo: \"#2E496DFF\",
+    accent_purple: \"#68217CFF\",
+    accent_pink: \"#86043AFF\",
+    accent_red: \"#78292EFF\",
+    accent_orange: \"#624000FF\",
+    accent_yellow: \"#534800FF\",
+    accent_green: \"#185529FF\",
+    accent_warm_grey: \"#554742FF\",
+    ext_warm_grey: \"#9B8E8AFF\",
+    ext_orange: \"#FBB86CFF\",
+    ext_yellow: \"#F7E062FF\",
+    ext_blue: \"#6ACAD8FF\",
+    ext_purple: \"#D58CFFFF\",
+    ext_pink: \"#FF9CDDFF\",
+    ext_indigo: \"#95C4FCFF\",
+))"""
+primary_container_bg = "None"
+secondary_container_bg = "None"
+spacing = """
+(
+    space_none: 0,
+    space_xxxs: 4,
+    space_xxs: 8,
+    space_xs: 12,
+    space_s: 16,
+    space_m: 24,
+    space_l: 32,
+    space_xl: 48,
+    space_xxl: 64,
+    space_xxxl: 128,
+)"""
+success = "Some(\"#185529FF\")"
+text_tint = "Some(\"#213939FF\")"
+warning = "Some(\"#534800FF\")"
+window_hint = "None"
 
 [[operations]]
 component = "com.system76.CosmicTheme.Mode"
@@ -4179,7 +4673,7 @@ xdg_directory = "config"
 
 [operations.entries]
 auto_switch = "true"
-is_dark = "false"
+is_dark = "true"
 
 [[operations]]
 component = "com.system76.CosmicTk"
