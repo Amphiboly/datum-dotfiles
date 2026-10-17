@@ -213,6 +213,14 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
   refuses to start: re-enroll with `gaze add-face`. The same refusal
   happens if plaintext templates ever reappear (from an old backup, say),
   and the fix is the migration in `modules/nixos/facial-auth.nix`.
+- **Face unlock on Noctalia's lock screen goes through PAM `login`**
+  (hardcoded in noctalia). Since 2026-10-17 Gaze sits in `login` and not
+  in `greetd`, which reaches it through `substack login`. On the lock
+  screen: press Enter on the empty field, then look
+  (`lockscreen.allow_empty_password` in `assets/rik/noctalia.toml`). A typed
+  password also goes through Gaze first, so unlocking away from the camera
+  waits for it to give up. Console (tty) logins accept a face too.
+  `modules/nixos/facial-auth.nix`, the PAM comment block.
 - **The TPM2 PIN breaks after a BIOS or dbx update** (PCR 7 changes). Use the
   passphrase, then re-enroll with `--wipe-slot=tpm2`.
   `hosts/datum/disko-config.nix:18`

@@ -151,20 +151,36 @@ in {
     config.environment.etc."gaze/config.toml".source
   ];
 
-  # COSMIC's login screen and lock screen use different PAM services, and
-  # neither is in upstream's defaults:
+  # The login screen and the two lock screens use three PAM services, none in
+  # upstream's defaults:
   #
-  #   - "cosmic-greeter" is the lock screen only.
-  #   - The login screen is cosmic-greeter acting as a greetd client; greetd
-  #     itself runs the PAM conversation, as service "greetd" (which pulls in
-  #     the "login" stack via substack). Until 2026-10-14 this file assumed
-  #     cosmic-greeter covered both, so login never had face auth.
+  #   - "cosmic-greeter": COSMIC's lock screen only.
+  #   - "greetd": the login screen. cosmic-greeter is only a greetd client;
+  #     greetd itself runs the PAM conversation, and its stack is just
+  #     `substack login`. Until 2026-10-14 this file assumed cosmic-greeter
+  #     covered both, so login never had face auth.
+  #   - "login": Noctalia's lock screen (Umbriel sessions), hardcoded in
+  #     noctalia's lock_screen.cpp. Also console logins.
+  #
+  # So gaze goes into "login" and not into "greetd": greetd reaches it
+  # through the substack, so the greeter tries the face once. With it in
+  # both, a miss cost two timeouts (~5 s each) before the password prompt.
+  # Until 2026-10-17 it was in greetd only, so Noctalia's lock screen never
+  # asked Gaze.
+  #
+  # Noctalia only starts PAM once Enter is pressed, and ignores an empty
+  # field unless lockscreen.allow_empty_password is set, so that is on in
+  # assets/rik/noctalia.toml: Enter on an empty field, then look. An empty
+  # password can't unlock by itself, because rik has a password; a face
+  # miss just fails. A typed password goes through gaze first too, so
+  # unlocking away from the camera waits for gaze to give up.
+  #
+  # Console logins (tty) get face auth as a side effect. SSH is excluded:
+  # sshd has its own stack, and abort_if_ssh is set above anyway.
   #
   # Whenever this is on, the password stays a fallback: the module inserts
-  # face auth as `sufficient` ahead of pam_unix. In greetd's stack there is no
-  # unix rule of its own, so gaze lands ahead of `substack login`; a face
-  # match skips the login stack, and a miss falls through to its password
-  # prompt.
+  # face auth as `sufficient` ahead of pam_unix, so a miss falls through to
+  # the password prompt.
   #
   # Keyring: a face login gives pam_gnome_keyring no password, so the
   # "login" keyring (Maestral's Dropbox token is in it) can't be unlocked by
@@ -173,5 +189,5 @@ in {
   # at rest. If it ever gets a password again, face logins leave it locked and
   # Maestral stalls or prompts.
   security.pam.services.cosmic-greeter.gaze.enable = activeInAuthStack;
-  security.pam.services.greetd.gaze.enable = activeInAuthStack;
+  security.pam.services.login.gaze.enable = activeInAuthStack;
 }

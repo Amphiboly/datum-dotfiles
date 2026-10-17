@@ -116,6 +116,9 @@ pre_action_fade_seconds = 10
 [location]
 address = "Great Barrington, MA, USA"
 
+[lockscreen]
+allow_empty_password = true
+
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
