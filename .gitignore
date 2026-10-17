@@ -22,6 +22,7 @@ secrets.dec.yaml
 assets/fonts/msjh*.ttc
 assets/fonts/times.ttf
 
---- Other stuff as needed ---
+# --- Other stuff as needed ---
 saved-olde-output.txt
+*.pdf
 
