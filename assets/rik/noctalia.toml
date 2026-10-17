@@ -212,6 +212,18 @@ telemetry_enabled = true
     enabled = true
     size = 4
 
+    # next section added by rik copying Noctalia docs
+    [shell.launcher]
+      layout = "full"
+      width = 760
+      search_position = "bottom"
+      default_view = "recent"
+      categories = true
+      show_settings_button = true
+      show_session_button = true
+      app_grid = false
+      track_usage = true
+
 [theme]
 builtin = "Catppuccin"
 community_palette = "Tomorrow"
