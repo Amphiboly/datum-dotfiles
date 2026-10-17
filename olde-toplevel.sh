@@ -11,12 +11,15 @@
 # --inputs covers what nix-olde can't see: packages taken from their own
 # flake inputs (noctalia, umbriel) rather than nixpkgs. Their version
 # string rarely moves; what changes is the git revision in flake.lock, so
-# each github input's locked rev is compared with upstream's.
+# each github input's locked rev is compared with upstream's: with the
+# branch flake.nix follows, or, for an input pinned to a release tag, with
+# the newest release tag.
 #
 # Must run from the repo root (it evaluates the flake in `.`). HOST_ATTR
 # selects a nixosConfigurations entry other than datum.
 #
-# Needs: bash, nix, awk and GNU date; --inputs also needs git. nix-olde
+# Needs: bash, nix, awk and GNU date; --inputs also needs git, grep and
+# GNU sort (-V). nix-olde
 # produces the report this reads but is not called here, so it only has
 # to be installed wherever that report is made. jq is not used: flake.lock
 # is parsed with `nix eval` (builtins.fromJSON). Optional: gh, for
@@ -30,13 +33,21 @@ if [[ ${1:-} == --inputs ]]; then
   # Only github inputs carry a rev that ls-remote can check; the rest
   # (nixpkgs is a channel tarball, which nix-olde already covers) are
   # reported as skipped.
+  #
+  # The ref comes from the lock's `original` entry: what flake.nix asked
+  # for (a branch like noctalia's `cachix`, or a tag like lanzaboote's
+  # `v1.2.0`). The `locked` entry carries no ref, so reading it there
+  # compared every input with the default branch.
   # shellcheck disable=SC2016 # the ${...} below is Nix interpolation
   nix eval --impure --raw --expr '
     let
       lock = builtins.fromJSON (builtins.readFile ./flake.lock);
-      line = name: node: let l = lock.nodes.${node}.locked; in
+      line = name: node: let
+        n = lock.nodes.${node};
+        l = n.locked;
+      in
         "${name} ${l.type} ${l.owner or "-"}/${l.repo or "-"} "
-        + "${l.ref or "HEAD"} ${l.rev or "-"} ${toString l.lastModified}";
+        + "${n.original.ref or "-"} ${l.rev or "-"} ${toString l.lastModified}";
     in builtins.concatStringsSep ""
       (map (s: s + "\n")
         (builtins.attrValues (builtins.mapAttrs line lock.nodes.root.inputs)))
@@ -46,7 +57,37 @@ if [[ ${1:-} == --inputs ]]; then
       printf '%-20s %s  skipped (%s input)\n' "$name" "$locked" "$type"
       continue
     fi
-    head=$(git ls-remote "https://github.com/$repo" "$ref" | awk 'NR == 1 { print $1 }')
+    url="https://github.com/$repo"
+
+    # Tag pin: a tag doesn't move, so "behind the branch" says nothing.
+    # Report whether a newer release tag exists instead. Release tags are
+    # plain versions (v1.2.0, 1.2.0); pre-releases (v1.3.0-rc1) and other
+    # tag names are ignored. ls-remote lists an annotated tag twice: as
+    # the tag object and peeled (^{}) as the commit, which is what
+    # flake.lock records.
+    if [[ $ref != - ]] && tags=$(git ls-remote --tags "$url") \
+      && grep -q "refs/tags/$ref\(^{}\)\?\$" <<<"$tags"; then
+      tagrev=$(awk -v t="refs/tags/$ref" '$2 == t { r = $1 } $2 == t "^{}" { p = $1 }
+        END { print (p != "" ? p : r) }' <<<"$tags")
+      latest=$(awk '{ sub(/^refs\/tags\//, "", $2); sub(/\^\{\}$/, "", $2); print $2 }' <<<"$tags" \
+        | grep -E '^v?[0-9]+(\.[0-9]+)*$' | sort -uV | tail -n 1)
+      if [[ $tagrev != "$rev" ]]; then
+        status="pinned to $ref, but the lock differs from the tag (tag ${tagrev:0:12})"
+      elif [[ -n $latest && $latest != "$ref" ]]; then
+        status="pinned to $ref; newer release $latest"
+      else
+        status="pinned to $ref (latest release)"
+      fi
+      printf '%-20s %s  %s\n' "$name" "$locked" "$status"
+      continue
+    fi
+
+    # Branch (or the default branch when flake.nix names none).
+    if [[ $ref == - ]]; then
+      head=$(git ls-remote "$url" HEAD | awk 'NR == 1 { print $1 }')
+    else
+      head=$(git ls-remote "$url" "refs/heads/$ref" | awk 'NR == 1 { print $1 }')
+    fi
     if [[ -z $head ]]; then
       status="upstream lookup failed"
     elif [[ $head == "$rev" ]]; then
@@ -57,6 +98,7 @@ if [[ ${1:-} == --inputs ]]; then
       [[ $ahead == 1 ]] && s="" || s=s
       status="behind${ahead:+ by $ahead commit$s} (upstream ${head:0:12})"
     fi
+    [[ $ref != - ]] && status="$status [$ref]"
     printf '%-20s %s  %s\n' "$name" "$locked" "$status"
   done
   exit
