@@ -140,10 +140,8 @@ recent history.
 
 ## 4. Deferred or not yet done
 
-### Gaze hardening and tuning
+### Gaze tuning
 - **Where:** `modules/nixos/facial-auth.nix`
-- `storage.encrypt_templates = true` (TPM-sealed templates), line 118. Turn
-  it on by itself, apart from other changes, then re-enroll.
 - `parallel_capture = "auto"`, line 91. Try it "once the serial setup has
   proven itself."
 - `security.level = "high"`, line 97. Named as the next step up; the CPU
@@ -208,6 +206,13 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
 - **The face-login keyring has a blank password**, set by hand in Seahorse
   on 2026-10-14. If it ever gets a password again, face logins leave it
   locked and Maestral stalls. `modules/nixos/facial-auth.nix:163`
+- **Face templates are sealed to this TPM** (`storage.encrypt_templates`,
+  on since 2026-10-17). BIOS, kernel and Secure Boot updates don't affect
+  them, because the seal has no PCR policy. But clearing the TPM or moving
+  `/var/lib/gaze` to other hardware makes them unreadable, and gazed
+  refuses to start: re-enroll with `gaze add-face`. The same refusal
+  happens if plaintext templates ever reappear (from an old backup, say),
+  and the fix is the migration in `modules/nixos/facial-auth.nix`.
 - **The TPM2 PIN breaks after a BIOS or dbx update** (PCR 7 changes). Use the
   passphrase, then re-enroll with `--wipe-slot=tpm2`.
   `hosts/datum/disko-config.nix:18`

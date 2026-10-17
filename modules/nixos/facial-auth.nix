@@ -115,15 +115,21 @@ in {
         abort_if_lid_closed = true;
       };
 
-      # Not yet:
+      # Templates are AES-256-GCM encrypted under a key sealed to the TPM
+      # (/dev/tpmrm0, discrete Infineon), in /var/lib/gaze/tpm/dek.blob.
+      # The seal has no PCR policy, so BIOS, kernel and Secure Boot updates
+      # don't lock face auth out (unlike the LUKS PIN). It binds the
+      # templates to this machine's TPM; LUKS covers the at-rest case.
       #
-      #   storage.encrypt_templates = true;
-      #                              # Seals templates to the TPM (/dev/tpmrm0,
-      #                              # discrete Infineon). Worth turning on
-      #                              # once face auth works, but separately, so
-      #                              # a sealing failure isn't confused for a
-      #                              # camera one. Existing templates need
-      #                              # re-enrolling afterwards.
+      # Gaze 0.3.10 made this the default when the setting is omitted. That
+      # took gazed down on 2026-10-17: it fails closed on the plaintext
+      # templates 0.3.9 had written, until a one-time
+      #   sudo systemctl stop gazed
+      #   sudo gazed --migrate-legacy-templates
+      #   sudo systemctl start gazed
+      # Set explicitly so an upstream default can't flip it again. Turning
+      # it off later decrypts the store, which needs this same TPM.
+      storage.encrypt_templates = true;
     };
   };
 
