@@ -1,4 +1,19 @@
-# Known issues
+---
+author:
+- Claude
+- Rik Kabel
+title: Known issues
+date: 2026-10-17
+lang: en-US
+whitespace: medium
+layout: |
+  width=middle,backspace=1.5in,cutspace=1.5in, |
+  height=middle,topspace=0.75in,bottomspace=0.75in
+mainfont: libertinus sans
+linesize: 13.5pt
+fontsize: 11pt
+pagenumbering: location=margin
+...
 
 Every documented issue, workaround and deferred item in this config, gathered
 from the comments that describe them. The comments are still where the full
