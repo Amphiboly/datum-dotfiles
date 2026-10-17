@@ -147,6 +147,10 @@ radius = 3
 "Mod+Q" = { action = "window-close", repeat = false }
 "Mod+Escape" = "session-quit"
 "Mod+Shift+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
+# 1Password Quick Access (added by rik). As a native Wayland client
+# (NIXOS_OZONE_WL) 1Password can't grab its own global shortcut, so the
+# compositor owns the key and asks the running app to open the panel.
+"Ctrl+Shift+Space" = { action = "spawn:1password --quick-access", repeat = false }
 
 # Focus and movement
 "Mod+Left" = "window-focus-left"
