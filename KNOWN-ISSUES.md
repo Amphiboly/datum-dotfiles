@@ -107,16 +107,6 @@ recent history.
   Evaluating it here gave no error, but nothing has been built yet.
 - **Next:** uncomment, build, and rewrite the comment, or drop it.
 
-### sops-nix `buildGo125Module` overlay — blocker resolved, ready to remove
-- **Where:** `hosts/datum/default.nix:85`
-- **What:** sops-nix's `sops-install-secrets` asked for the removed
-  `buildGo125Module`, so the overlay aliases it to `buildGoModule`.
-- **Status (2026-10-17):** Mic92/sops-nix#983 was closed 2026-09-17. The
-  locked sops-nix now calls plain `buildGoModule`, so the overlay does
-  nothing.
-- **Next:** delete the overlay and its comment, then `nix eval` /
-  `nix flake check`.
-
 ### Gaze: RGB camera given as `/dev/video0` instead of `usb:`
 - **Where:** `modules/nixos/facial-auth.nix:54`
 - **What:** Gaze 0.3.9's `usb:` resolver filters to `video/x-raw`, and the
