@@ -20,7 +20,7 @@ from the comments that describe them. The comments are still where the full
 reasoning lives; this file points at them and says whether each one is still
 live.
 
-Last reviewed: 2026-10-17.
+Last reviewed: 2026-10-18.
 
 ## 1. Hardware under observation
 
@@ -93,11 +93,38 @@ Last reviewed: 2026-10-17.
      which points away from a constant fault on the data lines and toward
      something under discharge: the pack's gauge or protection board, or
      a contact that fails under current. One run is not proof.
-  2. Reseat the connector and check its pins.
-  3. If the old pack is still around: repeat the discharge test with it.
-     Clean readings mean the new pack is bad; the same garbage means the
-     laptop side.
-  4. Return the new pack to the seller if it's at fault.
+  2. Reseat the connector and check its pins and socket for bent,
+     discoloured or burnt contacts and for debris. It's keyed: don't
+     force it. Removal steps are in HP's Maintenance and Service Guide
+     for the 15-ch00x. Then repeat the discharge test.
+  3. If it still garbles, return this pack to the seller.
+  4. Buy a replacement against HP's battery code and spare-part number
+     from the manual, not just "fits Spectre x360 15": 3-cell, 11.55 V,
+     about 84 Wh. Distrust much higher claimed capacity. Prefer a stated
+     warranty and a return window of 30 days or more, and reviews that
+     mention the charge reading and sudden shutdowns, not just runtime.
+  5. Acceptance-test it within the return window: a discharge test,
+     an AC run, and upower's history checked for jumps (the logger
+     misses readings between samples). If a reputable pack garbles too,
+     suspect the laptop side.
+- **Pack history:** this laptop's battery has been replaced several
+  times.
+  - The old pack (itself the second or third) is worn out. It holds
+    only a surface charge and goes from 98% to 0% in seconds under load,
+    so it's no use for a comparison test. At most it could show, on AC,
+    whether a different pack also reads garbage. Don't refit it if it's
+    swollen.
+  - The first replacement worked for less than a day. Left on and
+    unplugged overnight, it was at 6% in the morning and after that
+    wouldn't take a charge. That fits a protection board locking out
+    after a deep discharge, common in cheap packs.
+  - This pack is the second replacement. It charges normally, so the
+    laptop's charging circuit isn't simply dead. Both replacements went
+    through the same connector and EC, though, so the inspection in
+    step 2 matters.
+  - HP discontinued this battery over a year ago and new old stock
+    can't be found. The more reputable third-party packs cost about
+    three times what this one did.
 - **Meanwhile:** upower's critical action fires on the first bad read of
   2% or below, so expect early shutdowns on battery. They're clean, so
   that's the safe failure; leave it be.
