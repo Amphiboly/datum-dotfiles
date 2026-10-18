@@ -73,6 +73,23 @@ Last reviewed: 2026-10-18.
   - On AC (15:06–15:40, about 205 samples): clean. The percentage rose
     96 → 100% one point at a time, voltage 12.79–13.01 V, charge
     6976 → 7232 mAh, then a 0.25 A trickle near full.
+- **2026-10-18, connector inspection:** with the bottom cover off
+  (photos taken, not in the repo):
+  - The laptop's header has 12 pins, straight, evenly spaced and level,
+    with clean solder joints. It's keyed by a small asymmetry at one
+    end; it looks almost reversible, so don't force it.
+  - The pack's plug has 12 contacts, evenly recessed, with no
+    darkening or melting. Probably 4 red (+), 4 black (−) and 4 signal
+    wires (green, white, grey, yellow: SMBus clock and data, and likely
+    temperature and presence). The wires enter the housing through a
+    hand-applied blob of glue, typical of aftermarket packs.
+  - One pin was slightly bent; it had still been inserting properly.
+    Rik straightened it and reseated the plug.
+- **2026-10-18, after the reseat:** unplugged at about 16:42; no
+  change. Upower recorded false readings from three minutes in: 100%
+  (16:45:30, 16:48:46, 16:54:20, 16:57:26) and 4% (16:45:34), while
+  the real charge fell smoothly 99 → 94% at about 12.5 V. The log
+  (`battery-2026-10-18-1641.log`) had no `ERR` entries.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
@@ -93,10 +110,10 @@ Last reviewed: 2026-10-18.
      which points away from a constant fault on the data lines and toward
      something under discharge: the pack's gauge or protection board, or
      a contact that fails under current. One run is not proof.
-  2. Reseat the connector and check its pins and socket for bent,
-     discoloured or burnt contacts and for debris. It's keyed: don't
-     force it. Removal steps are in HP's Maintenance and Service Guide
-     for the 15-ch00x. Then repeat the discharge test.
+  2. ~~Reseat the connector, check its pins, repeat the discharge
+     test.~~ Done 10-18: nothing visibly wrong on either side, and the
+     garbled reads continued. That leaves the pack's gauge or
+     protection board as the main suspect.
   3. If it still garbles, return this pack to the seller.
   4. Buy a replacement against HP's battery code and spare-part number
      from the manual, not just "fits Spectre x360 15": 3-cell, 11.55 V,
