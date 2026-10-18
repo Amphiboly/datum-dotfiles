@@ -60,6 +60,19 @@ Last reviewed: 2026-10-17.
     blocked and never returned. The kernel logged nothing about it, and
     upower kept getting answers. The logger has been reworked so the next
     run shows which read it was.
+- **2026-10-18, afternoon:** a third test, with the reworked logger. On
+  battery from 14:55 to 15:06 at 15–34 W (average 19.5 W), then 34
+  minutes on AC. No shutdown, and no read hung or failed.
+  - The real state on battery: 100% down to 96%, voltage falling
+    smoothly from 12.98 to 12.38 V.
+  - Garbled reads from about five minutes in, mostly between the
+    logger's samples. Upower recorded 100% (15:00:09 and 15:01:35, at a
+    real 98%), 90% (15:00:31, also in the log, while the charge field
+    said 98%) and 22% (15:04:38). The log also has one current of
+    0.09 A (15:04:45) among steady 1.3–2.7 A.
+  - On AC (15:06–15:40, about 205 samples): clean. The percentage rose
+    96 → 100% one point at a time, voltage 12.79–13.01 V, charge
+    6976 → 7232 mAh, then a 0.25 A trickle near full.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
@@ -75,8 +88,11 @@ Last reviewed: 2026-10-17.
   reads alone don't explain. A real loss of power fits the pack's
   protection tripping, or the connector, better than a board fault.
 - **Next:** separate the pack from the laptop.
-  1. Run the logger on AC for half an hour. Garbled reads on AC, at low
-     current, point more at the connector or the board.
+  1. ~~Run the logger on AC for half an hour.~~ Done 10-18: clean. So
+     far every garbled read has come while the pack supplies the power,
+     which points away from a constant fault on the data lines and toward
+     something under discharge: the pack's gauge or protection board, or
+     a contact that fails under current. One run is not proof.
   2. Reseat the connector and check its pins.
   3. If the old pack is still around: repeat the discharge test with it.
      Clean readings mean the new pack is bad; the same garbage means the
