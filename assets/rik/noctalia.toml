@@ -236,7 +236,7 @@ wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "btop", "helix", "kitty", "starship", "umbriel" ]
-    community_ids = [ "zen-browser", "zed", "zathura", "yazi" ]
+    community_ids = [ "zen-browser", "zathura", "yazi" ]
 
 [wallpaper]
 directory = "/home/rik/Pictures/wallpapers"

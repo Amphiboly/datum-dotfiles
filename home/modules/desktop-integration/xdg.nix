@@ -4,9 +4,9 @@ _: {
     mimeApps = {
       enable = true;
       defaultApplications = {
-        "text/plain" = ["dev.zed.Zed.desktop"];
-        "text/markdown" = ["dev.zed.Zed.desktop"];
-        "application/x-shellscript" = ["dev.zed.Zed.desktop"];
+        "text/plain" = ["Helix.desktop"];
+        "text/markdown" = ["Helix.desktop"];
+        "application/x-shellscript" = ["Helix.desktop"];
       };
     };
     terminal-exec = {
