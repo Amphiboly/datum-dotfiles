@@ -3,7 +3,7 @@ author:
 - Claude
 - Rik Kabel
 title: Known issues
-date: 2026-10-17
+date: 2026-10-18
 lang: en-US
 whitespace: medium
 layout: |
@@ -24,10 +24,12 @@ Last reviewed: 2026-10-17.
 
 ## 1. Hardware under observation
 
-### Replacement battery: power cut at ~90% on 2026-10-17
+### Replacement battery: garbled gauge readings, two shutdowns on battery
 - **Background:** HP "Primary" pack, 83.9 Wh (7264 mAh, 3S, design minimum
-  11.55 V). Fitted 2026-10-16, along with the AX210 card.
-- **What happened:** during a deliberate discharge test, the machine lost
+  11.55 V). Fitted 2026-10-16, along with the AX210 card. It reports
+  `charge_full` exactly equal to its design capacity and a cycle count of
+  0, and has no serial number.
+- **2026-10-17:** during a deliberate discharge test, the machine lost
   power at about 17:23, around an hour after being unplugged. There was no
   shutdown sequence. The log just stops, and the next boot found the
   journal "uncleanly shut down".
@@ -39,29 +41,77 @@ Last reviewed: 2026-10-17.
   - the charge reading jumped around in the 15 minutes before the cut:
     22% (17:08), 42% (17:17), 100% (17:18), one 0 W rate sample, then
     92 → 83% in 90 s
-- **Reading:** cutting out at a healthy voltage, with unreliable gauge
-  readings, points at the pack's protection circuit or a poorly seated
-  connector, not at a flat battery.
-- **Status:** one incident so far.
-- **Next:**
-  1. Reseat the battery connector.
-  2. Repeat the discharge test below.
-  3. If it cuts out again, or the readings jump again, return the battery
-     to the seller.
+- **2026-10-18:** a second discharge test, logged with the first version
+  of the logger below (`battery-2026-10-18-1254.log`). Unplugged at about 12:55, at 30–35 W.
+  This time it was a clean shutdown: at 12:59:55 upowerd asked logind to
+  power off, because a reading of 2% (12:59:35) had crossed its
+  `PercentageAction=2`. The configured `CriticalPowerAction=HybridSleep`
+  fell back to power-off.
+  - The real state throughout: about 97%, 12.22–12.25 V.
+  - Garbled reads came every few seconds from about two minutes in:
+    charge 111% (8032 mAh, more than the pack's capacity), 44–50% and 2%;
+    voltage 65.53 V (0xFFFF, all bits set), 50.7, 32.7 and 16.1 V; rate
+    0.4 W and 190 W.
+  - On AC beforehand the readings were stable ("Full", 100%, 12.95 V),
+    but that was only three samples.
+  - The logger stopped by itself at 12:57:51, two minutes before the
+    shutdown; nobody was at the laptop. An empty read wouldn't have
+    stopped it (zsh makes it 0), so most likely a read from the battery
+    blocked and never returned. The kernel logged nothing about it, and
+    upower kept getting answers. The logger has been reworked so the next
+    run shows which read it was.
+- **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
+  the battery connector → the embedded controller → ACPI) is corrupted
+  intermittently, and worse under load: it began within two minutes at
+  33 W, against 15 minutes at 15–21 W the day before. 0xFFFF is a
+  typical failed bus read. Suspects, in order:
+  1. the pack's own gauge or protection board. An aftermarket-looking
+     pack: no serial, cycle count 0, full capacity equal to design.
+  2. the battery connector or its seating.
+  3. the laptop side: the embedded controller, the SMBus lines or the
+     charging circuit.
+
+  The 10-17 hard cut (no shutdown sequence) is a second symptom that bad
+  reads alone don't explain. A real loss of power fits the pack's
+  protection tripping, or the connector, better than a board fault.
+- **Next:** separate the pack from the laptop.
+  1. Run the logger on AC for half an hour. Garbled reads on AC, at low
+     current, point more at the connector or the board.
+  2. Reseat the connector and check its pins.
+  3. If the old pack is still around: repeat the discharge test with it.
+     Clean readings mean the new pack is bad; the same garbage means the
+     laptop side.
+  4. Return the new pack to the seller if it's at fault.
+- **Meanwhile:** upower's critical action fires on the first bad read of
+  2% or below, so expect early shutdowns on battery. They're clean, so
+  that's the safe failure; leave it be.
 
 #### Discharge test
 
 Run the logger in a terminal, then unplug the charger. It writes one line
-every 10 s and syncs each line to disk, so the log survives a power cut.
-The journal doesn't; it lost the last ~3 minutes before the 10-17 cut.
+every 10 s: time, status, percentage, then voltage, current and charge in
+the kernel's raw units (µV, µA, µAh; 12936000 is 12.94 V). Each value is
+synced to disk as soon as it's read, so the log survives a power cut. The
+journal doesn't; it lost the last ~3 minutes before the 10-17 cut.
+
+It is built to keep going when the battery's readings go bad. On 10-18
+the first version stopped by itself, two minutes before the shutdown,
+probably on a read that never returned. Now:
+- each read has a time limit, and a failed or hung read logs `ERR:<field>`
+  instead of stopping the loop
+- if a read hangs anyway, the unfinished last line shows which field it was
+- values are logged as they come, with no arithmetic, so a garbled value
+  can't break it
 
 ```sh
 log=~/battery-$(date +%F-%H%M).log; b=/sys/class/power_supply/BAT0
 while :; do
-  printf '%s %s %s%% %s mV %s mA %s mAh\n' "$(date +%T)" "$(<$b/status)" \
-    "$(<$b/capacity)" $(( $(<$b/voltage_now)/1000 )) \
-    $(( $(<$b/current_now)/1000 )) $(( $(<$b/charge_now)/1000 )) >> "$log"
-  sync "$log"; sleep 10
+  printf '%s' "$(date +%T)" >> "$log"
+  for f in status capacity voltage_now current_now charge_now; do
+    printf ' %s' "$(timeout -k 1 3 cat "$b/$f" 2>/dev/null || echo "ERR:$f")" >> "$log"
+    sync "$log"
+  done
+  printf '\n' >> "$log"; sync "$log"; sleep 10
 done
 ```
 
