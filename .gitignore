@@ -25,4 +25,5 @@ assets/fonts/times.ttf
 # --- Other stuff as needed ---
 saved-olde-output.txt
 *.pdf
+*.ignore
 
