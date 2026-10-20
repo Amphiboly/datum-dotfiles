@@ -54,11 +54,11 @@
 }: let
   raw = stdenv.mkDerivation {
     pname = "context-lmtx-raw";
-    version = "2026-10-01";
+    version = "2026-10-16";
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash = "sha256-C/C9n9cry4KBRFsKdEbwstt/f2FnUvabzacn3fvHrXo=";
+    outputHash = "sha256-yroDwW5CDMKtjr8MhNEMCIR8+X5bIl8YAvw4qyfLB4A=";
     nativeBuildInputs = [autoPatchelfHook curl cacert unzip];
 
     dontUnpack = true;
@@ -81,9 +81,17 @@
       chmod +x scratch/bin/mtxrun
       autoPatchelf scratch/bin/mtxrun
 
+      # Since the 2026-10-16 bootstrap, mtx-install.lua downloads through
+      # LuaMetaTeX's built-in `client` module, which dlopen()s libcurl.so.4
+      # at runtime (it is not a DT_NEEDED entry, so autoPatchelf can't see
+      # it). With no libcurl on the loader path `client.supported()` is
+      # false and the script falls back to `socket.http`, which LuaMetaTeX
+      # doesn't have: "attempt to index a nil value (global 'socket')".
+      # libcurl picks up the CA bundle from cacert's setup hook.
       (
         cd scratch
         export PATH="$PWD/bin:$PATH"
+        export LD_LIBRARY_PATH="${lib.getLib curl}/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
         ./bin/mtxrun --script ./bin/mtx-install.lua --update \
           --server=lmtx.pragma-ade.com,lmtx.pragma-ade.nl,lmtx.contextgarden.net \
           --instance=install-lmtx --platform=linux-64 --erase
