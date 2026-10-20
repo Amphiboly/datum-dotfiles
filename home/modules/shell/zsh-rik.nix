@@ -30,6 +30,12 @@
     initContent = ''
       export FZF_DEFAULT_COMMAND="${pkgs.fd}/bin/fd --type f --hidden --strip-cwd-prefix"
       export FZF_DEFAULT_OPTS="--height=60% --layout=reverse --border=rounded --prompt=\"  \" --pointer=\"  \" --preview-window=right:65%:wrap:border-left"
+      # Noctalia's fzf template renders this snippet from the shell palette;
+      # it appends --color options to FZF_DEFAULT_OPTS. It has to come after
+      # the export above, which also resets the options in nested shells so
+      # the colours aren't appended twice. Palette changes reach new shells.
+      [[ -r ''${XDG_CONFIG_HOME:-$HOME/.config}/fzf/themes/noctalia.sh ]] &&
+        source ''${XDG_CONFIG_HOME:-$HOME/.config}/fzf/themes/noctalia.sh
 
       bindkey -v
       export KEYTIMEOUT=1
