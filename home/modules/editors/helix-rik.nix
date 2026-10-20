@@ -2,11 +2,17 @@
 #
 # Preferences: theme, editor appearance, and keybindings. Enablement lives
 # in helix.nix.
+#
+# The theme is Noctalia's: its built-in helix template renders
+# ~/.config/helix/themes/noctalia.toml from the shell palette. Helix doesn't
+# watch theme files, so after a palette change run `:theme noctalia` (or
+# `:config-reload`) in open editors. Space n d / Space n n still switch to
+# the fixed light/dark themes from theme/colors.nix, for the session only.
 {config, ...}: {
   home.sessionVariables.EDITOR = "helix";
 
   programs.helix.settings = {
-    theme = config.theme.colorScheme.light;
+    theme = "noctalia";
 
     editor = {
       line-number = "relative";

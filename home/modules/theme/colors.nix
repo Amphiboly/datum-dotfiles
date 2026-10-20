@@ -1,9 +1,11 @@
 # home/modules/theme/colors.nix
 #
-# Names of the light/dark color themes, in Helix's naming, since Helix is the
-# only app here with a static default + manual light/dark keybind. Kitty
-# already switches automatically based on the OS light/dark preference via
-# autoThemeFiles, and keeps its own theme-catalog names independently.
+# Names of the light/dark color themes, in Helix's naming. For rik these
+# are only the fixed fallbacks behind Helix's Space n d / Space n n
+# keybinds; the default theme for rik's helix and kitty now comes from
+# Noctalia's templates (helix-rik.nix, kitty-rik.nix). Kitty for guest
+# still switches on the OS light/dark preference via its own
+# autoThemeFiles, with kitty theme-catalog names kept independently.
 {lib, ...}: {
   options.theme.colorScheme = {
     light = lib.mkOption {
