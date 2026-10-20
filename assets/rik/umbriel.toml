@@ -15,8 +15,11 @@
 [include]
  files = []
 
+# noctalia.toml is rendered by Noctalia's built-in umbriel template
+# (borders, insert hint, overview, tab bar) from the shell palette. Its hook
+# would add it here itself, but this file is a read-only store link.
 [include.optional]
- files = []
+ files = ["noctalia.toml"]
 
 # ==============================================================================
 # General
