@@ -12,43 +12,77 @@
 # because several defaults append words (username and hostname end in
 # " in ").
 #
-# Segment colours: user/host #9A348E, directory #DA627D, git #FCA17D,
-# time #33658A. Outside a git repo the git segment is empty, leaving a
-# sliver of orange between the arrows -- a known quirk of this layout.
-_: {
+# Segment colours are palette names, not hex: user/host `mauve`, directory
+# `red`, git `flamingo`, time `blue`, segment text `base`. Outside a git
+# repo the git segment is empty, leaving a sliver of it between the arrows
+# -- a known quirk of this layout.
+#
+# The palette comes from Noctalia. Its built-in starship template renders
+# [palettes.noctalia] into ~/.cache/noctalia/starship-palette.toml, and its
+# hook splices that into the starship config, with `palette = "noctalia"`.
+# Starship has no include, and the Home Manager config is a read-only store
+# link, so the hook can't edit it. Instead STARSHIP_CONFIG points at a
+# writable copy in $XDG_STATE_HOME: activation copies the generated config
+# there and runs Noctalia's own hook on it once, and from then on Noctalia
+# rewrites the palette block there on every palette change (the hook finds
+# the path through the systemd user environment). Starship rereads its
+# config at each prompt, so open shells follow along.
+#
+# [palettes.fallback] holds the original Pastel Powerline colours. It is
+# the palette until Noctalia has rendered one (a fresh profile, or a session
+# without Noctalia), and what ~/.config/starship.toml uses in shells started
+# before STARSHIP_CONFIG was set.
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  liveConfig = "${config.xdg.stateHome}/starship/starship.toml";
+  noctaliaPalette = "${config.xdg.cacheHome}/noctalia/starship-palette.toml";
+  noctaliaHook = "${config.programs.noctalia.package}/share/noctalia/assets/templates/starship/apply.sh";
+in {
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
     settings = {
       add_newline = false;
-      format = "[](#9A348E)$username[on ](bg:#9A348E fg:white)$hostname[](fg:#9A348E bg:#DA627D)$directory[](fg:#DA627D bg:#FCA17D)$git_branch$git_status[](fg:#FCA17D bg:#33658A)$time[](fg:#33658A) $character";
+      palette = "fallback";
+      palettes.fallback = {
+        mauve = "#9A348E";
+        red = "#DA627D";
+        flamingo = "#FCA17D";
+        blue = "#33658A";
+        base = "#FFFFFF";
+      };
+      format = "[](mauve)$username[on ](bg:mauve fg:base)$hostname[](fg:mauve bg:red)$directory[](fg:red bg:flamingo)$git_branch$git_status[](fg:flamingo bg:blue)$time[](fg:blue) $character";
       username = {
         disabled = false;
         show_always = true;
-        style_user = "bg:#9A348E fg:white";
-        style_root = "bg:#9A348E fg:red bold";
+        style_user = "bg:mauve fg:base";
+        style_root = "bg:mauve fg:base bold underline";
         format = "[ $user ]($style)";
       };
       hostname = {
         ssh_only = false;
         trim_at = ".";
         disabled = false;
-        style = "bg:#9A348E fg:white";
+        style = "bg:mauve fg:base";
         format = "[$hostname ]($style)";
       };
       directory = {
         truncation_length = 3;
         truncate_to_repo = true;
-        style = "bg:#DA627D fg:white bold";
+        style = "bg:red fg:base bold";
         format = "[ $path ]($style)";
       };
       git_branch = {
         symbol = "🌱 ";
-        style = "bg:#FCA17D fg:black";
+        style = "bg:flamingo fg:base";
         format = "[ $symbol$branch ]($style)";
       };
       git_status = {
-        style = "bg:#FCA17D fg:black bold";
+        style = "bg:flamingo fg:base bold";
         conflicted = "🏳 ";
         ahead = "⇡";
         behind = "⇣";
@@ -63,7 +97,7 @@ _: {
       time = {
         disabled = false;
         time_format = "%R";
-        style = "bg:#33658A fg:white";
+        style = "bg:blue fg:base";
         format = "[ $time ]($style)";
       };
       character = {
@@ -76,4 +110,25 @@ _: {
       };
     };
   };
+
+  # Shells read the first (mkForce: the starship module sets it to its own
+  # configPath); Noctalia's hook, run by the noctalia user service, reads
+  # the second via `systemctl --user show-environment`.
+  home.sessionVariables.STARSHIP_CONFIG = lib.mkForce liveConfig;
+  systemd.user.sessionVariables.STARSHIP_CONFIG = liveConfig;
+
+  # After linkGeneration, so the generated starship.toml is in place. The
+  # copy is overwritten on every activation (dropping the palette block),
+  # and the hook puts the current palette straight back. A failed hook
+  # warns rather than aborting activation; the fallback palette still works.
+  home.activation.starshipLiveConfig = lib.hm.dag.entryAfter ["linkGeneration"] ''
+    live=${lib.escapeShellArg liveConfig}
+    run mkdir -p "$(dirname "$live")"
+    run install -m 0644 ${config.home.file.${config.programs.starship.configPath}.source} "$live"
+    if [[ -f ${lib.escapeShellArg noctaliaPalette} ]]; then
+      run env PATH=${lib.makeBinPath [pkgs.coreutils pkgs.gawk pkgs.gnused pkgs.gnugrep pkgs.diffutils]} \
+        STARSHIP_CONFIG="$live" ${pkgs.bash}/bin/bash ${noctaliaHook} \
+        || warnEcho "Noctalia's starship hook failed; prompt keeps the fallback palette"
+    fi
+  '';
 }
