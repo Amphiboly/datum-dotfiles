@@ -5,11 +5,23 @@ _: {
     enableZshIntegration = true;
     settings = {
       add_newline = false;
-      format = "$git_branch $git_status $directory $character";
+      #     format = "$git_branch $git_status $directory $character";
+      format = "[ ](#9A348E) $username on $hostname [ ](bg:#DA627D fg:#9A348E) $directory [ ](fg:#DA627D bg:#FCA17D) $git_branch $git_status [ ](fg:#06969A bg:#33658A) $time [ ](fg:#33658A) ";
       directory = {
         truncation_length = 3;
         truncate_to_repo = true;
         style = "bold cyan";
+      };
+      hostname = {
+        ssh_only = false;
+        trim_at = ".";
+        disabled = false;
+      };
+      username = {
+        disabled = false;
+        show_always = true;
+        style_user = "white";
+        style_root = "red bold";
       };
       git_branch = {
         symbol = "🌱 ";
