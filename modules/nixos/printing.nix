@@ -14,8 +14,9 @@
       # unquoted as `$makeWrapperArgs`, which yields only the first element
       # ("--prefix"), so makeCWrapper chokes on the gapps args that follow
       # ("Unknown argument .../dconf-.../gio/modules"). hplipWithPlugin is
-      # unfree, so there's no cache hit to hide it. Drop this override once
-      # nixpkgs fixes the preFixup (check: build without it).
+      # unfree, so there's no cache hit to hide it. Fixed upstream by
+      # NixOS/nixpkgs#575319 (hplip 3.26.6); drop this override once the
+      # lock's nixpkgs has it. See KNOWN-ISSUES.md.
       (hplipWithPlugin.overrideAttrs {__structuredAttrs = false;})
     ];
   };

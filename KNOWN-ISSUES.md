@@ -246,6 +246,26 @@ recent history.
   lock, or the output is in the cache. Then uncomment it and drop the
   comment.
 
+### hplip built with `__structuredAttrs = false`
+- **Where:** `modules/nixos/printing.nix:11`
+- **What:** the 2026-10-20 upgrade failed building hplipWithPlugin 3.26.4
+  in its fixupPhase: `makeCWrapper: Unknown argument
+  .../dconf-0.49.0-lib/lib/gio/modules`. nixpkgs made
+  `buildPythonApplication` default to `__structuredAttrs = true`, so
+  hplip's `makeWrapperArgs` became a bash array. Its preFixup still
+  expanded it unquoted as `$makeWrapperArgs`, which gives only the first
+  element (`--prefix`), and the wrapper misread the arguments after it.
+  hplipWithPlugin is unfree, so it's always built locally and no cache hit
+  hides the breakage. The override turns structuredAttrs back off for
+  hplip alone.
+- **Upstream:** fixed by NixOS/nixpkgs#575319 ("hplip: 3.26.4 -> 3.26.6,
+  fix build"), merged to master 2026-10-17. It splices the arguments in
+  at the Nix level with `lib.escapeShellArgs`. On 2026-10-20 it had
+  reached `nixpkgs-unstable` but not `nixos-unstable`, the channel datum
+  follows.
+- **Remove when:** the lock's nixpkgs has hplip 3.26.6 or later. Then
+  drop the override and its comment, and confirm the build.
+
 ### Gaze: RGB camera given as `/dev/video0` instead of `usb:`
 - **Where:** `modules/nixos/facial-auth.nix:54`
 - **What:** Gaze 0.3.9's `usb:` resolver filters to `video/x-raw`, and the
