@@ -232,6 +232,20 @@ recent history.
   Evaluating it here gave no error, but nothing has been built yet.
 - **Next:** uncomment, build, and rewrite the comment, or drop it.
 
+### NAPS2 disabled: patchelf 0.19.2 crashes on its .NET deps
+- **Where:** `home/modules/productivity/office.nix:8`
+- **What:** the 2026-10-20 nightly upgrade failed building naps2 8.3.2.
+  nixpkgs moved patchelf from 0.15.2 to 0.19.2 between the 2026-10-15 and
+  2026-10-17 locks, and patchelf 0.19.2 aborts with
+  `Assertion splitIndex == -1 failed` adding an rpath to `crossgen` in
+  `runtime.linux-arm64.Microsoft.NETCore.App-2.1.30`, a prebuilt NuGet
+  package in naps2's dependencies. cache.nixos.org had no build of the
+  new naps2 either, so Hydra most likely fails the same way.
+- **Upstream:** no nixpkgs issue found on 2026-10-20.
+- **Remove when:** `nix build nixpkgs#naps2` succeeds against a fresh
+  lock, or the output is in the cache. Then uncomment it and drop the
+  comment.
+
 ### Gaze: RGB camera given as `/dev/video0` instead of `usb:`
 - **Where:** `modules/nixos/facial-auth.nix:54`
 - **What:** Gaze 0.3.9's `usb:` resolver filters to `video/x-raw`, and the
