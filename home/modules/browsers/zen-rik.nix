@@ -1,9 +1,34 @@
 # home/modules/browsers/zen-rik.nix
 #   by Chat 2026-08-28
 #   based on firefox-rik.nix
-{pkgs, ...}: {
+#
+# Colours of Zen's own interface and internal pages come from Noctalia's
+# zen-browser community template, which renders two stylesheets (each with
+# light and dark palettes, picked by prefers-color-scheme) into
+# ~/.cache/noctalia/zen-browser/. Its hook would add the @imports to the
+# profile and enable the stylesheets pref in user.js, but user.js is a
+# read-only Home Manager link, so the hook stops there; the imports and the
+# pref are set here instead. Zen reads them at startup, so restart it after
+# a palette change.
+{
+  config,
+  pkgs,
+  ...
+}: let
+  noctaliaCss = "${config.xdg.cacheHome}/noctalia/zen-browser";
+in {
   programs.zen-browser.profiles.default = {
+    userChrome = ''
+      @import "${noctaliaCss}/zen-userChrome.css";
+    '';
+    userContent = ''
+      @import "${noctaliaCss}/zen-userContent.css";
+    '';
+
     settings = {
+      # Lets Zen load userChrome.css / userContent.css at all.
+      "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+
       "browser.startup.homepage" = "https://nixos.org";
 
       "identity.fxaccounts.enabled" = true;
