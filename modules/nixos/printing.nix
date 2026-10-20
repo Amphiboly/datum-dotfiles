@@ -6,18 +6,7 @@
     # Injects the target compilation driver modules straight into the local CUPS backend loop
     drivers = with pkgs; [
       brlaser # Supports Brother MFC and HL layout frameworks natively
-      # Supports HP Color LaserJet print pipelines via proprietary hooks.
-      #
-      # WORKAROUND (2026-10-20, nixpkgs 09063bd): buildPythonApplication now
-      # defaults to __structuredAttrs = true, which turns hplip's
-      # makeWrapperArgs into a bash array. Its preFixup still expands it
-      # unquoted as `$makeWrapperArgs`, which yields only the first element
-      # ("--prefix"), so makeCWrapper chokes on the gapps args that follow
-      # ("Unknown argument .../dconf-.../gio/modules"). hplipWithPlugin is
-      # unfree, so there's no cache hit to hide it. Fixed upstream by
-      # NixOS/nixpkgs#575319 (hplip 3.26.6); drop this override once the
-      # lock's nixpkgs has it. See KNOWN-ISSUES.md.
-      (hplipWithPlugin.overrideAttrs {__structuredAttrs = false;})
+      hplipWithPlugin # Supports HP Color LaserJet print pipelines via proprietary hooks
     ];
   };
 
