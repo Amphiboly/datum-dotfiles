@@ -13,10 +13,8 @@
 # bat template keeps rendering (out-of-store, so it follows palette
 # changes; gitui reads it at startup).
 #
-# Keys: vi-style, from upstream's vim_style_key_config.ron (v0.28.1) with
-# one change: page up is ctrl+u, not ctrl+b, because ctrl+b is the tuios
-# leader and never reaches a program inside tuios. Help moves to F1, since
-# h is now "left". Unlisted actions keep gitui's defaults
+# Keys: vi-style, from upstream's vim_style_key_config.ron (v0.28.1). Help
+# moves to F1, since h is now "left". Unlisted actions keep gitui's defaults
 # (src/keys/key_list.rs). Home Manager writes this to key_bindings.ron,
 # the name gitui reads (its option text still says key_config.ron).
 {config, ...}: {
@@ -33,7 +31,7 @@
 
           popup_up: Some(( code: Char('p'), modifiers: "CONTROL")),
           popup_down: Some(( code: Char('n'), modifiers: "CONTROL")),
-          page_up: Some(( code: Char('u'), modifiers: "CONTROL")),
+          page_up: Some(( code: Char('b'), modifiers: "CONTROL")),
           page_down: Some(( code: Char('f'), modifiers: "CONTROL")),
           home: Some(( code: Char('g'), modifiers: "")),
           end: Some(( code: Char('G'), modifiers: "SHIFT")),
