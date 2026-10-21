@@ -16,8 +16,6 @@
     ./home/modules/shell/fzf-zoxide.nix
     ./home/modules/terminal/kitty.nix
     ./home/modules/terminal/kitty-rik.nix
-    ./home/modules/terminal/tuios.nix
-    ./home/modules/terminal/tuios-rik.nix
     ./home/modules/editors/helix.nix
     ./home/modules/editors/helix-rik.nix
     ./home/modules/editors/vim.nix
