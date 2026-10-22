@@ -76,19 +76,27 @@ if command -v fwupdmgr &> /dev/null; then
     read -rp "Check for UEFI/device firmware updates? (y/N): " check_firmware </dev/tty
     if [[ "$check_firmware" =~ ^[Yy]$ ]]; then
         echo "Refreshing firmware metadata from LVFS..."
-        fwupdmgr refresh || echo "Metadata refresh failed (offline?) — continuing with cached data."
+        # fwupdmgr exits 2 for "nothing to do" (metadata already fresh, no
+        # updates), distinct from 1 for a real error. The `|| rc=$?` form
+        # also keeps either from tripping set -e.
+        rc=0
+        fwupdmgr refresh || rc=$?
+        if (( rc == 1 )); then
+            echo "Metadata refresh failed (offline?) — continuing with cached data."
+        fi
 
-        # get-updates exits non-zero when there's simply nothing to install;
-        # don't let that trip set -e.
-        if fwupdmgr get-updates; then
+        rc=0
+        fwupdmgr get-updates || rc=$?
+        if (( rc == 0 )); then
             read -rp "Apply available firmware updates now? (y/N): " apply_firmware </dev/tty
             if [[ "$apply_firmware" =~ ^[Yy]$ ]]; then
                 echo "Applying firmware updates. Some devices (notably UEFI/BIOS) will require a reboot to complete."
                 fwupdmgr update
             fi
-        else
-            echo "No firmware updates available."
+        elif (( rc == 1 )); then
+            echo "Checking for firmware updates failed — see the error above."
         fi
+        # rc == 2: fwupdmgr has already printed "No updates available".
     fi
 else
     echo "fwupdmgr not found on PATH — nothing to check yet."
