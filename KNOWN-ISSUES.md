@@ -20,7 +20,7 @@ from the comments that describe them. The comments are still where the full
 reasoning lives; this file points at them and says whether each one is still
 live.
 
-Last reviewed: 2026-10-18.
+Last reviewed: 2026-10-23.
 
 ## 1. Hardware under observation
 
@@ -90,6 +90,79 @@ Last reviewed: 2026-10-18.
   (16:45:30, 16:48:46, 16:54:20, 16:57:26) and 4% (16:45:34), while
   the real charge fell smoothly 99 → 94% at about 12.5 V. The log
   (`battery-2026-10-18-1641.log`) had no `ERR` entries.
+- **2026-10-23: two more hard cuts.** After five days on the HP brick,
+  Rik moved rooms and plugged into an Anker USB-C charger (the 65 W one,
+  though at first it was taken for the 140 W; see the correction below),
+  with nothing else plugged into it. The laptop's charging LED lit, but upower says the pack
+  discharged the whole time, at 16–30 W
+  (the full system load), so the laptop wasn't running on USB-C power at
+  all. Not logger-run; reconstructed from upower history and the journal.
+  - 12:13:41 unplugged from the brick. Within 12 s a false 3% (real 98%);
+    that's the "battery at 3%" warning Rik saw.
+  - 12:14–13:08: the real charge fell smoothly 98 → 79%, with the usual
+    false readings in between (100%, 3%, 8%, 19–21%, 36–37%, 71–75%;
+    rates of 0, 0.4 and 97–188 W).
+  - About 13:08:40: **hard cut** at a real ~79%. The journal stops, with
+    no shutdown sequence.
+  - 13:09:46: booted on battery (`ADP1` off-line) and cut again after
+    **44 s**, also with no shutdown sequence.
+  - 14:31: booted on the brick, charging normally (93 → 96%, rate
+    tapering 10.9 → 6.9 W, no false readings).
+  - Still consistent: every false reading and every cut has come while
+    the pack supplies the power. The new part is that the hard cuts
+    repeat, at about 80% real charge, once within a minute of booting.
+    That's the pack's protection cutting the output, not upower reacting
+    to a false reading.
+  - The real discharge matches upower's rate (19% of 84 Wh in 55 min is
+    about 17 W), so the charger supplied little or nothing, even though
+    the LED meant the EC had seen it. `ADP1` read off-line at the
+    13:09:46 boot, and the kernel logged no UCSI/Type-C events at
+    plug-in. Not output sharing: the laptop was the only device on the
+    charger. The cause is open. In rough order of likelihood:
+    1. The PD negotiation landed on a low contract, 5 V, or failed. Some
+       HP firmware won't take power from a non-HP source, or caps it,
+       usually with a boot-time "low power adapter" warning.
+    2. The cable: a non-e-marked cable limits the contract to 3 A, and
+       some cables are charge-only at low power.
+    3. The port: only one of the two Type-C ports may accept power.
+    4. The bad pack: if the EC reads false battery data, it may refuse
+       or throttle charging from a source it trusts less than the HP
+       brick.
+  - **Correction, same day:** the charger was actually Rik's 65 W Anker
+    (the 140 W had been swapped with it by mistake). Retested on it at
+    15:03, alone on the charger: `ADP1` online, battery charging, and the
+    state held at charging (1) through an `nh os switch` (about
+    15:05–15:09; a short build, so a light test). UCSI read
+    `VOLTAGE_MAX=5000000`, `CURRENT_MAX=3000000`, `CURRENT_NOW=3250000`.
+    3.25 A is the 20 V current of a 65 W source and a 5 V contract can't
+    exceed 3 A, so the contract is most likely 20 V / 65 W and UCSI's
+    voltage fields are unreliable on this machine.
+  - **Then a spontaneous dropout:** at 15:10:27, 90 s after the build,
+    with nothing touched, the supply dropped on the SS + bolt port.
+    Discharging at 15–20 W until Rik replugged at about 15:12:53. The
+    journal logged nothing at all.
+  - **Port and wiggle test** (logger below, 5 s samples:
+    `charger-2026-10-23-1525.log` and `-1718.log` in ~/Projects/datum).
+    UCSI maps the ports: `USBC000:002` is the SS + bolt port, `001` the
+    bolt-only one.
+    - SS + bolt: about an hour hands-off (15:19–16:14), then the cable
+      wiggled at both ends. Clean.
+    - Bolt-only: about an hour hands-off (16:15–17:18), then wiggled.
+      Clean.
+    - Upower's history, which records state changes as they happen,
+      agrees. No failed reads.
+  - **Conclusion:** both ports charge, and the cable isn't loose at
+    either end. The dropouts are intermittent and silent (no kernel
+    event), and the test couldn't reproduce them. Cable, charger and the
+    laptop's input side are all still possible. With this pack an
+    unnoticed dropout ends in a hard cut, so: use the HP brick when
+    unattended; on USB-C, run the logger (it raises a desktop
+    notification when AC goes off-line); swap the cable or try the
+    140 W charger one at a time to narrow it down.
+  - The logger used here:
+    `/tmp/claude-1000/…/scratchpad/charger-logger.sh LOG [SECONDS]`. It
+    lives in the session scratchpad, so it won't survive; make it a user
+    service in the repo if it's needed again.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
@@ -142,9 +215,13 @@ Last reviewed: 2026-10-18.
   - HP discontinued this battery over a year ago and new old stock
     can't be found. The more reputable third-party packs cost about
     three times what this one did.
-- **Meanwhile:** upower's critical action fires on the first bad read of
-  2% or below, so expect early shutdowns on battery. They're clean, so
-  that's the safe failure; leave it be.
+- **Meanwhile:** treat the pack as unusable on battery (revised
+  2026-10-23, after two hard cuts in a row at ~80%). Keep datum 15 on the
+  HP brick. A clean shutdown, from upower's critical action firing on a
+  false reading of 2% or below, is the good outcome now; the hard cuts
+  risk the btrfs filesystem and whatever is open. Watch the pack for
+  swelling or heat, and replace it rather than settling for
+  semi-portable use.
 
 #### Discharge test
 
