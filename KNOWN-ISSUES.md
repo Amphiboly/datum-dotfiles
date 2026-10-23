@@ -148,7 +148,9 @@ Last reviewed: 2026-10-23.
     - SS + bolt: about an hour hands-off (15:19–16:14), then the cable
       wiggled at both ends. Clean.
     - Bolt-only: about an hour hands-off (16:15–17:18), then wiggled.
-      Clean.
+      Clean. A second hour (17:18–18:17) was clean apart from one
+      sample at 18:13:31, when Rik knocked the plug out by accident;
+      the wiggles after he reconnected were clean.
     - Upower's history, which records state changes as they happen,
       agrees. No failed reads.
   - **Conclusion:** both ports charge, and the cable isn't loose at
