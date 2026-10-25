@@ -251,7 +251,11 @@ options = "compose:ralt"     # (rik) RAlt as compose, matching COSMIC and umbrie
 # # Borders apply in every mode but "none".
 border_width = 4               # px; 0 = no border (rik)
 # border_color = "#333333"       # unfocused border
-border_color_focused = "#666666"  # focused border; set it apart from (rik)
+# (rik) both from the Noctalia palette (Tomorrow, light), as Umbriel's
+# borders are: background and primary accent. Fixed values, so they don't
+# follow a palette or light/dark change; update them by hand.
+border_color = "#e8e8e8"       # (rik)
+border_color_focused = "#4271ae"  # focused border; set it apart from (rik)
                                     # border_color for a focus indicator
 
 # # Focus-dependent opacity for windows with no `opacity` rule or `msg opacity`
