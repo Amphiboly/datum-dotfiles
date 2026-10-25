@@ -11,7 +11,8 @@
 #
 # This is per-user rather than system-wide, matching this repo's split
 # between system privileges and Home Manager config -- Noctalia starts via
-# this systemd user service, bound to Umbriel's session target (see below).
+# this systemd user service, bound to the Umbriel and driftwm sessions (see
+# below).
 {
   inputs,
   lib,
@@ -63,11 +64,17 @@
   # Umbriel sessions. mkForce because the module sets these as lists, which
   # would otherwise merge with ours rather than replace them; the module has
   # no `systemd.target` option to do this more politely.
-  systemd.user.services.noctalia = {
+  #
+  # driftwm has no session target of its own; its driftwm.service (started by
+  # driftwm-session) is the equivalent, and it imports WAYLAND_DISPLAY into
+  # the user manager before signalling READY, so ordering after it is enough.
+  systemd.user.services.noctalia = let
+    sessions = ["umbriel-session.target" "driftwm.service"];
+  in {
     Unit = {
-      After = lib.mkForce ["umbriel-session.target"];
-      PartOf = lib.mkForce ["umbriel-session.target"];
+      After = lib.mkForce sessions;
+      PartOf = lib.mkForce sessions;
     };
-    Install.WantedBy = lib.mkForce ["umbriel-session.target"];
+    Install.WantedBy = lib.mkForce sessions;
   };
 }
