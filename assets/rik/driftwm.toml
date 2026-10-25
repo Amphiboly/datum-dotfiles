@@ -2,9 +2,9 @@
 # commented reference config, kept whole so it can be diffed against a new
 # release's (the package ships it as etc/driftwm/config.reference.toml).
 # rik's changes are uncommented in place, each marked "(rik)"; new lines sit
-# next to the defaults they relate to. Deployed by
-# home/modules/desktop-integration/driftwm-rik.nix and checked with
-# `driftwm --check-config` at build time.
+# next to the defaults they relate to. Deployed and checked with
+# `driftwm --check-config` at build time by
+# home/modules/desktop-integration/driftwm.nix.
 #
 # The bar, launcher, notifications, wallpaper and lock screen come from
 # Noctalia, which starts with the session (noctalia.nix binds its unit to
@@ -249,9 +249,9 @@ options = "compose:ralt"     # (rik) RAlt as compose, matching COSMIC and umbrie
 # default_mode = "client"
 
 # # Borders apply in every mode but "none".
-# border_width = 0               # px; 0 = no border
+border_width = 4               # px; 0 = no border (rik)
 # border_color = "#333333"       # unfocused border
-# border_color_focused = "#333333"  # focused border; set it apart from
+border_color_focused = "#666666"  # focused border; set it apart from (rik)
                                     # border_color for a focus indicator
 
 # # Focus-dependent opacity for windows with no `opacity` rule or `msg opacity`

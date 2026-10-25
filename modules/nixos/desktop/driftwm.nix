@@ -16,10 +16,11 @@
 #   (services.gnome.gcr-ssh-agent in onepassword.nix), so 1Password keeps
 #   SSH_AUTH_SOCK;
 # - a `swaylock` PAM service, unused: locking goes through Noctalia (the
-#   `login` PAM service, with Gaze), bound in assets/rik/driftwm.toml.
+#   `login` PAM service, with Gaze), bound in assets/<user>/driftwm.toml.
 #
 # Per-user config (config.toml) is Home Manager's job:
-# home/modules/desktop-integration/driftwm{,-rik}.nix.
+# home/modules/desktop-integration/driftwm.nix, with each user's
+# assets/<user>/driftwm.toml.
 {inputs, ...}: {
   imports = [inputs.driftwm.nixosModules.default];
 

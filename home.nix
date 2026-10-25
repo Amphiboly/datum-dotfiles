@@ -43,7 +43,6 @@
     ./home/modules/desktop-integration/noctalia-rik.nix
     ./home/modules/desktop-integration/umbriel-rik.nix
     ./home/modules/desktop-integration/driftwm.nix
-    ./home/modules/desktop-integration/driftwm-rik.nix
     ./home/modules/desktop-integration/sdl-freerdp.nix
     ./home/modules/desktop-integration/sdl-freerdp-rik.nix
   ];
