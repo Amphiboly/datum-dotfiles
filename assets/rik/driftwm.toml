@@ -29,6 +29,9 @@ top_left = "zoom-to-fit"
 # 1Password Quick Access: as a native Wayland client 1Password can't grab its
 # own global shortcut (same bind as umbriel.toml).
 "ctrl+shift+space" = "exec 1password --quick-access"
+# A switch swaps config.toml for a new store link, which driftwm doesn't
+# notice; reload by hand (or `driftwm msg action reload-config`).
+"mod+shift+comma" = "reload-config"
 
 "XF86MonBrightnessUp" = "spawn noctalia msg brightness-up"
 "XF86MonBrightnessDown" = "spawn noctalia msg brightness-down"
