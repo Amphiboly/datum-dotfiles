@@ -16,6 +16,10 @@ options = "compose:ralt"
 name = "eDP-1"
 scale = 1.75
 
+# Overview on the top-left corner; same as mod+w or a 3-finger pinch-in.
+[outputs.hot_corners]
+top_left = "zoom-to-fit"
+
 [keybindings]
 "mod+return" = "exec kitty"
 "mod+d" = "spawn noctalia msg panel-toggle launcher"
