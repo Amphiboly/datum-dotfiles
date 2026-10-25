@@ -1,0 +1,37 @@
+# driftwm config for rik -- only what differs from the built-in defaults.
+# Every option, with its default: https://github.com/malbiruk/driftwm/blob/main/config.reference.toml
+# Rendered to ~/.config/driftwm/config.toml by
+# home/modules/desktop-integration/driftwm-rik.nix, and validated at build time.
+#
+# The bar, launcher, notifications, wallpaper and lock screen come from
+# Noctalia, which starts with the session (noctalia.nix binds its unit to
+# driftwm.service); the binds below point at it rather than at the
+# swaylock/fuzzel/wpctl defaults.
+
+[input.keyboard]
+# RAlt as compose, matching COSMIC and umbriel.toml.
+options = "compose:ralt"
+
+[[outputs]]
+name = "eDP-1"
+scale = 1.75
+
+[keybindings]
+"mod+return" = "exec kitty"
+"mod+d" = "spawn noctalia msg panel-toggle launcher"
+# Noctalia's lock screen (`login` PAM service: Gaze, then password), not the
+# default swaylock, whose PAM service has no Gaze.
+"mod+l" = "spawn noctalia msg session lock"
+# 1Password Quick Access: as a native Wayland client 1Password can't grab its
+# own global shortcut (same bind as umbriel.toml).
+"ctrl+shift+space" = "exec 1password --quick-access"
+
+"XF86MonBrightnessUp" = "spawn noctalia msg brightness-up"
+"XF86MonBrightnessDown" = "spawn noctalia msg brightness-down"
+"XF86AudioRaiseVolume" = "spawn noctalia msg volume-up"
+"XF86AudioLowerVolume" = "spawn noctalia msg volume-down"
+"XF86AudioMute" = "spawn noctalia msg volume-mute"
+"XF86AudioPlay" = "spawn noctalia msg media toggle"
+"XF86AudioPause" = "spawn noctalia msg media toggle"
+"Print" = "spawn noctalia msg screenshot-region"
+"shift+Print" = "spawn noctalia msg screenshot-fullscreen"
