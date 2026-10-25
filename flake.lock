@@ -35,6 +35,26 @@
         "type": "github"
       }
     },
+    "driftwm": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792870682,
+        "narHash": "sha256-R1URdhzpE/6JBgVBQa9FI87IvSSzwoX0GG+Z2paCfkI=",
+        "owner": "malbiruk",
+        "repo": "driftwm",
+        "rev": "df076b15dead4f54eb67d2299a35984fb4a91b4a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "malbiruk",
+        "repo": "driftwm",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -306,6 +326,7 @@
     "root": {
       "inputs": {
         "disko": "disko",
+        "driftwm": "driftwm",
         "gaze": "gaze",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",

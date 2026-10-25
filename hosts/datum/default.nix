@@ -65,9 +65,11 @@
     # login/lock greeter (cosmic-greeter), which is where facial-auth.nix's
     # pam_gaze wiring lives. Umbriel (Noctalia's compositor) is added
     # alongside it as a selectable session rather than a replacement, so
-    # trying it out doesn't touch the greeter or face auth.
+    # trying it out doesn't touch the greeter or face auth. driftwm joins on
+    # the same terms (on trial since 2026-10-25).
     ../../modules/nixos/desktop/cosmic.nix
     ../../modules/nixos/desktop/umbriel.nix
+    ../../modules/nixos/desktop/driftwm.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
     # For rebuild-free per-user switches, see flake.nix's homeConfigurations.

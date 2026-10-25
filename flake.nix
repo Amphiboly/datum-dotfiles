@@ -79,6 +79,15 @@
     # upstream CI has built and tested.
     noctalia.url = "github:noctalia-dev/noctalia/cachix";
     umbriel.url = "github:noctalia-dev/umbriel";
+    # driftwm: infinite-canvas Wayland compositor, on trial as a third session
+    # next to COSMIC and Umbriel (modules/nixos/desktop/driftwm.nix). Unlike
+    # noctalia/umbriel it follows our nixpkgs: there's no binary cache to
+    # match, so it compiles either way, and following keeps its glibc in step
+    # with the system's Mesa for free.
+    driftwm = {
+      url = "github:malbiruk/driftwm";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
