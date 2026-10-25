@@ -2,21 +2,7 @@
 ui_scale = 1.7500000186264515
 
 [bar]
-order = [ "default", "Nix" ]
-
-    [bar.Nix]
-    capsule = true
-    capsule_border = "tertiary"
-    capsule_fill = "surface"
-    center = [ "status_2", "spacer_2", "nix_monitor_2" ]
-    concave_edge_corners = false
-    enabled = true
-    end = []
-    margin_ends = 10
-    position = "bottom"
-    reserve_space = false
-    smart_auto_hide = true
-    start = []
+order = [ "default" ]
 
     [bar.default]
     capsule = true
@@ -46,7 +32,7 @@ order = [ "default", "Nix" ]
     radius = 4
     scale = 1.0000000074505806
     shadow = false
-    start = [ "launcher", "control-center", "wallpaper", "workspaces" ]
+    start = [ "launcher", "control-center", "wallpaper", "workspaces", "spacer_3", "nix_monitor_3", "status_3" ]
     thickness = 25
 
 [desktop_widgets]
@@ -254,13 +240,22 @@ type = "avivbintangaringga/nix-monitor:nix-monitor"
 [widget.nix_monitor_2]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
 
+[widget.nix_monitor_3]
+type = "avivbintangaringga/nix-monitor:nix-monitor"
+
 [widget.spacer_2]
+type = "spacer"
+
+[widget.spacer_3]
 type = "spacer"
 
 [widget.status]
 type = "mindnbytes/nix-status:status"
 
 [widget.status_2]
+type = "mindnbytes/nix-status:status"
+
+[widget.status_3]
 type = "mindnbytes/nix-status:status"
 
 [widget.taskbar]
