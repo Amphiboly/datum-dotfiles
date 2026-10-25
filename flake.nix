@@ -5,6 +5,14 @@
   inputs = {
     #   nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
+    # TEMPORARY: mcp-nixos only (home/modules/unix-tools/claude-code.nix).
+    # nixos-unstable 3ec636362e18 (2026-10-25) carries python `mcp` 2.x, and
+    # fastmcp-slim 3.4.7 marks itself broken against mcp >= 2, which takes
+    # mcp-nixos down with it. This is the last channel release that built it;
+    # being a releases.nixos.org URL it's fixed, so `nix flake update` won't
+    # move it. Drop this input (and the reference in claude-code.nix) once
+    # NixOS/nixpkgs#563493 (fastmcp -> 4.x) reaches nixos-unstable.
+    nixpkgs-mcp.url = "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1097682.02c087f3fe67/nixexprs.tar.zst";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     disko = {
       url = "github:nix-community/disko";
