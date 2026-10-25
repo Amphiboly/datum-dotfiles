@@ -1,5 +1,5 @@
 [accessibility]
-ui_scale = 1.75
+ui_scale = 1.7500000186264515
 
 [bar]
 order = [ "default", "Nix" ]
@@ -24,10 +24,12 @@ order = [ "default", "Nix" ]
     capsule_border_width = 0.5
     capsule_fill = "on_primary"
     capsule_foreground = "secondary"
-    center = []
+    capsule_group = []
+    center = [ "clock", "spacer_2", "taskbar" ]
     contact_shadow = true
     end = [
-        "group:g1",
+        "bar",
+        "media",
         "tray",
         "notifications",
         "clipboard",
@@ -42,38 +44,14 @@ order = [ "default", "Nix" ]
     margin_edge = 6
     margin_ends = 10
     radius = 4
-    scale = 1.00
+    scale = 1.0000000074505806
     shadow = false
-    start = [ "group:g2", "wallpaper", "workspaces", "taskbar" ]
+    start = [ "launcher", "control-center", "wallpaper", "workspaces" ]
     thickness = 25
-
-        [[bar.default.capsule_group]]
-        accordion = false
-        accordion_direction = "end"
-        border_width = 1.0
-        enabled = true
-        fill = "surface_variant"
-        id = "g1"
-        members = [ "bar", "media" ]
-        opacity = 1.0
-        padding = 6.0
-
-        [[bar.default.capsule_group]]
-        accordion = false
-        accordion_direction = "end"
-        border = "tertiary"
-        border_width = 0.5
-        enabled = true
-        fill = "on_primary"
-        foreground = "secondary"
-        id = "g2"
-        members = [ "control-center", "launcher" ]
-        opacity = 1.0
-        padding = 6.0
 
 [desktop_widgets]
 schema_version = 2
-widget_order = [ "desktop-widget-0000000000000001" ]
+widget_order = []
 
     [desktop_widgets.grid]
     cell_size = 8
@@ -152,7 +130,7 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
     box_height = 196.0
     box_width = 720.0
     cx = 1097.0
-    cy = 1097.0
+    cy = 1098.031494140625
     output = "eDP-1"
     placement_height = 1234.0
     placement_width = 2194.0
@@ -208,6 +186,18 @@ telemetry_enabled = true
     [shell.animation]
     enabled = false
 
+    [shell.launcher]
+    app_grid = false
+    categories = true
+    default_view = "recent"
+    layout = "full"
+    search_position = "bottom"
+    show_app_actions = true
+    show_session_button = true
+    show_settings_button = true
+    track_usage = true
+    width = 760
+
     [shell.panel]
     control_center_placement = "floating"
 
@@ -215,28 +205,27 @@ telemetry_enabled = true
     enabled = true
     size = 4
 
-    # next section added by rik copying Noctalia docs
-    [shell.launcher]
-      layout = "full"
-      width = 760
-      search_position = "bottom"
-      default_view = "recent"
-      categories = true
-      show_settings_button = true
-      show_session_button = true
-      app_grid = false
-      track_usage = true
-
 [theme]
 builtin = "Catppuccin"
 community_palette = "Tomorrow"
-mode = "auto"
+mode = "light"
 source = "community"
 wallpaper_scheme = "m3-content"
 
     [theme.templates]
     builtin_ids = [ "btop", "helix", "kitty", "starship", "umbriel" ]
-    community_ids = [ "zen-browser", "zathura", "yazi", "thunderbird", "libreoffice", "glow", "fzf", "fastfetch", "claude-code", "bat" ]
+    community_ids = [
+        "zen-browser",
+        "zathura",
+        "yazi",
+        "thunderbird",
+        "libreoffice",
+        "glow",
+        "fzf",
+        "fastfetch",
+        "claude-code",
+        "bat"
+    ]
 
 [wallpaper]
 directory = "/home/rik/Pictures/wallpapers"
@@ -256,6 +245,9 @@ unit = "imperial"
 [widget.bar]
 type = "noctalia/umbriel-companion:bar"
 
+[widget.clock]
+scale = 1.1500000000000001
+
 [widget.nix-monitor]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
 
@@ -270,3 +262,6 @@ type = "mindnbytes/nix-status:status"
 
 [widget.status_2]
 type = "mindnbytes/nix-status:status"
+
+[widget.taskbar]
+icon_scale = 1.1000000000000001
