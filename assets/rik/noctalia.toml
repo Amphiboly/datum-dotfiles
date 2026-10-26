@@ -11,7 +11,7 @@ order = [ "default" ]
     capsule_fill = "on_primary"
     capsule_foreground = "secondary"
     capsule_group = []
-    center = [ "clock", "spacer_2", "taskbar" ]
+    center = [ "clock_2", "spacer_2", "taskbar" ]
     contact_shadow = true
     end = [
         "bar",
@@ -160,7 +160,7 @@ flake_dir = "/home/rik/Projects/datum/datum-config"
 nixos_configuration = "datum"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status", "noctalia/umbriel-companion" ]
+enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status", "noctalia/umbriel-companion", "pulser/hover-widgets" ]
 
 [shell]
 corner_radius_scale = 0.25
@@ -233,6 +233,10 @@ type = "noctalia/umbriel-companion:bar"
 
 [widget.clock]
 scale = 1.1500000000000001
+
+[widget.clock_2]
+scale = 1.1500000000000001
+type = "pulser/hover-widgets:clock"
 
 [widget.nix-monitor]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
