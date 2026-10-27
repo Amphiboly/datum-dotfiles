@@ -69,6 +69,15 @@ lid_open = "umbriel msg output-enable:eDP-1"
 # added by rik
 [output.eDP-1]
 scale = 1.75
+position = [0, 0]
+
+# added by rik: the LG ultrawide, by its config name (`umbriel outputs`),
+# since its connector moves between DP-1 and DP-2. Pinned to the right of
+# the panel (3840 / 1.75 = 2194 logical px): a disable/enable cycle
+# (umbriel-outputs-reset, Mod+Shift+O) otherwise re-places it at 0,0 on
+# top of eDP-1.
+[output."LG Electronics LG ULTRAWIDE 0x00022572"]
+position = [2194, 0]
 
 # ==============================================================================
 # Appearance
