@@ -169,19 +169,29 @@ follows_mouse = true
 "XF86MonBrightnessDown" = { action = "spawn:noctalia msg brightness-down", allow_when_locked = true }
 
 # Focus and movement
-"Mod+Left" = "window-focus-left"
-"Mod+Down" = "window-focus-down"
-"Mod+Up" = "window-focus-up"
-"Mod+Right" = "window-focus-right"
-"Mod+H" = "window-focus-left"
-"Mod+J" = "window-focus-down"
-"Mod+K" = "window-focus-up"
-"Mod+L" = "window-focus-right"
+# added by rik: the -or-output variants carry focus onto the neighbouring
+# monitor at the layout's edge; with one output they act as plain
+# window-focus-*.
+"Mod+Left" = "window-focus-or-output-left"
+"Mod+Down" = "window-focus-or-output-down"
+"Mod+Up" = "window-focus-or-output-up"
+"Mod+Right" = "window-focus-or-output-right"
+"Mod+H" = "window-focus-or-output-left"
+"Mod+J" = "window-focus-or-output-down"
+"Mod+K" = "window-focus-or-output-up"
+"Mod+L" = "window-focus-or-output-right"
 "Mod+F1" = "window-focus-next"
 "Mod+Shift+Left" = "column-move-left"
 "Mod+Shift+Down" = "window-move-down"
 "Mod+Shift+Up" = "window-move-up"
 "Mod+Shift+Right" = "column-move-right"
+# added by rik: multi-monitor. Mod+Grave cycles focus through outputs and
+# wraps, so it reaches the laptop panel even when focus is stranded on an
+# external monitor that has been switched off (direction no longer matters).
+"Mod+Grave" = "output-focus-next"
+"Mod+Shift+Grave" = "window-move-to-output-next"
+"Mod+Ctrl+Shift+Left" = "column-move-to-output-left"
+"Mod+Ctrl+Shift+Right" = "column-move-to-output-right"
 # added by rik
 "Mod+C" = "column-center"
 "Mod+Shift+C" = "window-center"
