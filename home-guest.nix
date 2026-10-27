@@ -13,7 +13,6 @@ _: {
     ./home/modules/desktop-integration/noctalia.nix
     ./home/modules/desktop-integration/noctalia-guest.nix
     ./home/modules/desktop-integration/umbriel-guest.nix
-    ./home/modules/desktop-integration/driftwm.nix
     ./home/modules/desktop-integration/sdl-freerdp.nix
   ];
 
