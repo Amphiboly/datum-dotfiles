@@ -165,6 +165,50 @@ Last reviewed: 2026-10-23.
     `/tmp/claude-1000/…/scratchpad/charger-logger.sh LOG [SECONDS]`. It
     lives in the session scratchpad, so it won't survive; make it a user
     service in the repo if it's needed again.
+- **2026-10-27: two more hard cuts, then the pack stopped charging on the
+  brick.** Rik started the day on USB-C, saw 45% there, and moved to the HP
+  brick. Reconstructed afterwards from upower history and the journal; no
+  logger ran.
+  - 10:20–10:28: discharging (state 2) from 99 to 97% at about 15 W, with
+    the usual false readings (89%, 22%). **Hard cut at 10:28:32**, at a
+    real ~97%: the journal just stops, and the 10:29 boot found it
+    "uncleanly shut down". `ADP1` read on-line at that boot.
+  - 10:29–11:50: the state flipped between charging (1), discharging (2),
+    fully charged (4) and pending-charge (5), mostly 5 after 10:43, yet the
+    real charge fell steadily, 96 → 57%. That's about 33 Wh in 80 minutes,
+    or ~25 W, the whole system load: the pack powered the laptop while the
+    EC reported AC. False readings throughout (1–39%, 100%), and rate spikes
+    of 94–218 W.
+  - This is the **first garbling seen with AC reported present**; every
+    earlier false reading came while the pack was plainly discharging. It
+    fits the 10-23 picture, where the pack carried the load while the
+    charger was plugged in.
+  - **Hard cut at 11:49:56**, at a reported 57%: the log ends in audio DMA
+    errors with no shutdown sequence, and the 12:16 boot found the journal
+    "uncleanly shut down".
+  - Since 12:16, on the brick (`ADP1` on-line): **not charging**. upower
+    reads a flat 45%, `pending-charge`, 0 W, sysfs `status=Not charging`,
+    across four boots and seven hours (still so at 19:22). The voltage sits
+    at 11.38 V, 3.79 V a cell. That fits a resting pack at roughly half
+    charge, and is well under the 12.2–13.0 V seen on 10-18 at 94–100%.
+    The 57 → 45% step happened across the 11:50–12:16 power-off.
+  - A flat value for seven hours, on AC, looks like a stuck gauge or
+    charging deliberately blocked by the EC or the pack's protection
+    board. Until today the brick charged it normally (10-23: 93 → 100%;
+    10-25: full).
+  - The charging LED is steady white. On HP laptops that usually means AC
+    connected and battery full, or at least not charging; amber means
+    charging. (Not checked against this model's manual.) So the EC itself
+    sees nothing to charge, and isn't signalling a fault with a blinking
+    LED. That points at what the pack tells the EC, such as a "fully
+    charged" or "charge inhibit" status from its gauge or protection
+    board, rather than at the charger or the charging circuit, even though
+    the percentage the EC passes on to ACPI says 45%.
+  - upower's history also holds an entry dated 11-13 (74%, 12.3 V,
+    charging), two weeks in the future. It's a corrupt record, not a clock
+    problem: the system clock was right.
+  - **Next:** Rik is trying USB-C again to see whether the pack charges
+    there. He doubts it will, since USB-C also showed 45% this morning.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
@@ -223,7 +267,9 @@ Last reviewed: 2026-10-23.
   false reading of 2% or below, is the good outcome now; the hard cuts
   risk the btrfs filesystem and whatever is open. Watch the pack for
   swelling or heat, and replace it rather than settling for
-  semi-portable use.
+  semi-portable use. Since 2026-10-27 the pack doesn't charge on the
+  brick either, so it can't bridge even a brief power loss; any blip at
+  the wall or the plug is likely to end in a hard cut.
 
 #### Discharge test
 
