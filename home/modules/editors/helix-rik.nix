@@ -1,7 +1,7 @@
 # home/modules/editors/helix-rik.nix
 #
 # Preferences: theme, editor appearance, and keybindings. Enablement lives
-# in helix.nix.
+# in helix.nix. Vim is the default editor now; see vim-rik.nix.
 #
 # The theme is Noctalia's: its built-in helix template renders
 # ~/.config/helix/themes/noctalia.toml from the shell palette. Helix doesn't
@@ -9,8 +9,6 @@
 # `:config-reload`) in open editors. Space n d / Space n n still switch to
 # the fixed light/dark themes from theme/colors.nix, for the session only.
 {config, ...}: {
-  home.sessionVariables.EDITOR = "helix";
-
   programs.helix.settings = {
     theme = "noctalia";
 

@@ -1,7 +1,7 @@
 # home/modules/editors/helix.nix
 #
 # Enablement only: LSP/formatter wiring so nix/typst/markdown work for anyone.
-# See helix-rik.nix for theme, keybindings, and the $EDITOR default.
+# See helix-rik.nix for theme and keybindings.
 {pkgs, ...}: {
   home.packages = [pkgs.nixd pkgs.tinymist];
 

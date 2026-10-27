@@ -4,9 +4,9 @@ _: {
     mimeApps = {
       enable = true;
       defaultApplications = {
-        "text/plain" = ["Helix.desktop"];
-        "text/markdown" = ["Helix.desktop"];
-        "application/x-shellscript" = ["Helix.desktop"];
+        "text/plain" = ["vim.desktop"];
+        "text/markdown" = ["vim.desktop"];
+        "application/x-shellscript" = ["vim.desktop"];
       };
     };
     terminal-exec = {
