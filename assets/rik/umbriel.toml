@@ -192,6 +192,9 @@ follows_mouse = true
 "Mod+Shift+Grave" = "window-move-to-output-next"
 "Mod+Ctrl+Shift+Left" = "column-move-to-output-left"
 "Mod+Ctrl+Shift+Right" = "column-move-to-output-right"
+# added by rik: relight an external monitor that stayed dark after the idle
+# blank or a hotplug (script and reason in umbriel-rik.nix).
+"Mod+Shift+O" = { action = "spawn:umbriel-outputs-reset", repeat = false }
 # added by rik
 "Mod+C" = "column-center"
 "Mod+Shift+C" = "window-center"
