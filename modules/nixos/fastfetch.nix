@@ -68,7 +68,7 @@ _: {
                     },
                     {
                         "type": "custom",
-                        "format": "helix",
+                        "format": "vim",
                         "key": "├",
                     },
                     {

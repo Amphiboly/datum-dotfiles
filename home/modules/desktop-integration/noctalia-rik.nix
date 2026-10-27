@@ -8,7 +8,7 @@
 #
 # The rest wires up the app templates listed in that file's
 # [theme.templates], for apps that have no module of their own here. Apps
-# that do are wired in their own files: kitty-rik.nix, helix-rik.nix,
+# that do are wired in their own files: kitty-rik.nix,
 # starship.nix, zsh-rik.nix (fzf), zen-rik.nix, assets/rik/umbriel.toml.
 # btop, yazi, bat and Thunderbird need nothing: their configs are writable,
 # so Noctalia's hooks select the theme themselves. Claude Code needs the

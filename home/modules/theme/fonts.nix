@@ -1,7 +1,7 @@
 # home/modules/theme/fonts.nix
 #
-# Single source of truth for interface fonts. App modules (kitty, vim,
-# helix) read config.theme.font.* instead of hardcoding font names/sizes.
+# Single source of truth for interface fonts. App modules (kitty, vim)
+# read config.theme.font.* instead of hardcoding font names/sizes.
 {lib, ...}: {
   options.theme.font = {
     mono = lib.mkOption {

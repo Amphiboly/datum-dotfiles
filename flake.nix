@@ -144,7 +144,7 @@
     };
 
     # `nix fmt` / `nix fmt -- --check .` -- reformats the whole tree with
-    # alejandra (also used by Helix's LSP config, home/modules/editors/helix.nix).
+    # alejandra (also nixd's formatter in vim, home/modules/editors/vim.nix).
     formatter.${system} = pkgs.alejandra;
   };
 }
