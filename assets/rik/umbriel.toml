@@ -155,6 +155,11 @@ follows_mouse = true
 # (NIXOS_OZONE_WL) 1Password can't grab its own global shortcut, so the
 # compositor owns the key and asks the running app to open the panel.
 "Ctrl+Shift+Space" = { action = "spawn:1password --quick-access", repeat = false }
+# added by rik: Noctalia's window switcher. `hold` makes a quick tap flip to
+# the previous window; holding Alt keeps the overlay open, with Tab and
+# Shift+Tab cycling. Style (carousel/compact) is [shell.window_switcher]
+# in noctalia.toml.
+"Alt+Tab" = { action = "spawn:noctalia msg window-switcher hold", repeat = false }
 
 # Media, volume and brightness keys from any input device, routed through the
 # Noctalia shell so its OSDs show. Safe while the session is locked.
