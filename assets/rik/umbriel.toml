@@ -211,6 +211,10 @@ follows_mouse = true
 "Mod+Minus" = "window-modify-width-left:-0.1"
 "Mod+Shift+Plus" = "window-modify-height-up:0.1"
 "Mod+Shift+Minus" = "window-modify-height-up:-0.1"
+# added by rik: pan the strip, the only way to see the middle of a column
+# wider than the output (focus from a neighbour shows only its near edge).
+"Mod+Ctrl+Left" = "layout-scroll-left"
+"Mod+Ctrl+Right" = "layout-scroll-right"
 
 # Workspaces
 "Mod+1" = "workspace-switch:1"
@@ -251,7 +255,10 @@ follows_mouse = true
 # https://docs.noctalia.dev/umbriel/layout/
 [layout]
 # mode = "scrolling" # "scrolling", "dwindle", "master", or "floating".
-extent_presets = [0.333, 0.5, 0.667]
+# added by rik: 1.0 and 2.0 for wide scrolling columns (Umbriel #569, from
+# rik's request). Up to 4.0 is allowed; 2.0 spans two viewports plus the
+# gap. Other layouts skip presets above 1.0.
+extent_presets = [0.333, 0.5, 0.667, 1.0, 2.0]
 
 # What a tiled window's own maximize button does: "column" fills the column,
 # "edges" fills the usable area without struts, gaps, or borders. The
