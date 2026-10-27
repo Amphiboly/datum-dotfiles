@@ -76,6 +76,9 @@ pre_action_fade_seconds = 10
     action = "screen_off"
     enabled = true
     timeout = 300.0
+    # added by rik: Umbriel can't wake an external monitor after this
+    # blank (umbriel-rik.nix, upstream umbriel#218); cycle it back on.
+    resume_command = "umbriel-outputs-reset"
 
 [location]
 address = "Great Barrington, MA, USA"
