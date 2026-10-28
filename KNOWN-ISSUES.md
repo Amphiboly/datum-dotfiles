@@ -232,10 +232,26 @@ Last reviewed: 2026-10-23.
       minutes, which is a resting pack recovering, not charge going in.
       The power-button hold didn't restore charging.
   - **Status:** the pack can't run the laptop (five hard cuts at any
-    charge level) and won't take a charge. Options until a replacement:
-    leave it in on the brick, or disconnect it inside and run on the brick
-    alone, after checking that this model boots without a battery and
-    whether it throttles the CPU without one.
+    charge level) and won't take a charge. A 15 s power-button hold with
+    the brick unplugged (HP's hard reset) changed nothing, so the pack has
+    been **disconnected inside** since the evening of 10-27.
+  - **Running without a battery** (checked 21:03): it boots and runs on
+    the brick alone. `BAT0` is gone, upower shows "0% (should be
+    ignored)", `ADP1` is on-line, and `systemd-ac-power` says yes, so the
+    nightly upgrade's battery skip doesn't trigger. No CPU cap is visible:
+    max 4.0 GHz, turbo on, `max_perf_pct=100`, RAPL PL1 15 W / PL2 25 W
+    (the i7-8550U's stock limits), and a 5 s all-core load averaged
+    2148 MHz. There is no with-battery baseline to compare against, so
+    "not throttled" is inferred from the limits being stock. Any power
+    blip is now an instant hard power-off.
+  - **The LED:** yellow while charging, white when full (Rik's
+    correction). So from 12:16 the EC took the pack as *full* at 45%.
+    That's the pack's gauge or protection board reporting a false "full"
+    or "charge inhibit", not the charger. With no pack, the LED is simply
+    white for "AC connected", so it gives no further diagnostic.
+  - The removed pack sits at ~40%, a reasonable storage level. Keep it
+    somewhere cool and non-flammable, check it for swelling, and recycle
+    it rather than keep it.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
@@ -261,15 +277,51 @@ Last reviewed: 2026-10-23.
      garbled reads continued. That leaves the pack's gauge or
      protection board as the main suspect.
   3. If it still garbles, return this pack to the seller.
-  4. Buy a replacement against HP's battery code and spare-part number
+  4. ~~Buy a replacement against HP's battery code and spare-part number
      from the manual, not just "fits Spectre x360 15": 3-cell, 11.55 V,
      about 84 Wh. Distrust much higher claimed capacity. Prefer a stated
      warranty and a return window of 30 days or more, and reviews that
-     mention the charge reading and sudden shutdowns, not just runtime.
-  5. Acceptance-test it within the return window: a discharge test,
-     an AC run, and upower's history checked for jumps (the logger
-     misses readings between samples). If a reputable pack garbles too,
-     suspect the laptop side.
+     mention the charge reading and sudden shutdowns, not just runtime.~~
+     Chosen 2026-10-27: **BTI `YB06XLBTI`** from **ProVantage**. Returns
+     within 30 days, "100% satisfaction or defective", by mail. Notes
+     from choosing it:
+     - The 15-ch takes **YB06XL**. KB06XL is the older 15-bl pack.
+       Listings give HP's YB06XL spares as `926372-855`, `928427-271`,
+       `HSTNN-DB8H` and `TPN-Q200` (among others); check them against the
+       removed pack's label.
+     - BTI (now distributed by Origin Storage) sells to business IT
+       buyers, and is an honestly labelled compatible pack from an
+       accountable US channel. Its claim of grade-A Japanese/Korean cells
+       is the vendor's own.
+     - Rejected: reliablelaptopparts.com, $64.99 "Brand New Genuine
+       Original HP". Its contact page lists a Shenzhen factory, a Chinese
+       phone number and a Gmail address, there's no HP spare number or
+       date, and it's far too cheap for genuine discontinued stock: an
+       aftermarket pack with an HP label, the same profile as the pack
+       that failed. Also passed over: Micro Center (same BTI pack, but
+       returns in store only, at Cambridge) and LaptopBatteryExpress
+       "Xtend" ($145.90, claimed Samsung cells, 2-year warranty, Digital
+       Day Inc., Ohio). Xtend is legitimate, but the cell claim can't be
+       verified.
+     - Genuine HP new old stock would be made around 2019–21. Shelf-aged
+       packs may be at 80–90% capacity, or locked out if they sat drained.
+  5. Acceptance-test it within the return window. Keep the box, note the
+     delivery date, and test in the first week:
+     - Before use, record what the pack reports: `manufacturer`,
+       `model_name`, `serial_number`, `cycle_count`, `charge_full` vs
+       `charge_full_design` in `/sys/class/power_supply/BAT0/`, and
+       `upower -i`. A serial number, a real manufacture date and a full
+       capacity a little *below* design are good signs. The failed pack
+       had no serial, a cycle count of 0, and full exactly equal to
+       design.
+     - Charge to full on the brick. The LED should go yellow, then white,
+       with upower showing `charging`, a positive rate and a rising
+       voltage.
+     - A 1–2 hour discharge, with the logger under "Discharge test", and
+       upower's history checked afterwards for jumps (the logger misses
+       readings between samples). Any false reading or cut is grounds to
+       return it as defective.
+     - If a reputable pack garbles too, suspect the laptop side.
 - **Pack history:** this laptop's battery has been replaced several
   times.
   - The old pack (itself the second or third) is worn out. It holds
@@ -296,7 +348,9 @@ Last reviewed: 2026-10-23.
   swelling or heat, and replace it rather than settling for
   semi-portable use. Since 2026-10-27 the pack doesn't charge on the
   brick either, so it can't bridge even a brief power loss; any blip at
-  the wall or the plug is likely to end in a hard cut.
+  the wall or the plug is likely to end in a hard cut. Since that evening
+  it has been disconnected, and datum 15 runs on the brick alone until
+  the BTI pack arrives: shut down before unplugging.
 
 #### Discharge test
 
