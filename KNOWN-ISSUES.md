@@ -207,8 +207,35 @@ Last reviewed: 2026-10-23.
   - upower's history also holds an entry dated 11-13 (74%, 12.3 V,
     charging), two weeks in the future. It's a corrupt record, not a clock
     problem: the system clock was right.
-  - **Next:** Rik is trying USB-C again to see whether the pack charges
-    there. He doubts it will, since USB-C also showed 45% this morning.
+  - **Evening battery run, a fifth hard cut.** Instead of retrying USB-C,
+    Rik unplugged both the charger and the external monitor at 19:32.
+    - The pack carried 17–30 W, discharging steadily. The voltage sagged
+      from 11.38 V at rest to 10.97–11.19 V under load. There were false
+      readings of 10% (19:35:23) and 4% (19:38:13) against a real ~44%.
+    - **Hard cut at about 19:43:43**, mid-use (a launcher toggle, then
+      Alt+Tab, then nothing). There was no shutdown sequence, and the next
+      boot found the journal "uncleanly shut down". upower's on-disk
+      history stops at 19:38:13 because it saves in batches, so the last
+      few minutes were lost with the cut.
+    - It wasn't empty: energy went 37.7 → 33.6 Wh (45 → 40%), matching
+      about 11 minutes at ~20 W, and the cells sat around 3.7 V under
+      load, far above a ~3.0 V cutoff. So the protection board cut the
+      output, as on 10-23. The cuts have now come at 97%, ~80% and 40%,
+      so charge level isn't the trigger.
+    - While the machine was off, the white LED kept blinking slowly. A
+      ~10 s hold of the power button stopped it. The meaning of a blinking
+      white LED on this model isn't checked; it may be the EC flagging
+      low battery or a battery error.
+    - Back on the brick (boot at 19:48): still **not charging**. upower
+      reads 40%, pending-charge, 0 W, and sysfs `Not charging`, with the
+      LED steady white. The voltage creeps 11.31 → 11.33 V over 20
+      minutes, which is a resting pack recovering, not charge going in.
+      The power-button hold didn't restore charging.
+  - **Status:** the pack can't run the laptop (five hard cuts at any
+    charge level) and won't take a charge. Options until a replacement:
+    leave it in on the brick, or disconnect it inside and run on the brick
+    alone, after checking that this model boots without a battery and
+    whether it throttles the CPU without one.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
