@@ -87,8 +87,16 @@ builtin = "Catppuccin"
 mode = "auto"
 
     [theme.templates]
-    builtin_ids = [ "ghostty", "niri" ]
-    community_ids = [ "yazi" ]
+    builtin_ids = [ "btop", "kitty", "starship", "umbriel" ]
+    community_ids = [ "zen-browser",
+                      "zathura",
+                      "yazi",
+                      "libreoffice",
+                      "glow",
+                      "fzf",
+                      "fastfetch",
+                      "bat"
+    ]
 
 [wallpaper]
 directory = "/home/guest/Pictures/wallpapers"
