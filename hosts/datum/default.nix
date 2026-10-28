@@ -68,6 +68,7 @@
     # trying it out doesn't touch the greeter or face auth.
     ../../modules/nixos/desktop/cosmic.nix
     ../../modules/nixos/desktop/umbriel.nix
+    ../../modules/nixos/desktop/wallpapers.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
     # For rebuild-free per-user switches, see flake.nix's homeConfigurations.
