@@ -252,6 +252,30 @@ Last reviewed: 2026-10-23.
   - The removed pack sits at ~40%, a reasonable storage level. Keep it
     somewhere cool and non-flammable, check it for swelling, and recycle
     it rather than keep it.
+- **2026-10-29: pack refitted, two more hard cuts on USB-C.** The pack was
+  back in by the 10:07 boot (the 10:06 shutdown before it was clean). Rik
+  used the laptop on USB-C in an easy chair. Reconstructed from upower
+  history and the journal; no logger ran.
+  - 10:07–18:35: upower recorded no change at all, a flat 40% and
+    pending-charge (5), so it neither charged nor showed a discharge.
+    When it moved from the brick to USB-C isn't known.
+  - **Hard cut at about 18:35:40**: the journal ends mid-session (an
+    umbriel DRM commit error, then nothing), and the 18:37 boot found it
+    "uncleanly shut down". The pack was at 37% at that boot.
+  - 18:52–19:15: discharging (2) from 37 to 31%, with the usual false
+    readings (7%, 8%, 100%) in the first few minutes. That's the 10-23
+    picture again: on USB-C, the pack carries the load.
+  - **Hard cut at about 19:19:44**, at a real ~31%; the 19:24 boot also
+    found the journal "uncleanly shut down". That's seven hard cuts in
+    all.
+  - Since 19:24, on the brick (`ADP1` on-line, both UCSI sources
+    off-line): **still not charging**. 29%, pending-charge, 0 W, 11.16 V.
+    That's below the 11.55 V design minimum, but it's the resting
+    voltage, not a cutoff (3.72 V a cell).
+  - **Status:** nothing has changed since 10-27: the pack neither runs the
+    laptop nor charges. Rik will take it out again (brick-only) when he
+    gets a chance. Until then, don't run it on USB-C, and don't unplug it
+    without shutting down first.
 - **Reading:** the gauge data (fuel-gauge chip in the pack → SMBus through
   the battery connector → the embedded controller → ACPI) is corrupted
   intermittently, and worse under load: it began within two minutes at
@@ -283,7 +307,8 @@ Last reviewed: 2026-10-23.
      warranty and a return window of 30 days or more, and reviews that
      mention the charge reading and sudden shutdowns, not just runtime.~~
      Chosen 2026-10-27: **BTI `YB06XLBTI`** from **ProVantage**. Returns
-     within 30 days, "100% satisfaction or defective", by mail. Notes
+     within 30 days, "100% satisfaction or defective", by mail. Ship
+     date given as **2026-11-21**; the window runs from delivery. Notes
      from choosing it:
      - The 15-ch takes **YB06XL**. KB06XL is the older 15-bl pack.
        Listings give HP's YB06XL spares as `926372-855`, `928427-271`,
@@ -348,9 +373,11 @@ Last reviewed: 2026-10-23.
   swelling or heat, and replace it rather than settling for
   semi-portable use. Since 2026-10-27 the pack doesn't charge on the
   brick either, so it can't bridge even a brief power loss; any blip at
-  the wall or the plug is likely to end in a hard cut. Since that evening
-  it has been disconnected, and datum 15 runs on the brick alone until
-  the BTI pack arrives: shut down before unplugging.
+  the wall or the plug is likely to end in a hard cut. From that evening
+  it was disconnected, and datum 15 ran on the brick alone. Refitted
+  2026-10-29, it cut out twice more on USB-C (above) and still doesn't
+  charge, so it comes out again until the BTI pack arrives (ships
+  2026-11-21). Shut down before unplugging.
 
 #### Discharge test
 
