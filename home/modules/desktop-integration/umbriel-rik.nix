@@ -24,9 +24,9 @@
       runtimeInputs = [pkgs.gawk pkgs.coreutils];
       text = ''
         for out in $(umbriel outputs | awk '/^[^ \t]/ && $1 !~ /^eDP-/ {print $1}'); do
-          umbriel msg "output-disable:$out"
+          umbriel msg output-disable "$out"
           sleep 1
-          umbriel msg "output-enable:$out"
+          umbriel msg output-enable "$out"
         done
       '';
     })

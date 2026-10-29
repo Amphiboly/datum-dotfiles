@@ -29,10 +29,11 @@
           out = f[1]; sub(/:$/, "", out) }
         / \(focused\)$/ { focused = out }
         { last[out] = f[2] }
-        END { if (focused != "") print last[focused] "/" focused }
+        END { if (focused != "") print last[focused], focused }
       ') || true
       if [ -n "$target" ]; then
-        umbriel msg "workspace-switch:$target" >/dev/null || true
+        read -r ws out <<<"$target"
+        umbriel msg workspace-switch "$ws" --output "$out" >/dev/null || true
       fi
       exec sdl-freerdp "$@"
     '';
