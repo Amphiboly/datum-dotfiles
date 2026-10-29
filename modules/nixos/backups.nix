@@ -56,6 +56,43 @@
     config.fileSystems."/mnt/5CDbackup".options
   );
 
+  # Machine state on @ that a reinstall from this flake can't recreate.
+  # Generations cover everything in /nix, and btrbk/rustic cover @home;
+  # these are the small, rarely changing files neither reaches. The
+  # restore order matters for two of them; see the reinstall sequence in
+  # flake.nix.
+  #   sbctl:        Secure Boot signing keys. Restored, they spare a new
+  #                 firmware enrollment (secure-boot.nix).
+  #   sops:         the age key. Also in 1Password, which is the copy a
+  #                 restore depends on: this repo's password is a sops
+  #                 secret, so the backed-up copy can't unlock its own repo.
+  #   nixos:        uid/gid map, so system users (btrbk is 998) keep their
+  #                 numbers across a reinstall.
+  #   ssh host keys: so nostrum and others don't see a key mismatch.
+  #   tailscale:    node identity; without it datum rejoins as a new node.
+  #   bluetooth, NetworkManager: pairings and saved Wi-Fi.
+  #   gaze:         face templates. Their key is sealed to this machine's
+  #                 TPM (facial-auth.nix), so they're only good on the same
+  #                 board with an uncleared TPM; anywhere else, re-enroll.
+  # Read live, not from a snapshot: @ isn't snapshotted, and these change
+  # too rarely for that to matter.
+  systemStatePaths = [
+    "/var/lib/sbctl"
+    "/var/lib/sops"
+    "/var/lib/nixos"
+    "/etc/ssh/ssh_host_ed25519_key"
+    "/etc/ssh/ssh_host_ed25519_key.pub"
+    "/etc/ssh/ssh_host_rsa_key"
+    "/etc/ssh/ssh_host_rsa_key.pub"
+    "/etc/ssh/ssh_host_ecdsa_key"
+    "/etc/ssh/ssh_host_ecdsa_key.pub"
+    "/var/lib/tailscale"
+    "/var/lib/bluetooth"
+    "/var/lib/NetworkManager"
+    "/etc/NetworkManager/system-connections"
+    "/var/lib/gaze"
+  ];
+
   # rustic with the repository and password pre-wired.
   #
   # Plain `rustic` cannot work here and never will: the repo path lives only
@@ -467,6 +504,20 @@ in {
             --glob="!/run/restic-atomic-home/guest/.cache" \
             /run/restic-atomic-home/guest
         fi
+
+        # System state pipeline (systemStatePaths above). Only paths that
+        # exist are passed, so a host without, say, an RSA host key doesn't
+        # fail the whole run.
+        echo "Syncing system state..."
+        state_paths=()
+        for p in ${lib.escapeShellArgs systemStatePaths}; do
+          if [ -e "$p" ]; then
+            state_paths+=("$p")
+          else
+            echo "  (skipping missing $p)"
+          fi
+        done
+        rustic backup --tag="system" "''${state_paths[@]}"
 
         echo "Backup stream transmission completed successfully."
       '';

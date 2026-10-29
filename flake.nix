@@ -96,6 +96,55 @@
       overlays = [nur.overlays.default];
     };
   in {
+    # Reinstalling datum from scratch, on the same laptop (disk lost or
+    # wiped). The firmware keeps its enrolled Secure Boot keys through all
+    # of this; turning Secure Boot off doesn't clear them. So with the
+    # signing keys restored, nothing needs enrolling again.
+    #
+    # Needed from 1Password: the sops age key, the LUKS passphrase (disko
+    # asks for it) and the TPM PIN. Everything else comes from the age key:
+    # it decrypts secrets.yaml, which holds the CIFS credentials and the
+    # rustic password.
+    #
+    #  1. Firmware: Secure Boot off (the NixOS installer isn't signed with
+    #     anything this machine trusts). Leave the keys alone; never "Clear
+    #     All Secure Boot Keys", which wipes dbx too.
+    #  2. Boot the installer, get online, clone this repo, and partition:
+    #       nix run github:nix-community/disko -- --mode disko \
+    #         hosts/datum/disko-config.nix
+    #     That mounts the new system at /mnt.
+    #  3. Age key: paste it from 1Password into
+    #     /mnt/var/lib/sops/age/keys.txt (root, 0600). Without it the first
+    #     activation can't decrypt rik-password-hash and creates rik locked
+    #     (users/rik.nix).
+    #  4. System state from the nightly backup (backups.nix, tag "system"):
+    #     at least /var/lib/sbctl, BEFORE installing: lanzaboote signs the
+    #     boot files during nixos-install and fails without the keys.
+    #     Decrypt what's needed with
+    #       SOPS_AGE_KEY_FILE=/mnt/var/lib/sops/age/keys.txt \
+    #         nix shell nixpkgs#sops -c sops -d secrets.yaml
+    #     mount //5cd-rack.local/n/datum with the CIFS credentials, then
+    #       nix shell nixpkgs#rustic -c rustic -r <share>/restic-repo \
+    #         snapshots --filter-tags system
+    #       ... restore <id>:/var/lib/sbctl /mnt/var/lib/sbctl
+    #     and the same for the other paths in systemStatePaths, each to
+    #     its place under /mnt.
+    #     No backup? `sbctl create-keys` into /mnt/var/lib/sbctl instead,
+    #     and enroll them after step 6 (secure-boot.nix, steps 1-3).
+    #  5. nixos-install --flake .#datum, and set root's password when it
+    #     asks (not --no-root-passwd; see users/root.nix).
+    #  6. Reboot, then Secure Boot on in the firmware. It boots, because the
+    #     restored keys signed everything. `sudo sbctl verify` to check.
+    #  7. TPM2 + PIN: the LUKS header is new, so enroll again, with Secure
+    #     Boot already on (the slot is bound to PCR 7). Command in the
+    #     header of hosts/datum/disko-config.nix.
+    #  8. /home from rustic (tags user:rik, user:guest), then
+    #     `nh os switch .` so Home Manager takes over.
+    #
+    # A different board, or firmware reset to factory keys, means
+    # enrolling again in step 6 whatever the backup holds.
+    #
+    # Changing a login password: users/default.nix.
     nixosConfigurations.datum = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {inherit inputs;};
