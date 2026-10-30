@@ -212,7 +212,7 @@ widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-login-box@DP-2", "loc
 [osd]
 follow_focused_output = true
 monitors = [ "eDP-1" ]
-scale = 0.5
+scale = 0.90000000596046448
 
     [osd.kinds]
     dnd = false
