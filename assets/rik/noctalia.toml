@@ -1,5 +1,5 @@
 [accessibility]
-ui_scale = 1.7500000186264515
+ui_scale = 1.0000000074505806
 
 [bar]
 order = [ "default" ]
@@ -10,11 +10,10 @@ order = [ "default" ]
     capsule_border_width = 0.5
     capsule_fill = "on_primary"
     capsule_foreground = "secondary"
-    capsule_group = []
     center = [ "clock_2", "spacer_2", "taskbar" ]
     contact_shadow = true
     end = [
-        "bar",
+        "group:g1",
         "media",
         "tray",
         "notifications",
@@ -34,6 +33,19 @@ order = [ "default" ]
     shadow = false
     start = [ "launcher", "control-center", "wallpaper", "workspaces", "spacer_3", "nix_monitor_3", "status_3" ]
     thickness = 25
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "tertiary"
+        border_width = 0.5
+        enabled = true
+        fill = "on_primary"
+        foreground = "secondary"
+        id = "g1"
+        members = [ "bar", "bar_2" ]
+        opacity = 1.0
+        padding = 6.0
 
 [desktop_widgets]
 schema_version = 2
@@ -65,20 +77,18 @@ pre_action_fade_seconds = 10
     [idle.behavior.lock]
     action = "lock"
     enabled = false
-    timeout = 600.0
+    timeout = 900.0
 
     [idle.behavior.lock-and-suspend]
     action = "lock_and_suspend"
     enabled = false
-    timeout = 900.0
+    timeout = 1200.0
 
     [idle.behavior.screen-off]
     action = "screen_off"
     enabled = true
-    timeout = 300.0
-    # added by rik: Umbriel can't wake an external monitor after this
-    # blank (umbriel-rik.nix, upstream umbriel#218); cycle it back on.
     resume_command = "umbriel-outputs-reset"
+    timeout = 600.0
 
 [location]
 address = "Great Barrington, MA, USA"
@@ -89,12 +99,68 @@ allow_empty_password = true
 [lockscreen_widgets]
 enabled = false
 schema_version = 2
-widget_order = [ "lockscreen-login-box@eDP-1" ]
+widget_order = [ "lockscreen-login-box@eDP-1", "lockscreen-login-box@DP-2", "lockscreen-login-box@DP-1" ]
 
     [lockscreen_widgets.grid]
     cell_size = 16
     major_interval = 4
     visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1720.0
+    cy = 1258.0
+    output = "DP-1"
+    placement_height = 1440.0
+    placement_width = 3440.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-1".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@DP-2"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1720.0
+    cy = 1258.0
+    output = "DP-2"
+    placement_height = 1440.0
+    placement_width = 3440.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@DP-2".settings]
+        background_color = "surface_container"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_password_reveal = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
 
     [lockscreen_widgets.widget."lockscreen-login-box@Virtual-1"]
     box_height = 70.0
@@ -138,11 +204,14 @@ widget_order = [ "lockscreen-login-box@eDP-1" ]
         show_keyboard_layout = true
         show_login_button = true
         show_media = true
+        show_password_reveal = true
         show_session_buttons = true
         show_unlock_hint = true
         show_weather = true
 
 [osd]
+follow_focused_output = true
+monitors = [ "eDP-1" ]
 scale = 0.5
 
     [osd.kinds]
@@ -163,7 +232,13 @@ flake_dir = "/home/rik/Projects/datum/datum-config"
 nixos_configuration = "datum"
 
 [plugins]
-enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status", "noctalia/umbriel-companion", "pulser/hover-widgets" ]
+enabled = [
+    "avivbintangaringga/nix-monitor",
+    "mindnbytes/nix-status",
+    "noctalia/umbriel-companion",
+    "pulser/hover-widgets",
+    "tordex/xwayland"
+]
 
 [shell]
 corner_radius_scale = 0.25
@@ -197,10 +272,10 @@ telemetry_enabled = true
 
 [theme]
 builtin = "Catppuccin"
-community_palette = "Tomorrow"
+community_palette = "Noctalia legacy"
 mode = "light"
-source = "community"
-wallpaper_scheme = "m3-content"
+source = "wallpaper"
+wallpaper_scheme = "vibrant"
 
     [theme.templates]
     builtin_ids = [ "btop", "kitty", "starship", "umbriel" ]
@@ -221,19 +296,23 @@ wallpaper_scheme = "m3-content"
 directory = "/home/rik/Pictures/wallpapers"
 
     [wallpaper.default]
-    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+    path = "/home/rik/Pictures/wallpapers/cities-05.jpg"
 
     [wallpaper.last]
-    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+    path = "/home/rik/Pictures/wallpapers/cities-05.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/rik/Pictures/wallpapers/rose_pine.png"
+    path = "/home/rik/Pictures/wallpapers/cities-05.jpg"
 
 [weather]
 unit = "imperial"
 
 [widget.bar]
 type = "noctalia/umbriel-companion:bar"
+
+[widget.bar_2]
+hide_on_wayland = false
+type = "tordex/xwayland:bar"
 
 [widget.clock]
 scale = 1.1500000000000001
