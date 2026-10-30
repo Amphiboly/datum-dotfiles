@@ -7,6 +7,11 @@ _: {
         "text/plain" = ["vim.desktop"];
         "text/markdown" = ["vim.desktop"];
         "application/x-shellscript" = ["vim.desktop"];
+        # The plugin's entry, not org.pwmt.zathura.desktop: that one
+        # declares no MimeType, the mupdf plugin's does (hidden from
+        # menus, NoDisplay). Firefox second, for "Open With". Until now
+        # PDFs fell through to LibreOffice Draw.
+        "application/pdf" = ["org.pwmt.zathura-pdf-mupdf.desktop" "firefox.desktop"];
       };
     };
     terminal-exec = {
