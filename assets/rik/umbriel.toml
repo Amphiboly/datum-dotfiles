@@ -199,7 +199,11 @@ follows_mouse = true
 # Applications and session
 "Mod+Return" = { action = "spawn kitty", repeat = false }
 "Mod" = "spawn noctalia msg panel-toggle launcher"
-"Mod+Q" = { action = "window-close", repeat = false }
+# added by rik: allow_when_inhibited keeps Mod+Q and Mod+1 working while
+# Mod+Shift+Escape passes every other key through to the focused window
+# (e.g. an RDP session, so Ctrl+Shift+Space reaches 1Password there).
+# sdl-freerdp runs under Xwayland, which can't ask for passthrough itself.
+"Mod+Q" = { action = "window-close", repeat = false, allow_when_inhibited = true }
 "Mod+Escape" = "session-quit"
 "Mod+Shift+Escape" = { action = "shortcuts-inhibit-toggle", allow_when_inhibited = true, repeat = false }
 # added by rik
@@ -287,7 +291,7 @@ follows_mouse = true
 "Mod+Ctrl+Right" = "layout-scroll-right"
 
 # Workspaces
-"Mod+1" = "workspace-switch 1"
+"Mod+1" = { action = "workspace-switch 1", allow_when_inhibited = true }
 "Mod+2" = "workspace-switch 2"
 "Mod+3" = "workspace-switch 3"
 "Mod+4" = "workspace-switch 4"
