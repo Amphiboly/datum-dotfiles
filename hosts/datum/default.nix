@@ -69,6 +69,7 @@
     ../../modules/nixos/desktop/cosmic.nix
     ../../modules/nixos/desktop/umbriel.nix
     ../../modules/nixos/desktop/shared-services.nix
+    ../../modules/nixos/desktop/thunar.nix
     ../../modules/nixos/desktop/wallpapers.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).

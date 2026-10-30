@@ -12,6 +12,9 @@ _: {
         # menus, NoDisplay). Firefox second, for "Open With". Until now
         # PDFs fell through to LibreOffice Draw.
         "application/pdf" = ["org.pwmt.zathura-pdf-mupdf.desktop" "firefox.desktop"];
+        # Thunar (modules/nixos/desktop/thunar.nix). Until now folders went
+        # to kitty-open.desktop, which claims inode/directory itself.
+        "inode/directory" = ["thunar.desktop"];
       };
     };
     terminal-exec = {
