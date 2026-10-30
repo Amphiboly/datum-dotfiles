@@ -29,6 +29,7 @@
     ./home/modules/productivity/thunderbird.nix
     ./home/modules/productivity/maestral-service.nix
     ./home/modules/productivity/maestral-service-rik.nix
+    ./home/modules/productivity/rclone-dropbox.nix
     ./home/modules/productivity/syncthing.nix
     ./home/modules/productivity/syncthing-rik.nix
     ./home/modules/desktop-integration/xdg.nix

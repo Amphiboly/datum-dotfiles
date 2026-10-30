@@ -50,6 +50,11 @@ _: {
     # 'h' forces systemd to apply the strict +C (NOCOW/No-Compression) flag atomically [a]
     "d /home/rik/Dropbox 0700 rik users - -"
     "h /home/rik/Dropbox - - - - +C"
+    # rclone's VFS cache for ~/DropboxCloud (rclone-dropbox.nix), up to 20 GB
+    # of churn. As a nested subvolume it's left out of btrbk's hourly @home
+    # snapshots, which would otherwise keep old cache files for weeks. 'v'
+    # only creates it if the path doesn't exist yet.
+    "v /home/rik/.cache/rclone 0700 rik rik -"
     # Automatically ensures /mnt/btrfs-root/.snapshots/home exists with
     # secure root-only permissions (0700) on every single boot sequence [a].
     "d /mnt/btrfs-root/.snapshots/home 0700 root root - -"
