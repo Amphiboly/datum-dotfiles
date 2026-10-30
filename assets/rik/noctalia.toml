@@ -168,6 +168,7 @@ enabled = [ "avivbintangaringga/nix-monitor", "mindnbytes/nix-status", "noctalia
 [shell]
 corner_radius_scale = 0.25
 font_family = "Lilex Nerd Font Medium"
+polkit_agent = true
 settings_show_advanced = true
 settings_window_translucent = true
 telemetry_enabled = true

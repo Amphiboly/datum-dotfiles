@@ -68,6 +68,7 @@ widget_order = [ "lockscreen-login-box@Virtual-1" ]
 [shell]
 corner_radius_scale = 0.2500000037252903
 font_family = "JetBrainsMonoNL NFP Medium"
+polkit_agent = true
 settings_show_advanced = true
 telemetry_enabled = true
 # unknown setting ui_scale = 0.7500000037252903
