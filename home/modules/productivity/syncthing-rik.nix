@@ -1,7 +1,7 @@
 # home/modules/productivity/syncthing-rik.nix
 #
-# This user's actual Syncthing wiring: ~/Projects shared bidirectionally
-# with nostrum.
+# This user's actual Syncthing wiring: ~/Projects and ~/Documents shared
+# bidirectionally with nostrum.
 #
 _: {
   services.syncthing.settings = {
@@ -54,6 +54,26 @@ _: {
         # gitignored, shouldn't leak between machines any more than it
         # does between commits
         "**/.claude/settings.local.json"
+      ];
+    };
+
+    # Plain working documents, no build tooling, so only the per-machine
+    # transient files from the projects list apply.
+    folders.documents = {
+      id = "documents";
+      path = "~/Documents";
+      devices = ["nostrum"];
+
+      # Same insurance as projects.
+      versioning.type = "staggered";
+
+      ignorePatterns = [
+        # LibreOffice lock files
+        "**/.~lock.*#"
+
+        # Editor swap files
+        "**/*.swp"
+        "**/*.swo"
       ];
     };
   };
