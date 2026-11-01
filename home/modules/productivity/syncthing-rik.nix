@@ -57,8 +57,9 @@ _: {
       ];
     };
 
-    # Plain working documents, no build tooling, so only the per-machine
-    # transient files from the projects list apply.
+    # Working documents. Mostly the projects list, minus two patterns that
+    # would hide real content here: "**/*.log" (Home Assistant, installer
+    # and tax-software logs) and "**/*.bak" (may be a wanted backup).
     folders.documents = {
       id = "documents";
       path = "~/Documents";
@@ -68,12 +69,33 @@ _: {
       versioning.type = "staggered";
 
       ignorePatterns = [
+        # Version control, in case a project ever lands here
+        "**/.git"
+        "/git"
+
+        # Nix build outputs and dev-shell caches
+        "**/result"
+        "**/result-*"
+        "**/.direnv"
+
+        # ConTeXt/TeX build byproducts (not *.log, see above)
+        "**/*.tuc"
+        "**/*.top"
+        "**/*.synctex.gz"
+        "**/*-tmp.pdf"
+
         # LibreOffice lock files
         "**/.~lock.*#"
 
-        # Editor swap files
+        # Editor swap/backup/tmp files. The tmp dirs under Tax are scratch.
         "**/*.swp"
         "**/*.swo"
+        "**/*~"
+        "**/tmp"
+        "**/.tmp"
+
+        # Claude Code per-machine permission state
+        "**/.claude/settings.local.json"
       ];
     };
   };
