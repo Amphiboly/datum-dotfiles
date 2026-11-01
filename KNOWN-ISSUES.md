@@ -451,33 +451,21 @@ recent history.
 
 ## 2. Waiting on upstream: temporary, with a removal condition
 
-### Zotero disabled — blocker resolved, ready to re-enable
+### Zotero disabled: its Firefox ESR 140 engine is end-of-life
 - **Where:** `home/modules/productivity/office.nix:17`
-- **What:** Zotero 10 needs Firefox ESR 140, which nixpkgs dropped
-  (NixOS/nixpkgs#568692).
-- **Status (2026-10-17):** fixed upstream, though not by the PR the comment
-  names. #569006 was closed unmerged. The maintainers merged
-  NixOS/nixpkgs#572466 instead ("reviving prebuilt Firefox 140 ESR"),
-  2026-10-15. `pkgs.zotero` (10.0.4) evaluates on the current lock and is
-  not marked broken.
-- **Caveat from the PR author:** it may need `firefox-esr-140-bin-unwrapped`
-  allowed as both unfree and insecure (`nixpkgs.config.permittedInsecurePackages`).
-  Evaluating it here gave no error, but nothing has been built yet.
-- **Next:** uncomment, build, and rewrite the comment, or drop it.
-
-### NAPS2 disabled: patchelf 0.19.2 crashes on its .NET deps
-- **Where:** `home/modules/productivity/office.nix:8`
-- **What:** the 2026-10-20 nightly upgrade failed building naps2 8.3.2.
-  nixpkgs moved patchelf from 0.15.2 to 0.19.2 between the 2026-10-15 and
-  2026-10-17 locks, and patchelf 0.19.2 aborts with
-  `Assertion splitIndex == -1 failed` adding an rpath to `crossgen` in
-  `runtime.linux-arm64.Microsoft.NETCore.App-2.1.30`, a prebuilt NuGet
-  package in naps2's dependencies. cache.nixos.org had no build of the
-  new naps2 either, so Hydra most likely fails the same way.
-- **Upstream:** no nixpkgs issue found on 2026-10-20.
-- **Remove when:** `nix build nixpkgs#naps2` succeeds against a fresh
-  lock, or the output is in the cache. Then uncomment it and drop the
-  comment.
+- **What:** Zotero 10 runs on Firefox ESR 140. nixpkgs first dropped ESR
+  140 (NixOS/nixpkgs#568692), then brought it back as a prebuilt binary
+  for Zotero (NixOS/nixpkgs#572466, 2026-10-15). ESR 140 reached
+  end-of-life on 2026-10-13, so nixpkgs marks
+  `firefox-esr-140-bin-unwrapped` insecure and refuses to evaluate
+  `pkgs.zotero` (10.0.4, checked 2026-11-01).
+- **Decision (2026-11-01):** wait rather than allow it through
+  `permittedInsecurePackages`. Zotero renders web content (its browser,
+  snapshots, translators) with that engine, and it would get no further
+  security fixes.
+- **Remove when:** a Zotero release on a supported ESR reaches
+  nixos-unstable and `pkgs.zotero` evaluates without an insecure-package
+  exception. Then uncomment it and drop the comment.
 
 ### Gaze: RGB camera given as `/dev/video0` instead of `usb:`
 - **Where:** `modules/nixos/facial-auth.nix:54`
