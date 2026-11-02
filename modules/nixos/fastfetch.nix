@@ -38,22 +38,22 @@ _: {
                         "keyColor": "yellow"
                     },
                     {
+                        "type": "lm",
+                        "key": "┌󰧨",
+                        "keyColor": "blue"
+                    },
+                    {
       //                "type": "custom",
-      //                "key": "┌",
+      //                "key": "├",
       //                "format": "Noctalia",
       //                "keyColor": "blue"
                         "type": "de",
-                        "key": "┌",
+                        "key": "├",
                         "keyColor": "blue"
                     },
                     {
                         "type": "wm",
                         "key": "├",
-                        "keyColor": "blue"
-                    },
-                    {
-                        "type": "lm",
-                        "key": "├󰧨",
                         "keyColor": "blue"
                     },
                     {
@@ -67,9 +67,9 @@ _: {
                         "keyColor": "blue"
                     },
                     {
-                        "type": "custom",
-                        "format": "vim",
+                        "type": "editor",
                         "key": "├",
+                        "keyColor": "blue"
                     },
                     {
                         "type": "colors",
