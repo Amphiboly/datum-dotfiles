@@ -4,6 +4,7 @@
     glow
     just
     libreoffice-stable
+    lilypond-unstable-with-fonts
     mdbook
     naps2
     pandoc
