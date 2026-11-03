@@ -30,9 +30,31 @@
   # runs (requires_path) once ~/.config/zathura exists; its hook then
   # re-sources running instances over D-Bus. zathura loads it only if
   # zathurarc includes it.
-  xdg.configFile."zathura/zathurarc".text = ''
-    include noctaliarc
-  '';
+  #
+  # Qt (KDE Connect and other Qt apps): the template renders
+  # colors/noctalia.conf under both ~/.config/qt5ct and qt6ct, but has no
+  # hook to select it, and qt{5,6}ct only use a palette that
+  # color_scheme_path names. So both confs are managed here. They're
+  # read-only as a result, and the qt5ct/qt6ct GUIs can't save; nothing
+  # was set through them anyway. qt.enable and QT_QPA_PLATFORMTHEME come
+  # from modules/nixos/desktop/shared-services.nix. Qt apps read the
+  # palette at startup, so restart them after a theme change.
+  xdg.configFile = let
+    qtct = dir: {
+      text = ''
+        [Appearance]
+        color_scheme_path=${config.xdg.configHome}/${dir}/colors/noctalia.conf
+        custom_palette=true
+        standard_dialogs=xdgdesktopportal
+      '';
+    };
+  in {
+    "zathura/zathurarc".text = ''
+      include noctaliarc
+    '';
+    "qt5ct/qt5ct.conf" = qtct "qt5ct";
+    "qt6ct/qt6ct.conf" = qtct "qt6ct";
+  };
 
   # LibreOffice: the template's hook packs the colours into an .oxt
   # extension and installs it with unopkg (skipped while LibreOffice runs;

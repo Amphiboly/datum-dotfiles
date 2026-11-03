@@ -40,8 +40,9 @@
   # Where GTK apps keep their settings (colour scheme, fonts).
   programs.dconf.enable = true;
 
-  # Qt apps (KDE Connect and the like) take their style from qt5ct/qt6ct,
-  # whose ~/.config/qt{5,6}ct carry rik's palette.
+  # Qt apps (KDE Connect and the like) take their style and palette from
+  # qt5ct/qt6ct. Which palette is per-user: rik's points at Noctalia's
+  # (noctalia-rik.nix).
   qt = {
     enable = true;
     platformTheme = "qt5ct";
