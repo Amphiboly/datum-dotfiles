@@ -60,14 +60,11 @@
     ../../modules/nixos/users/rik.nix
     ../../modules/nixos/users/guest.nix
 
-    # Desktop environment. Gnome was a stopgap for when Cosmic's heavy update
-    # cadence outran this laptop's rebuild speed; removed since it was never
-    # wanted on its own merits. COSMIC remains the default DE and owns the
-    # login/lock greeter (cosmic-greeter), which is where facial-auth.nix's
-    # pam_gaze wiring lives. Umbriel (Noctalia's compositor) is added
-    # alongside it as a selectable session rather than a replacement, so
-    # trying it out doesn't touch the greeter or face auth.
-    ../../modules/nixos/desktop/cosmic.nix
+    # Desktop: Umbriel (compositor) + Noctalia (shell, per-user in Home
+    # Manager) is the only session. COSMIC was the desktop until 2026-11-03
+    # (tag last-cosmic); only its greeter is left, as the login screen,
+    # until noctalia-greeter replaces it.
+    ../../modules/nixos/desktop/cosmic-greeter.nix
     ../../modules/nixos/desktop/umbriel.nix
     ../../modules/nixos/desktop/shared-services.nix
     ../../modules/nixos/desktop/thunar.nix
