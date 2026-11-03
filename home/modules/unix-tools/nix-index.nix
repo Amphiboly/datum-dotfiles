@@ -12,6 +12,11 @@
 #     `comma-with-db` wrapper points it at the database in the store, so
 #     comma is NOT also listed in cli-utils.nix: the two would collide on
 #     bin/,.
+#   - When several packages provide a command (`sl` is sl, sapling and
+#     femtolisp), comma asks once via fzy and remembers the pick in
+#     ~/.local/state/comma/choices; later runs, even with -a, reuse it
+#     without asking. `, -d <cmd>` forgets it and asks again, `, -e` clears
+#     every pick, and `, -p <cmd>` lists the candidates without running.
 #   - Importing the module sets programs.nix-index.enable (mkDefault). That
 #     installs nix-locate against the same database and hooks zsh's
 #     command_not_found_handler, so a missing command prints the package
