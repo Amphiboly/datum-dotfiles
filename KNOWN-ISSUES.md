@@ -553,7 +553,6 @@ can be rechecked after big upstream changes.
 | `.rdp` MIME type shipped as a package, because nothing runs update-mime-database on `~/.local/share/mime` | `home/modules/desktop-integration/sdl-freerdp.nix:6` | — |
 | `gcr-ssh-agent` disabled so 1Password owns `SSH_AUTH_SOCK` | `modules/nixos/onepassword.nix:36` | — |
 | ConTeXt LMTX wrappers avoid `exec -a` (luametatex finds its root by its own path) | `pkgs/context-lmtx/default.nix:37` | — |
-| Cheatsheet applet's data files copied by hand (`just install` can't run in the sandbox) | `pkgs/cosmic-ext-applet-cheatsheet/default.nix:12` | — |
 
 ## 6. Known limitations and gotchas
 
@@ -602,16 +601,11 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
 - **`olde-toplevel.sh` matches names heuristically**, so it can miss
   packages, and it subtracts hand-listed packages that are also platform
   defaults (curl, openssh). `olde-toplevel.sh:73`, `:121`
-- **Applet shortcut is set by hand:** the cheatsheet's Super+C binding
-  lives in COSMIC Settings, not the repo.
-  `home/modules/desktop-integration/cosmic-applet-cheatsheet.nix:15`
 
 ### Manual pin bumps
 - lanzaboote: release tag, bumped by hand. `flake.nix:13`
 - context-lmtx: bump `version`, rebuild, paste the new hash.
   `pkgs/context-lmtx/default.nix:11`
-- cosmic-ext-applet-cheatsheet: set `rev`/`version`, blank both hashes, build
-  twice. `pkgs/cosmic-ext-applet-cheatsheet/default.nix:7`
 
 ## 7. Defects and stale comments found while compiling this
 
