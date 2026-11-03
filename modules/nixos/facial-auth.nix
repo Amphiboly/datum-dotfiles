@@ -154,13 +154,13 @@ in {
   # The login screen and the lock screen use these PAM services, none in
   # upstream's defaults:
   #
-  #   - "cosmic-greeter": COSMIC's lock screen only, so unused since COSMIC
-  #     went on 2026-11-03. The greeter module still defines the service;
-  #     this line goes when noctalia-greeter replaces cosmic-greeter.
-  #   - "greetd": the login screen. cosmic-greeter is only a greetd client;
-  #     greetd itself runs the PAM conversation, and its stack is just
-  #     `substack login`. Until 2026-10-14 this file assumed cosmic-greeter
-  #     covered both, so login never had face auth.
+  #   - "greetd": the login screen. The greeter (noctalia-greeter since
+  #     2026-11-03, cosmic-greeter before) is only a greetd client; greetd
+  #     itself runs the PAM conversation, and its stack is just `substack
+  #     login`. noctalia-greeter needs allow_empty_password for Enter on an
+  #     empty field to start PAM (desktop/noctalia-greeter.nix). Until
+  #     2026-10-14 this file assumed cosmic-greeter's own service covered
+  #     login, so login never had face auth.
   #   - "login": Noctalia's lock screen (Umbriel sessions), hardcoded in
   #     noctalia's lock_screen.cpp. Also console logins.
   #
@@ -190,6 +190,5 @@ in {
   # 2026-10-14, so it opens without one; LUKS and file permissions protect it
   # at rest. If it ever gets a password again, face logins leave it locked and
   # Maestral stalls or prompts.
-  security.pam.services.cosmic-greeter.gaze.enable = activeInAuthStack;
   security.pam.services.login.gaze.enable = activeInAuthStack;
 }

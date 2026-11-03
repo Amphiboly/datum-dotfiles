@@ -61,9 +61,9 @@
     ../../modules/nixos/users/guest.nix
 
     # Desktop: Umbriel (compositor) + Noctalia (shell, per-user in Home
-    # Manager) is the only session, behind noctalia-greeter. COSMIC was the
-    # desktop until 2026-11-03 (tag last-cosmic). To go back to
-    # cosmic-greeter, swap the next line for desktop/cosmic-greeter.nix.
+    # Manager) is the only session, behind noctalia-greeter. COSMIC and
+    # cosmic-greeter were the desktop and login screen until 2026-11-03
+    # (tag last-cosmic).
     ../../modules/nixos/desktop/noctalia-greeter.nix
     ../../modules/nixos/desktop/umbriel.nix
     ../../modules/nixos/desktop/shared-services.nix

@@ -2,7 +2,8 @@
 #
 # The login screen: noctalia-greeter (github:noctalia-dev/noctalia-greeter),
 # a greetd greeter with its own small wlroots compositor, styled like
-# Noctalia. It replaced cosmic-greeter on 2026-11-03. Package and module
+# Noctalia. It replaced cosmic-greeter on 2026-11-03 (cosmic-greeter.nix
+# is in tag last-cosmic and the commit after). Package and module
 # come from nixpkgs (services.displayManager.noctalia-greeter), not the
 # upstream flake: same version, and cache.nixos.org has it.
 #
