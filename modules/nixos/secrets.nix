@@ -19,6 +19,8 @@ _: {
       # Private half of the key remote-builder.nix uses to reach nostrum.
       # Root-owned because the nix-daemon (root) opens the SSH connection.
       "nostrum-builder-ssh-key" = {owner = "root";};
+      # ntfy publish token (1Password); ntfy-alerts.nix sends it as Bearer.
+      "ntfy-publish-token" = {owner = "root";};
 
       # User Email Keys (Declaratively owned by rik)
       "spectrum-smtp-password" = {owner = "rik";};

@@ -189,7 +189,7 @@ in {
     path = [config.nix.package config.systemd.package pkgs.git pkgs.nvd pkgs.coreutils pkgs.util-linux pkgs.msmtp pkgs.gnugrep pkgs.gnused];
     wants = ["network-online.target"];
     after = ["network-online.target"];
-    onFailure = ["status-email-alert@%n.service"];
+    onFailure = ["status-email-alert@%n.service" "status-ntfy-alert@%n.service"];
     # Don't start it as a side effect of `nh os switch` changing the unit.
     restartIfChanged = false;
     serviceConfig = {

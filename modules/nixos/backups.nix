@@ -321,7 +321,7 @@ in {
   # here") is deliberately ignored for this file: the separate systemd.*
   # assignments keep each unit next to the section it belongs to, which
   # reads better than one merged `systemd = { ... }` block. Reviewed by Rik.
-  systemd.services.btrbk-local.onFailure = ["status-email-alert@%n.service"];
+  systemd.services.btrbk-local.onFailure = ["status-email-alert@%n.service" "status-ntfy-alert@%n.service"];
 
   # =========================================================================
   # 2. DECLARATIVE ATOMIC BACKUPS (NATIVE SYSTEMD RUSTIC CALL ENGINE)
@@ -346,7 +346,7 @@ in {
     # a bounded retry, so a transient post-resume network state costs a few
     # seconds instead of a whole day's backup.
     after = ["multi-user.target" "tailscaled.service"];
-    onFailure = ["status-email-alert@%n.service"];
+    onFailure = ["status-email-alert@%n.service" "status-ntfy-alert@%n.service"];
 
     # cifs-utils: mount(8) execs mount.cifs out of PATH for -t cifs, and
     # without it the mount fails with "unknown filesystem type 'cifs'" even
