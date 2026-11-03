@@ -51,8 +51,8 @@ files = ["noctalia.toml"]
 # `umbriel outputs`.
 # https://docs.noctalia.dev/umbriel/configuration/#events
 # [events]
-# lid_close = "umbriel msg output-disable:eDP-1"
-# lid_open = "umbriel msg output-enable:eDP-1"
+# lid_close = "umbriel msg output-disable eDP-1"
+# lid_open = "umbriel msg output-enable eDP-1"
 
 # ==============================================================================
 # Screencast
