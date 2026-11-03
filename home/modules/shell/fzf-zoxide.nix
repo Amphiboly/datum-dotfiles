@@ -1,8 +1,10 @@
 # home/modules/shell/fzf-zoxide.nix
-_: {
+{pkgs, ...}: {
   home.sessionVariables = {
     _ZO_DATA_DIR = "$HOME/.local/share/zoxide";
-    _FZF_PREVIEW_CMD = "bat --color=always --style=plain,numbers --line-range=:500 {}";
+    # bat by store path, like fd in zsh-rik.nix, so this module doesn't
+    # depend on cli-utils.nix putting it on PATH.
+    _FZF_PREVIEW_CMD = "${pkgs.bat}/bin/bat --color=always --style=plain,numbers --line-range=:500 {}";
   };
 
   programs.fzf = {
