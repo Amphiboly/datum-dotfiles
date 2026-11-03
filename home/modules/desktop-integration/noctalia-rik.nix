@@ -11,7 +11,9 @@
 # that do are wired in their own files: kitty-rik.nix,
 # starship.nix, zsh-rik.nix (fzf), zen-rik.nix, assets/rik/umbriel.toml.
 # btop, yazi, bat and Thunderbird need nothing: their configs are writable,
-# so Noctalia's hooks select the theme themselves. Claude Code needs the
+# so Noctalia's hooks select the theme themselves. Neither do KDE apps
+# (kcolorscheme): Noctalia writes the colours into ~/.config/kdeglobals,
+# itself writable, and signals running KDE apps to reload. Claude Code needs the
 # theme picked once, by hand, with /theme.
 {
   config,
@@ -31,14 +33,17 @@
   # re-sources running instances over D-Bus. zathura loads it only if
   # zathurarc includes it.
   #
-  # Qt (KDE Connect and other Qt apps): the template renders
+  # Qt Widgets apps: the template renders
   # colors/noctalia.conf under both ~/.config/qt5ct and qt6ct, but has no
   # hook to select it, and qt{5,6}ct only use a palette that
   # color_scheme_path names. So both confs are managed here. They're
   # read-only as a result, and the qt5ct/qt6ct GUIs can't save; nothing
   # was set through them anyway. qt.enable and QT_QPA_PLATFORMTHEME come
   # from modules/nixos/desktop/shared-services.nix. Qt apps read the
-  # palette at startup, so restart them after a theme change.
+  # palette at startup, so restart them after a theme change. Kirigami
+  # apps such as KDE Connect ignore this palette: their style
+  # (qqc2-desktop-style) reads KColorScheme, i.e. kdeglobals, which the
+  # kcolorscheme template covers.
   xdg.configFile = let
     qtct = dir: {
       text = ''
