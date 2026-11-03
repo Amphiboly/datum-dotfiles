@@ -458,7 +458,8 @@ recent history.
   for Zotero (NixOS/nixpkgs#572466, 2026-10-15). ESR 140 reached
   end-of-life on 2026-10-13, so nixpkgs marks
   `firefox-esr-140-bin-unwrapped` insecure and refuses to evaluate
-  `pkgs.zotero` (10.0.4, checked 2026-11-01).
+  `pkgs.zotero` (10.0.4 on 2026-11-01; 10.0.6, still on ESR 140, on
+  2026-11-03).
 - **Decision (2026-11-01):** wait rather than allow it through
   `permittedInsecurePackages`. Zotero renders web content (its browser,
   snapshots, translators) with that engine, and it would get no further
