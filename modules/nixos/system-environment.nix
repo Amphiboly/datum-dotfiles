@@ -12,7 +12,6 @@
   environment.systemPackages = with pkgs; [
     bind.dnsutils
     cifs-utils # mount helper binaries required by your windows smb share
-    comma
     curl
     git
     home-manager
