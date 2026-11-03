@@ -43,6 +43,14 @@
       url = "github:GunduLabs/gaze";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Prebuilt nix-index database, regenerated weekly upstream, for comma
+    # and the shell's command-not-found hint (home/modules/unix-tools/
+    # nix-index.nix). The database is plain data, so following our
+    # nixpkgs costs nothing: only the small nix-index/comma wrappers build.
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -9,6 +9,11 @@
     WLR_NO_HARDWARE_CURSORS = "1"; # Fixes invisible cursor rendering inside virtual machines
   };
 
+  # The default command-not-found looks up the channel's programs.sqlite,
+  # which a flake-only system doesn't have. Home Manager's nix-index
+  # replaces it for rik (home/modules/unix-tools/nix-index.nix).
+  programs.command-not-found.enable = false;
+
   environment.systemPackages = with pkgs; [
     bind.dnsutils
     cifs-utils # mount helper binaries required by your windows smb share

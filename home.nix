@@ -6,6 +6,7 @@
     ./home/modules/unix-tools/git-identity-rik.nix
     ./home/modules/unix-tools/gitui.nix
     ./home/modules/unix-tools/cli-utils.nix
+    ./home/modules/unix-tools/nix-index.nix
     ./home/modules/unix-tools/gen-diff.nix
     ./home/modules/unix-tools/python.nix
     ./home/modules/unix-tools/claude-code.nix

@@ -13,7 +13,6 @@
 
     # Nix utilities
     alejandra
-    comma
     deadnix
     nil
     nix-olde
