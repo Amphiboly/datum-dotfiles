@@ -251,6 +251,9 @@ telemetry_enabled = true
     [shell.animation]
     enabled = false
 
+    [shell.greeter_sync]
+    auto_sync = true
+
     [shell.launcher]
     app_grid = false
     categories = true
