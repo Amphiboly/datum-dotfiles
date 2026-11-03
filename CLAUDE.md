@@ -26,16 +26,19 @@
   System Configuration → Boot Options. Never "Clear All Secure Boot Keys"
   casually; it wipes dbx too. If it won't boot, turning Secure Boot off in
   the BIOS is the safe fallback.
-- Desktop: COSMIC (`cosmic-greeter` via greetd), with Umbriel + Noctalia as
-  a second session. Three PAM services front the screens:
+- Desktop: Umbriel + Noctalia, the only session. COSMIC was removed on
+  2026-11-03 (tag `last-cosmic` has the last config with it). Only its
+  greeter is left: `cosmic-greeter` via greetd stays the login screen until
+  noctalia-greeter has been shown to work with Gaze. PAM services:
   - The login screen is `greetd`. greetd runs the PAM conversation for
     cosmic-greeter, and its stack is just `substack login`.
-  - COSMIC's lock screen is `cosmic-greeter`.
   - Noctalia's lock screen is `login`, hardcoded in noctalia. Console
     logins use it too.
+  - `cosmic-greeter` was COSMIC's lock screen and is unused now; the
+    greeter module still defines it.
 
-  Gaze is enabled on `cosmic-greeter` and `login`, not on `greetd`, which
-  gets it through the substack (facial-auth.nix).
+  Gaze is enabled on `login` (and the leftover `cosmic-greeter`), not on
+  `greetd`, which gets it through the substack (facial-auth.nix).
 - Authentication: GunduLabs Gaze (`gazed` daemon + `pam_gaze.so`), see
   `modules/nixos/facial-auth.nix`.
 

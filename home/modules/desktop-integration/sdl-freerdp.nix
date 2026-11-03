@@ -15,7 +15,7 @@
 # themselves: default_workspace only takes a fixed position or an existing
 # name. Dynamic workspaces always keep one empty workspace last on each
 # output, so the wrapper switches to that one and the window opens there.
-# Outside Umbriel (e.g. COSMIC) `umbriel workspaces` fails and it just runs
+# Outside Umbriel `umbriel workspaces` fails and it just runs
 # sdl-freerdp. Fullscreen comes from the window rule in umbriel.toml.
 {pkgs, ...}: let
   newWorkspace = pkgs.writeShellApplication {

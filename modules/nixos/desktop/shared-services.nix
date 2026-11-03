@@ -1,19 +1,17 @@
 # modules/nixos/desktop/shared-services.nix
 #
-# The system services the Umbriel/Noctalia session needs, declared here so
-# they don't depend on which full desktop sits alongside it. Until
-# 2026-10-29 every one of these arrived only as a mkDefault from nixpkgs'
-# COSMIC module (traced with definitionsWithLocations), so removing or
-# swapping COSMIC would have switched them off silently. Other DEs aren't
-# a drop-in either: Plasma brings neither gnome-keyring nor gvfs.
+# The system services the Umbriel/Noctalia session needs, which a full
+# desktop module would otherwise provide. Every one of these used to arrive
+# only as a mkDefault from nixpkgs' COSMIC module (traced with
+# definitionsWithLocations); they were declared here (2026-10-29, and
+# at-spi2/Qt on 2026-11-03) so that removing COSMIC, done 2026-11-03,
+# switched nothing off. Other DEs aren't a drop-in either: Plasma brings
+# neither gnome-keyring nor gvfs.
 #
 # Only system-wide pieces belong here. Session pieces (the polkit agent,
 # tray applets) run inside one desktop's session and never reach the
 # others; for Umbriel the polkit agent is Noctalia's own (`polkit_agent`
 # in assets/<user>/noctalia.toml).
-#
-# All of this is a no-op while COSMIC is installed: same values, plain
-# assignments instead of its mkDefaults.
 {
   lib,
   pkgs,
@@ -43,8 +41,7 @@
   programs.dconf.enable = true;
 
   # Qt apps (KDE Connect and the like) take their style from qt5ct/qt6ct,
-  # whose ~/.config/qt{5,6}ct carry rik's palette. Added 2026-11-03 before
-  # COSMIC went, which was the only thing setting it.
+  # whose ~/.config/qt{5,6}ct carry rik's palette.
   qt = {
     enable = true;
     platformTheme = "qt5ct";
@@ -66,8 +63,7 @@
     hicolor-icon-theme
   ];
 
-  # Fallback cursor for anything without one set. COSMIC puts "Cosmic"
-  # first at the same mkDefault priority; mkAfter keeps Adwaita behind it
-  # while COSMIC is here and makes it the fallback once COSMIC is gone.
+  # Fallback cursor for anything without one set. (The mkDefault/mkAfter
+  # dates from COSMIC, which put "Cosmic" first at the same priority.)
   xdg.icons.fallbackCursorThemes = lib.mkDefault (lib.mkAfter ["Adwaita"]);
 }

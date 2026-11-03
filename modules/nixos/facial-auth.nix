@@ -151,10 +151,12 @@ in {
     config.environment.etc."gaze/config.toml".source
   ];
 
-  # The login screen and the two lock screens use three PAM services, none in
+  # The login screen and the lock screen use these PAM services, none in
   # upstream's defaults:
   #
-  #   - "cosmic-greeter": COSMIC's lock screen only.
+  #   - "cosmic-greeter": COSMIC's lock screen only, so unused since COSMIC
+  #     went on 2026-11-03. The greeter module still defines the service;
+  #     this line goes when noctalia-greeter replaces cosmic-greeter.
   #   - "greetd": the login screen. cosmic-greeter is only a greetd client;
   #     greetd itself runs the PAM conversation, and its stack is just
   #     `substack login`. Until 2026-10-14 this file assumed cosmic-greeter

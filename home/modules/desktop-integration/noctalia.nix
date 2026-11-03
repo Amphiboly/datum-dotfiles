@@ -6,7 +6,7 @@
 # the shared half -- enable/systemd/package, identical for every user -- so
 # any user who imports it plus a noctalia-<user>.nix companion (which
 # supplies `settings` from assets/<user>/noctalia.toml) gets a working shell
-# when they pick "Umbriel" at cosmic-greeter, not a bare compositor. See
+# when they log in to Umbriel, not a bare compositor. See
 # home.nix + noctalia-rik.nix and home-guest.nix + noctalia-guest.nix.
 #
 # This is per-user rather than system-wide, matching this repo's split
@@ -56,8 +56,9 @@
   ];
 
   # The module hangs the unit off graphical-session.target, which every
-  # systemd-aware session reaches -- COSMIC included -- so Noctalia's bar
-  # and panels came up on top of COSMIC's own. Umbriel ships
+  # systemd-aware session reaches, so while COSMIC was here (until
+  # 2026-11-03) Noctalia's bar and panels came up on top of COSMIC's own,
+  # and any other session would get them too. Umbriel ships
   # umbriel-session.target (BindsTo graphical-session.target, started only
   # by start-umbriel), so binding to that instead confines Noctalia to
   # Umbriel sessions. mkForce because the module sets these as lists, which

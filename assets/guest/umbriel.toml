@@ -107,7 +107,7 @@ backdrop = "#000000FF"
 # https://docs.noctalia.dev/umbriel/input/
 [input.keyboard]
 numlock_toggle = true
-# added by rik: RAlt as compose, matching my COSMIC setting
+# added by rik: RAlt as compose
 options = "compose:ralt"
 
 # added by rik

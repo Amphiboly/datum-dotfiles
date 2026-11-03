@@ -35,7 +35,7 @@ _: {
 
   # Hand the SSH agent role to 1Password alone.
   #
-  # gnome-keyring arrives with the COSMIC session and its gcr-ssh-agent claims
+  # gnome-keyring (shared-services.nix) comes with gcr-ssh-agent, which claims
   # SSH_AUTH_SOCK (/run/user/1000/gcr/ssh) while holding no identities at all.
   # `ssh` itself is unaffected — IdentityAgent in ~/.ssh/config overrides the
   # environment — but anything that reaches for SSH_AUTH_SOCK directly instead
@@ -43,6 +43,6 @@ _: {
   # SSH agent can own that variable, so this yields it.
   #
   # This turns off the SSH agent component only. gnome-keyring-daemon keeps
-  # running for libsecret/Secret Service, which COSMIC and others still want.
+  # running for libsecret/Secret Service (Maestral's token, among others).
   services.gnome.gcr-ssh-agent.enable = false;
 }

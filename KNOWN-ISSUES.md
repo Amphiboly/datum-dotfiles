@@ -547,7 +547,7 @@ can be rechecked after big upstream changes.
 
 | Workaround | Where | Recheck when |
 |---|---|---|
-| Noctalia's user unit forced onto `umbriel-session.target` (`mkForce`), otherwise it starts on top of COSMIC too | `home/modules/desktop-integration/noctalia.nix:58` | the HM module gains a target option |
+| Noctalia's user unit forced onto `umbriel-session.target` (`mkForce`), otherwise it would start in any systemd session | `home/modules/desktop-integration/noctalia.nix:58` | the HM module gains a target option |
 | `restartTriggers` on gazed, which the upstream module lacks. Depends on `mutableConfig = false` | `modules/nixos/facial-auth.nix:130` | upstream adds triggers, or `mutableConfig` is flipped |
 | btrbk lockfile in `/var/lib/btrbk`, plus `onFailure` added to the generated unit by name | `modules/nixos/backups.nix:263`, `:278` | the btrbk module grows an onFailure hook |
 | `.rdp` MIME type shipped as a package, because nothing runs update-mime-database on `~/.local/share/mime` | `home/modules/desktop-integration/sdl-freerdp.nix:6` | — |
@@ -624,7 +624,7 @@ None of these were documented as issues; they turned up while reading.
   to satisfy" what?
 - **Old header paths** (`~/Projects/datum-config/…`, from before the
   `modules/` layout) in `modules/nixos/bluetooth.nix:1`,
-  `modules/nixos/desktop/cosmic.nix:1`, `modules/nixos/backups.nix:1`,
+  `modules/nixos/backups.nix:1`,
   `hosts/datum/laptop-configuration.nix:1`, `home.nix:1`, `mksecrets.sh:2`.
   Also `home/modules/unix-tools/claude-code-rik.nix:1` calls itself
   `claude-rik.nix`.

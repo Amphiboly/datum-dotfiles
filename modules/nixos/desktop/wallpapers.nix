@@ -3,8 +3,9 @@
 # The shared wallpaper set (assets/wallpaper/) system-wide, at
 # /run/current-system/sw/share/backgrounds/datum, for every user and
 # whichever user Home Manager config they have. COSMIC's wallpaper picker
-# lists what's under share/backgrounds/ in the XDG data dirs; that is how
-# it already finds cosmic-wallpapers (share/backgrounds/cosmic).
+# was what read it (it lists share/backgrounds/ in the XDG data dirs);
+# since COSMIC went on 2026-11-03 nothing does. Kept as a candidate
+# background for noctalia-greeter; drop it if that ends up not using it.
 #
 # Noctalia doesn't look here: it reads one folder per user, filled by
 # home/modules/desktop-integration/wallpapers.nix from the same assets.
@@ -18,7 +19,6 @@
     ])
   ];
 
-  # The COSMIC module already links this; stated here so this module stands
-  # on its own if COSMIC ever goes.
+  # The COSMIC module used to link this too.
   environment.pathsToLink = ["/share/backgrounds"];
 }
