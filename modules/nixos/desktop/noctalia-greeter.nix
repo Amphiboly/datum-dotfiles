@@ -39,7 +39,13 @@ in {
   services.displayManager.noctalia-greeter = {
     enable = true;
     passwordlessSyncUsers = ["rik"];
-    settings.auth.allow_empty_password = true;
+    settings = {
+      auth.allow_empty_password = true;
+      # The greeter doesn't remember the last user; without a default it
+      # opens the picker, alphabetical, so on guest. guest is still in the
+      # list.
+      user.default = "rik";
+    };
   };
 
   # The greeter finds sessions in /run/current-system/sw/share/
