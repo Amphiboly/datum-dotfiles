@@ -547,7 +547,6 @@ can be rechecked after big upstream changes.
 
 | Workaround | Where | Recheck when |
 |---|---|---|
-| `hardware.system76.power-daemon.enable = false`. COSMIC mkDefaults it on, and it crash-loops fighting TLP's `pd` shim | `modules/nixos/power-management.nix:15` | the COSMIC module changes how it picks a power daemon |
 | Noctalia's user unit forced onto `umbriel-session.target` (`mkForce`), otherwise it starts on top of COSMIC too | `home/modules/desktop-integration/noctalia.nix:58` | the HM module gains a target option |
 | `restartTriggers` on gazed, which the upstream module lacks. Depends on `mutableConfig = false` | `modules/nixos/facial-auth.nix:130` | upstream adds triggers, or `mutableConfig` is flipped |
 | btrbk lockfile in `/var/lib/btrbk`, plus `onFailure` added to the generated unit by name | `modules/nixos/backups.nix:263`, `:278` | the btrbk module grows an onFailure hook |
@@ -562,7 +561,7 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
 
 - **No battery charge thresholds.** The HP's ACPI battery exposes no
   `charge_control_*` files, so it always charges to 100%.
-  `modules/nixos/power-management.nix:54`
+  `modules/nixos/power-management.nix:43`
 - **The face-login keyring has a blank password**, set by hand in Seahorse
   on 2026-10-14. If it ever gets a password again, face logins leave it
   locked and Maestral stalls. `modules/nixos/facial-auth.nix:163`
