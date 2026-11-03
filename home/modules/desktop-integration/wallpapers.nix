@@ -11,11 +11,13 @@
 # own images in next to these. Adding a file to assets/wallpaper/ is all it
 # takes to ship it (git add it first; flakes only see tracked files).
 #
-# The same set is also system-wide, from modules/nixos/desktop/wallpapers.nix.
-# Both copy the folder in as plain `${path}`, so it is one store path. That
-# is why `source` is an interpolated string, not a bare path: Home Manager
-# copies a bare path again under its own "hm_" name, and these images would
-# then sit in the store twice.
+# `source` is an interpolated string, not a bare path, from when the same
+# set was also system-wide for COSMIC's wallpaper picker (until
+# 2026-11-03): both copied the folder in as plain `${path}`, one store
+# path, where a bare path would have made Home Manager copy it again under
+# its own "hm_" name. With one user of it left, either form stores it once.
+# The login screen gets its background from Noctalia's greeter sync
+# instead (modules/nixos/desktop/noctalia-greeter.nix).
 _: {
   home.file."Pictures/wallpapers" = {
     source = "${../../../assets/wallpaper}";
