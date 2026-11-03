@@ -33,10 +33,22 @@
 
     # Trash, MTP and smb:// for GUI file managers; also pulls in udisks2.
     gvfs.enable = true;
+
+    # The accessibility bus. GTK apps look for it at startup and log
+    # "Couldn't connect to accessibility bus" without it.
+    gnome.at-spi2-core.enable = true;
   };
 
   # Where GTK apps keep their settings (colour scheme, fonts).
   programs.dconf.enable = true;
+
+  # Qt apps (KDE Connect and the like) take their style from qt5ct/qt6ct,
+  # whose ~/.config/qt{5,6}ct carry rik's palette. Added 2026-11-03 before
+  # COSMIC went, which was the only thing setting it.
+  qt = {
+    enable = true;
+    platformTheme = "qt5ct";
+  };
 
   xdg.portal = {
     enable = true;
