@@ -592,9 +592,6 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
   (`modules/nixos/users/root.nix:3`).
 - **UIDs/GIDs are pinned** (rik 1000, guest 1001/993). Changing them doesn't
   renumber existing accounts. `modules/nixos/users/rik.nix:13`
-- **COSMIC snapshot:** settings changed after `cosmic-export` but before the
-  next build get reverted. The wallpaper (in `$XDG_STATE_HOME`) is not
-  carried. `home/modules/desktop-integration/cosmic-snapshot.nix:23`, `:33`
 - **`gaze doctor` reports `pam_gaze.so` missing**, a false positive on
   NixOS. `CLAUDE.md`
 - **statix W20 in `backups.nix`** is accepted on purpose.

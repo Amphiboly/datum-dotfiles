@@ -37,7 +37,6 @@
     ./home/modules/desktop-integration/onepassword.nix
     ./home/modules/desktop-integration/compose-key.nix
     ./home/modules/desktop-integration/cosmic-applet-cheatsheet.nix
-    ./home/modules/desktop-integration/cosmic-snapshot.nix
     ./home/modules/desktop-integration/wallpapers.nix
     ./home/modules/desktop-integration/noctalia.nix
     ./home/modules/desktop-integration/noctalia-rik.nix
@@ -51,10 +50,6 @@
     homeDirectory = "/home/rik";
     stateVersion = "26.05";
   };
-
-  # COSMIC settings from assets/rik/cosmic.toml; refresh it with
-  # `cosmic-export` (see home/modules/desktop-integration/cosmic-snapshot.nix).
-  desktop.cosmicSnapshot.enable = true;
 
   # =========================================================================
   # Rik-specific one-off scripts (not a shared category, so it stays here)
