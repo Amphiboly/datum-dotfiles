@@ -551,6 +551,7 @@ can be rechecked after big upstream changes.
 | `restartTriggers` on gazed, which the upstream module lacks. Depends on `mutableConfig = false` | `modules/nixos/facial-auth.nix:130` | upstream adds triggers, or `mutableConfig` is flipped |
 | btrbk lockfile in `/var/lib/btrbk`, plus `onFailure` added to the generated unit by name | `modules/nixos/backups.nix:263`, `:278` | the btrbk module grows an onFailure hook |
 | `.rdp` MIME type shipped as a package, because nothing runs update-mime-database on `~/.local/share/mime` | `home/modules/desktop-integration/sdl-freerdp.nix:6` | — |
+| greetd's command set by hand with `XDG_DATA_DIRS` = session dirs, because the nixpkgs noctalia-greeter module doesn't pass them and the greeter finds no sessions | `modules/nixos/desktop/noctalia-greeter.nix:51` | NixOS/nixpkgs#582861 is fixed |
 | `gcr-ssh-agent` disabled so 1Password owns `SSH_AUTH_SOCK` | `modules/nixos/onepassword.nix:36` | — |
 | ConTeXt LMTX wrappers avoid `exec -a` (luametatex finds its root by its own path) | `pkgs/context-lmtx/default.nix:37` | — |
 

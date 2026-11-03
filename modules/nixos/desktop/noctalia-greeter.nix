@@ -53,7 +53,7 @@ in {
   # wayland-sessions and $XDG_DATA_DIRS. On NixOS neither has them: the
   # session files (umbriel.desktop) are only in
   # services.displayManager.sessionData.desktops. The nixpkgs module
-  # doesn't pass that (as of 2026-11-03); upstream's flake module does,
+  # doesn't pass that (NixOS/nixpkgs#582861); upstream's flake module does,
   # the same way as here. A plain assignment beats the module's mkDefault.
   services.greetd.settings.default_session.command =
     "${lib.getExe' pkgs.coreutils "env"} "
