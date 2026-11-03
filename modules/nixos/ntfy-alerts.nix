@@ -59,8 +59,12 @@ in {
         TOKEN=$(< ${tokenFile})
 
         # Short: it has to read on a lock screen. The mail has the long log.
+        # --retry alone skips a refused connection, which is what the first
+        # test hit (2026-11-03: 443 on the proxy refused for a moment, curl
+        # gave up in 72 ms). --retry-connrefused rides out a few seconds of
+        # nginx reload; backoff 1+2+4 s.
         journalctl -u "$UNIT" -n 10 --no-pager -o cat \
-          | curl -fsS --max-time 15 --retry 3 \
+          | curl -fsS --max-time 15 --retry 3 --retry-connrefused \
               -H @<(printf 'Authorization: Bearer %s\n' "$TOKEN") \
               -H "Title: $UNIT failed on datum" \
               -H "Priority: $PRIORITY" \
