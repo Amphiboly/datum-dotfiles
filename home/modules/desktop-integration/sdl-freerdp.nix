@@ -17,6 +17,15 @@
 # output, so the wrapper switches to that one and the window opens there.
 # Outside Umbriel `umbriel workspaces` fails and it just runs
 # sdl-freerdp. Fullscreen comes from the window rule in umbriel.toml.
+#
+# The wrapper also makes SDL3 prefer Wayland: left to itself, sdl-freerdp
+# came up under Xwayland. An X11 window can't ask the compositor to pass
+# shortcuts through, so Ctrl+Shift+Space opened the local 1Password panel
+# unless Mod+Shift+Escape was pressed first. As a native Wayland client,
+# FreeRDP's keyboard grab requests keyboard-shortcuts-inhibit by itself
+# (tested 2026-11-03: the key reached the remote session with no toggle,
+# and scaling, resize and Ctrl+Alt+Return all still worked). The x11
+# fallback covers running it without a Wayland display.
 {pkgs, ...}: let
   newWorkspace = pkgs.writeShellApplication {
     name = "sdl-freerdp-new-workspace";
@@ -35,6 +44,7 @@
         read -r ws out <<<"$target"
         umbriel msg workspace-switch "$ws" --output "$out" >/dev/null || true
       fi
+      export SDL_VIDEO_DRIVER=wayland,x11
       exec sdl-freerdp "$@"
     '';
   };
