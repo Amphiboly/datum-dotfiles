@@ -14,6 +14,7 @@ order = [ "default" ]
     contact_shadow = true
     end = [
         "group:g1",
+        "notes",
         "media",
         "tray",
         "notifications",
@@ -237,7 +238,8 @@ enabled = [
     "mindnbytes/nix-status",
     "noctalia/umbriel-companion",
     "pulser/hover-widgets",
-    "tordex/xwayland"
+    "tordex/xwayland",
+    "noctalia/notes"
 ]
 
 [shell]
@@ -333,6 +335,9 @@ type = "avivbintangaringga/nix-monitor:nix-monitor"
 
 [widget.nix_monitor_3]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
+
+[widget.notes]
+type = "noctalia/notes:notes"
 
 [widget.spacer_2]
 type = "spacer"
