@@ -315,6 +315,7 @@ type = "noctalia/umbriel-companion:bar"
 
 [widget.bar_2]
 hide_on_wayland = false
+indicate_focused_only = false
 type = "tordex/xwayland:bar"
 
 [widget.clock]
