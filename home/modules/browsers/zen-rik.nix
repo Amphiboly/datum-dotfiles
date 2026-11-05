@@ -17,6 +17,11 @@
 }: let
   noctaliaCss = "${config.xdg.cacheHome}/noctalia/zen-browser";
 in {
+  # Default browser: the zen module maps http(s), html, xhtml, mailto,
+  # about:, json and text/plain to zen-beta.desktop (all mkDefault, so
+  # xdg.nix keeps text/plain on vim) and sets BROWSER=zen-beta.
+  programs.zen-browser.setAsDefaultBrowser = true;
+
   programs.zen-browser.profiles.default = {
     userChrome = ''
       @import "${noctaliaCss}/zen-userChrome.css";
