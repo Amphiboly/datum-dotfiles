@@ -5,35 +5,65 @@ ui_scale = 1.0000000074505806
 order = [ "default" ]
 
     [bar.default]
+    background_opacity = 0.0
     capsule = true
     capsule_border = "tertiary"
     capsule_border_width = 0.5
     capsule_fill = "on_primary"
     capsule_foreground = "secondary"
-    center = [ "clock_2", "spacer_2", "taskbar" ]
+    capsule_radius = 4
+    center = [ "clock_2", "weather" ]
     contact_shadow = true
-    end = [
-        "group:g1",
-        "notes",
-        "media",
-        "tray",
-        "notifications",
-        "clipboard",
-        "network",
-        "bluetooth",
-        "volume",
-        "brightness",
-        "battery",
-        "weather",
-        "session"
-    ]
+    end = [ "group:g5", "spacer_7", "media", "tray", "group:g4", "spacer_6", "session" ]
     margin_edge = 6
     margin_ends = 10
     radius = 4
     scale = 1.0000000074505806
     shadow = false
-    start = [ "launcher", "control-center", "wallpaper", "workspaces", "spacer_3", "nix_monitor_3", "status_3" ]
+    start = [ "launcher", "group:g3", "spacer_5", "workspaces", "taskbar", "spacer_4", "group:g2", "group:g1" ]
     thickness = 25
+
+        [bar.default.dead_zone]
+        click_through = true
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "tertiary"
+        border_width = 0.5
+        enabled = true
+        fill = "on_primary"
+        foreground = "secondary"
+        id = "g2"
+        members = [ "nix_monitor_3", "status_3" ]
+        opacity = 1.0
+        padding = 6.0
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "tertiary"
+        border_width = 0.5
+        enabled = true
+        fill = "on_primary"
+        foreground = "secondary"
+        id = "g3"
+        members = [ "control-center", "wallpaper" ]
+        opacity = 1.0
+        padding = 6.0
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "tertiary"
+        border_width = 0.5
+        enabled = true
+        fill = "on_primary"
+        foreground = "secondary"
+        id = "g4"
+        members = [ "notifications", "clipboard", "volume", "network", "bluetooth", "brightness", "battery" ]
+        opacity = 1.0
+        padding = 6.0
 
         [[bar.default.capsule_group]]
         accordion = false
@@ -44,9 +74,23 @@ order = [ "default" ]
         fill = "on_primary"
         foreground = "secondary"
         id = "g1"
-        members = [ "bar", "bar_2" ]
+        members = [ "bar_2", "bar" ]
         opacity = 1.0
         padding = 6.0
+
+        [[bar.default.capsule_group]]
+        accordion = false
+        accordion_direction = "end"
+        border = "tertiary"
+        border_width = 0.5
+        enabled = true
+        fill = "on_primary"
+        foreground = "secondary"
+        id = "g5"
+        members = [ "notes" ]
+        opacity = 1.0
+        padding = 6.0
+        radius = 4.0
 
 [desktop_widgets]
 schema_version = 2
@@ -232,6 +276,9 @@ details_position = "center"
 flake_dir = "/home/rik/Projects/datum/datum-config"
 nixos_configuration = "datum"
 
+[plugin_settings."noctalia/umbriel-companion"]
+panel_placement = "floating"
+
 [plugins]
 enabled = [
     "avivbintangaringga/nix-monitor",
@@ -327,6 +374,9 @@ scale = 1.1500000000000001
 scale = 1.1500000000000001
 type = "pulser/hover-widgets:clock"
 
+[widget.network]
+show_label = false
+
 [widget.nix-monitor]
 type = "avivbintangaringga/nix-monitor:nix-monitor"
 
@@ -343,6 +393,18 @@ type = "noctalia/notes:notes"
 type = "spacer"
 
 [widget.spacer_3]
+type = "spacer"
+
+[widget.spacer_4]
+type = "spacer"
+
+[widget.spacer_5]
+type = "spacer"
+
+[widget.spacer_6]
+type = "spacer"
+
+[widget.spacer_7]
 type = "spacer"
 
 [widget.status]
