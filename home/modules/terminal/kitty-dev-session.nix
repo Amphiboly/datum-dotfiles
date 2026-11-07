@@ -18,6 +18,12 @@
 # window-dock on vim because a window-dock attaches to the active window,
 # and which window that is while a session loads isn't specified.
 #
+# The dock gets SKIP_FASTFETCH=1, which rik's zsh (zsh-rik.nix) checks to
+# skip its startup fastfetch: the logo doesn't fit in 10 rows, and the build
+# shell already shows it. A `clear` can't do this, since fastfetch runs
+# during zsh's startup, after any command the session could pass. In a shell
+# that doesn't check the variable it does nothing.
+#
 # Tall's default 50:50 split gives vim about 123 columns when the kitty
 # window is full width, about 82 at 2/3 width. To change it, add e.g.
 # `enabled_layouts tall:bias=45,*` above the `layout` line (the `,*` keeps
@@ -30,7 +36,7 @@ in {
     launch --hold vim .
     focus
     launch
-    launch --type=tab-dock --dock-edge=bottom --dock-size=10
+    launch --type=tab-dock --dock-edge=bottom --dock-size=10 --env SKIP_FASTFETCH=1
   '';
 
   programs.zsh.shellAliases.kdev = "kitty --detach --session ${config.xdg.configHome}/${session}";

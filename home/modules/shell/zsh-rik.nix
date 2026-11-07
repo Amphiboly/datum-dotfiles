@@ -71,7 +71,11 @@
 
       if [[ -o interactive ]]; then
           alias fastfetch="fastfetch_dynamic"
-          fastfetch_dynamic
+          # SKIP_FASTFETCH: set by a launcher that wants a bare prompt (kdev's
+          # docked shell, kitty-dev-session.nix). Unset so shells started
+          # from this one show fastfetch as usual.
+          [[ -z "$SKIP_FASTFETCH" ]] && fastfetch_dynamic
+          unset SKIP_FASTFETCH
 
           # added 2026-09-06
           unset ZSH_AUTOSUGGEST_USE_ASYNC
