@@ -603,11 +603,14 @@ recent history.
 - **Next:** once the server exists, decide whether to restrict the firewall
   to the scraper, and fix the header.
 
-### Nightly upgrade: two paths never tested
+### Nightly upgrade: local-build fallback never tested
 - **Where:** `modules/nixos/nightly-upgrade.nix`, `modules/nixos/remote-builder.nix:25`
-- **What:** the fallback to a local build when nostrum is unreachable, and
-  the skip-on-battery path. Neither has run for real yet. (This comes from
-  session notes; the repo itself doesn't record it.)
+- **What:** the fallback to a local build when nostrum is unreachable has
+  not run for real yet. (This comes from session notes; the repo itself
+  doesn't record it.)
+- ~~The skip-on-battery path, also untested.~~ Seen working twice in the
+  journal: 2026-10-14 03:00 and 2026-11-07 17:43, each logging
+  "SKIPPED: datum is on battery" and exiting cleanly.
 
 ### Syncthing GUI has no credentials
 - **Where:** `home/modules/productivity/syncthing.nix:7`
