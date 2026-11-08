@@ -21,7 +21,16 @@
   pkgs,
   ...
 }: {
-  programs.noctalia.settings = ../../../assets/rik/noctalia.toml;
+  # The asset is parsed and its font replaced by theme.font.gui
+  # (theme/fonts.nix), so the GUI font is set in one place next to the
+  # terminal font. The asset carries no font_family; if a re-export from
+  # Noctalia's settings brings one back, this still wins. A font chosen in
+  # Noctalia's own Settings at runtime lands in
+  # ~/.local/state/noctalia/settings.toml, which overrides both.
+  programs.noctalia.settings =
+    lib.recursiveUpdate
+    (builtins.fromTOML (builtins.readFile ../../../assets/rik/noctalia.toml))
+    {shell.font_family = config.theme.font.gui;};
 
   # glow: the template renders ~/.config/glow/noctalia.json. Glow 3 doesn't
   # expand ~ or $VARS in a style path from its config file, so the README

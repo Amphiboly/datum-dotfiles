@@ -291,7 +291,6 @@ enabled = [
 
 [shell]
 corner_radius_scale = 0.25
-font_family = "Lilex Nerd Font Medium"
 polkit_agent = true
 settings_show_advanced = true
 settings_window_translucent = true
