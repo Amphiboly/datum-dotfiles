@@ -571,6 +571,27 @@ recent history.
   nixos-unstable and `pkgs.zotero` evaluates without an insecure-package
   exception. Then uncomment it and drop the comment.
 
+### nixpkgs updates blocked: rustic fails to build (aws-lc-sys)
+- **Where:** `flake.lock` (held at the last committed nixpkgs);
+  `pkgs.rustic` is used by `modules/nixos/backups.nix`.
+- **What:** since NixOS/nixpkgs commit `44cddf92c4` ("cargoSetupHook:
+  Force system libs", 2026-10-12), every Rust build gets
+  `AWS_LC_SYS_USE_SYSTEM=1`. rustic 0.11.4's package doesn't list
+  `aws-lc` as an input, so `aws-lc-sys` 0.44 panics ("requires a
+  system-installed AWS-LC, but none was found"), and Hydra has no
+  binary. Seen 2026-11-08 updating to nixpkgs 20261107.f4a03c0; the
+  update was discarded (`git restore flake.lock`), so the running
+  system is unaffected and backups still work. Many Rust packages broke
+  the same way: tracking issue NixOS/nixpkgs#570938.
+- **Meanwhile:** the nightly upgrade will pull the new nixpkgs and fail
+  on rustic. That's harmless: it restores flake.lock, stages nothing,
+  and mails the log (`nightly-upgrade.nix`). Expect those failure mails
+  until the fix lands. Deliberately no local overlay.
+- **Fix upstream:** NixOS/nixpkgs#585155, "rustic: use native aws-lc,
+  zstd" (adds `aws-lc`, `zstd`, `pkg-config`), open since 2026-11-08.
+- **Remove when:** https://nixpk.gs/pr-tracker.html?pr=585155 shows it
+  in nixos-unstable and an update builds. Then delete this entry.
+
 ### Gaze: RGB camera given as `/dev/video0` instead of `usb:`
 - **Where:** `modules/nixos/facial-auth.nix:54`
 - **What:** Gaze 0.3.9's `usb:` resolver filters to `video/x-raw`, and the
