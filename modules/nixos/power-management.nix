@@ -8,7 +8,7 @@
 # TLP for control of the CPU governor below. inputs.noctalia.nixosModules
 # stays unimported system-wide for this reason -- Noctalia here is purely the
 # per-user Home Manager shell (see home/modules/desktop-integration/).
-_: {
+{config, ...}: {
   services = {
     # Block the default desktop power module to clear system locks
     power-profiles-daemon.enable = false;
@@ -73,4 +73,14 @@ _: {
       percentageAction = 5;
     };
   };
+
+  # upowerd reads UPower.conf only at startup, and its unit comes from the
+  # package with no restart trigger, so a rebuild that changes the
+  # thresholds above left the running daemon on the old ones (seen
+  # 2026-11-08). This makes switch-to-configuration restart it whenever
+  # the generated file changes. Noctalia's battery indicator blanks for a
+  # moment during the restart.
+  systemd.services.upower.restartTriggers = [
+    config.environment.etc."UPower/UPower.conf".source
+  ];
 }
