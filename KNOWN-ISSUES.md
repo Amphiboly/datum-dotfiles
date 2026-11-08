@@ -410,9 +410,34 @@ Last reviewed: 2026-11-08.
   65 W Anker USB-C charger (the 10-23/10-29 one), **both ports** charge at
   the same 2.83 A. Moving the cable between ports showed a 5 s gap while
   the laptop and charger negotiated, then a 97 mA trickle, then full
-  current. So USB-C works with a good pack, and the failed pack was the
-  likely cause of the earlier "plugged in but discharging". (UCSI's
-  `voltage_now` read 0 V while charging, as unreliable as on 10-23.)
+  current. So USB-C works with a good pack. (UCSI's `voltage_now` read
+  0 V while charging, as unreliable as on 10-23.)
+- **2026-11-08, loose USB-C connection:** while charging for test 2 on
+  the Anker charger, port `002`, something in the chain was loose: one
+  end of the cable, or the charger in the wall; Rik couldn't tell which.
+  From upower's history: real charging at 32.7 W to 57% by 09:20; brief
+  source changes at 09:31 and 09:35–09:40 (on battery, about 8 W); then
+  **09:40–11:34 labelled "charging" while the pack actually drained at
+  about 10 W**, 57 → 32%, 11.51 → 10.79 V; after reseating at 11:34, real
+  charging again at about 25 W. An `hp_wmi` event (`event_id 131073`)
+  marks each source change in the kernel log. The weak phase fits a
+  half-seated connection that kept a 5 V contract (or none) but no PD.
+  The pack read sanely throughout.
+  - **This weakens the earlier conclusion** that the failed pack caused
+    the 10-23/10-29 "plugged in but discharging". A loose connection
+    gives the same picture with a good pack, so either explanation fits
+    those dates. What 10-23/10-29 had and today didn't: state 2
+    (discharging) rather than "charging", and hard cuts, which still
+    point at the failed pack.
+  - Use the brick for discharge tests, so a USB-C fault can't mix with
+    the battery results. If USB-C drops out again with everything
+    visibly tight, reopen this.
+  - Then on the HP brick (11:42) it charged at a steady **0.387 A**
+    (about 4 W) instead of 2.83 A, with no kernel message. Reseating
+    the brick at both ends (11:46) brought back 2.83 A at once. That
+    fits HP's adapter-ID pin (the barrel's centre pin) not making
+    contact, so the EC treats the adapter as low-wattage and limits the
+    charge. If charging is ever slow on the brick, reseat it first.
 - **Discharge test 1 (2026-11-07 19:46 → 2026-11-08 02:13):**
   `~/Projects/datum/battery-2026-11-07-1946.log`, 2305 samples, no read
   errors. The percentage fell one point at a time from 100 to 9. It ran
