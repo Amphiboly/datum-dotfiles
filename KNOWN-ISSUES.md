@@ -20,15 +20,19 @@ from the comments that describe them. The comments are still where the full
 reasoning lives; this file points at them and says whether each one is still
 live.
 
-Last reviewed: 2026-10-23.
+Last reviewed: 2026-11-08.
 
 ## 1. Hardware under observation
 
 ### Replacement battery: garbled gauge readings, two shutdowns on battery
+- **Status (2026-11-07):** replaced by the BTI YB06XL; see the next
+  subsection. What follows is the record of the failed pack.
 - **Background:** HP "Primary" pack, 83.9 Wh (7264 mAh, 3S, design minimum
   11.55 V). Fitted 2026-10-16, along with the AX210 card. It reports
   `charge_full` exactly equal to its design capacity and a cycle count of
-  0, and has no serial number.
+  0, and has no serial number. (The BTI pack reports exactly the same, so
+  on this laptop these values come from HP's firmware, not the pack, and
+  say nothing about it; see below.)
 - **2026-10-17:** during a deliberate discharge test, the machine lost
   power at about 17:23, around an hour after being unplugged. There was no
   shutdown sequence. The log just stops, and the next boot found the
@@ -281,8 +285,10 @@ Last reviewed: 2026-10-23.
   intermittently, and worse under load: it began within two minutes at
   33 W, against 15 minutes at 15–21 W the day before. 0xFFFF is a
   typical failed bus read. Suspects, in order:
-  1. the pack's own gauge or protection board. An aftermarket-looking
-     pack: no serial, cycle count 0, full capacity equal to design.
+  1. the pack's own gauge or protection board. (The "no serial, cycle
+     count 0, full equal to design" once cited here as signs of an
+     aftermarket pack turned out to be HP's firmware: the BTI pack
+     reports the same.)
   2. the battery connector or its seating.
   3. the laptop side: the embedded controller, the SMBus lines or the
      charging circuit.
@@ -332,13 +338,14 @@ Last reviewed: 2026-10-23.
        packs may be at 80–90% capacity, or locked out if they sat drained.
   5. Acceptance-test it within the return window. Keep the box, note the
      delivery date, and test in the first week:
-     - Before use, record what the pack reports: `manufacturer`,
+     - ~~Before use, record what the pack reports (`manufacturer`,
        `model_name`, `serial_number`, `cycle_count`, `charge_full` vs
-       `charge_full_design` in `/sys/class/power_supply/BAT0/`, and
-       `upower -i`. A serial number, a real manufacture date and a full
-       capacity a little *below* design are good signs. The failed pack
-       had no serial, a cycle count of 0, and full exactly equal to
-       design.
+       `charge_full_design`) and treat a serial and full < design as good
+       signs.~~ Wrong for this laptop (found 2026-11-07): HP's firmware
+       fills these in. Every pack reads "HP", "Primary", no serial, 0
+       cycles, full = design, so they can't tell packs apart. Check the
+       label instead, and judge the pack by how it charges and
+       discharges.
      - Charge to full on the brick. The LED should go yellow, then white,
        with upower showing `charging`, a positive rate and a rising
        voltage.
@@ -379,9 +386,80 @@ Last reviewed: 2026-10-23.
   charge, so it comes out again until the BTI pack arrives (ships
   2026-11-21). Shut down before unplugging.
 
+### BTI YB06XL pack: acceptance test (return window to 2026-12-07)
+- **Arrived 2026-11-07**, two weeks ahead of the quoted ship date, so the
+  30-day window runs to about **2026-12-07**.
+- **Label:** BTI YB06XL, regulatory model HSTNN-DB8H, 11.55 V, 84.08 Wh
+  (nominal 7280 mAh), serial `905QE03462010505`, assembled in China.
+  Photos: `~/Dropbox/PXL_20261107_222232822.MP.jpg` (whole pack) and
+  `~/Dropbox/PXL_20261107_222245732.MP.jpg` (serial label).
+- **Visual:** flat. A raised ridge runs evenly along the lower edge of
+  every cell, which fits a pouch cell's sealed edge under the wrap, not
+  swelling (Rik has handled swollen packs, and this looks nothing like
+  one). The wrap is creased at one corner where it folds over that ridge.
+- **What Linux sees:** "HP" / "Primary", no serial, 0 cycles, full =
+  design = 7264 mAh. That's identical to the failed pack, so these values
+  come from HP's firmware, not the pack (see the corrected step 5 above).
+  After the first full discharge they read full = design = 7072 mAh: the
+  gauge relearned its capacity, and the firmware reports that as
+  "design" too.
+- **Arrival:** 33% charge, 11.13 V while the laptop drew about 3 A booting
+  on battery. No garbled readings.
+- **Charging (2026-11-07): good.** On the HP brick: `Charging`, 2.83 A
+  (about 33 W), orange LED. The failed pack sat at pending-charge. On the
+  65 W Anker USB-C charger (the 10-23/10-29 one), **both ports** charge at
+  the same 2.83 A. Moving the cable between ports showed a 5 s gap while
+  the laptop and charger negotiated, then a 97 mA trickle, then full
+  current. So USB-C works with a good pack, and the failed pack was the
+  likely cause of the earlier "plugged in but discharging". (UCSI's
+  `voltage_now` read 0 V while charging, as unreliable as on 10-23.)
+- **Discharge test 1 (2026-11-07 19:46 → 2026-11-08 02:13):**
+  `~/Projects/datum/battery-2026-11-07-1946.log`, 2305 samples, no read
+  errors. The percentage fell one point at a time from 100 to 9. It ran
+  6 h 27 min at about 15 W on average, with heavy-load spells around
+  2.6 A, and delivered about 73 Wh (87% of the 84 Wh label).
+
+  | Charge | Voltage | Per cell | Load |
+  |---|---|---|---|
+  | 100% | 13.02 V | 4.34 V | on AC |
+  | 90% | 12.37 V | 4.12 V | 1.2 A |
+  | 50% | 10.93 V | 3.64 V | 0.8 A |
+  | 30% | 10.62 V | 3.54 V | 0.8 A |
+  | 10% | 9.75 V | 3.25 V | 0.9 A |
+  | 6% | 9.36 V | 3.12 V | 0.9 A |
+  | 3% | 8.96 V | 2.99 V | 2.9 A |
+
+  - **Hard cut at 02:13:32, at a reported 3%.** The last two samples: 6%,
+    9.36 V, 0.92 A, then 3%, 8.96 V, 2.87 A, then nothing. The load jump
+    pulled the cells to about 3.0 V each, and the pack's protection cut
+    the power before upower's 2% action could fire. The journal ends at
+    02:12:07 (it lost the last 85 s), and the 08:02 boot found it
+    "uncleanly shut down". No btrfs errors in the journal afterwards.
+  - The gauge read high near empty: 9 → 7 and 6 → 3 were its last steps.
+    On a first cycle that's common. It started out assuming 7264 mAh and
+    has now measured 7072.
+  - **Not the failed pack's fault pattern:** no garbled readings at all,
+    and the cut came at the true bottom of the charge, not at 30–80%.
+  - **Open question:** the voltage ran low the whole way down. The
+    average was about 10.3 V against 11.55 V nominal; 3.64 V a cell at
+    50% under a light load is low. One weak cell is one explanation, but
+    Linux can't see per-cell voltages.
+- **Response:** upower now warns at 8% and shuts down at 5%
+  (`modules/nixos/power-management.nix`, 2026-11-08), so a clean
+  shutdown comes before the pack's cut-off even if the gauge reads a few
+  points high.
+- **Next: discharge test 2,** from a full charge, with the corrected
+  gauge and the new 5% action. It passes if the 5% shutdown fires cleanly
+  with no garbled readings. Note the voltage at 5–10% against the table
+  above. If it cuts out hard again, or the voltage curve is lower still,
+  write to BTI/ProVantage with both logs before 2026-12-07.
+
 #### Discharge test
 
-Run the logger in a terminal, then unplug the charger. It writes one line
+Run the logger in a terminal, then unplug the charger. A copy that runs
+as-is (the block below doesn't copy cleanly out of rendered Markdown) is
+`~/Projects/datum/battery-logger.sh`. It logs to
+`~/Projects/datum/battery-<date>-<time>.log` and echoes each line. It writes one line
 every 10 s: time, status, percentage, then voltage, current and charge in
 the kernel's raw units (µV, µA, µAh; 12936000 is 12.94 V). Each value is
 synced to disk as soon as it's read, so the log survives a power cut. The
