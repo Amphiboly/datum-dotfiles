@@ -322,6 +322,21 @@
         "type": "github"
       }
     },
+    "preservation": {
+      "locked": {
+        "lastModified": 1792953443,
+        "narHash": "sha256-s/A2rSO2Ndf8Y5yiouesnI/3Zkn9pmVGF2NxFxOUvx8=",
+        "owner": "nix-community",
+        "repo": "preservation",
+        "rev": "00be7f7dd1a11ae0605386f2272288de7cf33abe",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "preservation",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "disko": "disko",
@@ -334,6 +349,7 @@
         "nixpkgs-mcp": "nixpkgs-mcp",
         "noctalia": "noctalia",
         "nur": "nur",
+        "preservation": "preservation",
         "sops-nix": "sops-nix",
         "umbriel": "umbriel",
         "zen-browser": "zen-browser"

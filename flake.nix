@@ -55,6 +55,9 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Impermanence (IMPERMANENCE-PLAN.md, modules/nixos/impermanence.nix):
+    # bind mounts and symlinks from /persist. It has no inputs to follow.
+    preservation.url = "github:nix-community/preservation";
     # Noctalia desktop shell + its Umbriel compositor: the desktop since
     # COSMIC went on 2026-11-03 (modules/nixos/desktop/umbriel.nix; tag
     # last-cosmic has the COSMIC config).

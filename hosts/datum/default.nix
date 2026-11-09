@@ -26,6 +26,11 @@
     # Gaze (facial authentication): daemon, D-Bus/polkit, PAM wiring
     inputs.gaze.nixosModules.default
 
+    # Impermanence: state preserved from /persist (impermanence.nix,
+    # IMPERMANENCE-PLAN.md)
+    inputs.preservation.nixosModules.default
+    ../../modules/nixos/impermanence.nix
+
     # Core system modules
     ../../modules/nixos/secrets.nix
     ../../modules/nixos/boot.nix
@@ -73,6 +78,9 @@
     # For rebuild-free per-user switches, see flake.nix's homeConfigurations.
     inputs.home-manager.nixosModules.home-manager
   ];
+
+  # Stage 2 of IMPERMANENCE-PLAN.md: preserved, not yet wiped.
+  datum.impermanence.enable = true;
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
