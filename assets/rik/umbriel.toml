@@ -418,6 +418,19 @@ default_floating = true
 default_maximize = false
 default_position = { x = 20, y = 20, anchor = "bottom_right" }
 
+# added by rik: 1Password's SSH-agent approval panel (git push, ssh) can open
+# behind other windows, and an unanswered prompt fails the push with
+# "Permission denied (publickey)". Pin it above everything, focused and
+# centred. The title is matched exactly: the main window is
+# "<vault> — All Items — 1Password", or "Lock Screen — 1Password" when
+# locked; only the panel is a bare "1Password" (2026-11-08).
+[[window_rule]]
+match.app_id = "^com[.]onepassword[.]OnePassword$"
+match.title = "^1Password$"
+default_pinned = true
+default_focused = true
+default_position = { x = 0, y = 0, anchor = "center" }
+
 [[window_rule]]
 match.title = "^notificationtoasts_.+_desktop"
 default_position = { x = 0, y = 0, anchor = "bottom_right" }
