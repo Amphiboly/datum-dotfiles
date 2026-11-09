@@ -69,6 +69,12 @@
   #   nixos:        uid/gid map, so system users (btrbk is 998) keep their
   #                 numbers across a reinstall.
   #   ssh host keys: so nostrum and others don't see a key mismatch.
+  #                 Taken from services.openssh.hostKeys (private key plus
+  #                 .pub), so a key type nixpkgs adds is backed up without
+  #                 an edit here. That's how 26.11's mldsa44-ed25519 key
+  #                 (generated 2026-11-04) went unbacked-up until
+  #                 2026-11-09, while a stale ecdsa key sshd no longer
+  #                 loads was still listed.
   #   tailscale:    node identity; without it datum rejoins as a new node.
   #   bluetooth, NetworkManager: pairings and saved Wi-Fi.
   #   gaze:         face templates. Their key is sealed to this machine's
@@ -76,22 +82,20 @@
   #                 board with an uncleared TPM; anywhere else, re-enroll.
   # Read live, not from a snapshot: @ isn't snapshotted, and these change
   # too rarely for that to matter.
-  systemStatePaths = [
-    "/var/lib/sbctl"
-    "/var/lib/sops"
-    "/var/lib/nixos"
-    "/etc/ssh/ssh_host_ed25519_key"
-    "/etc/ssh/ssh_host_ed25519_key.pub"
-    "/etc/ssh/ssh_host_rsa_key"
-    "/etc/ssh/ssh_host_rsa_key.pub"
-    "/etc/ssh/ssh_host_ecdsa_key"
-    "/etc/ssh/ssh_host_ecdsa_key.pub"
-    "/var/lib/tailscale"
-    "/var/lib/bluetooth"
-    "/var/lib/NetworkManager"
-    "/etc/NetworkManager/system-connections"
-    "/var/lib/gaze"
-  ];
+  systemStatePaths =
+    [
+      "/var/lib/sbctl"
+      "/var/lib/sops"
+      "/var/lib/nixos"
+    ]
+    ++ lib.concatMap (k: [k.path "${k.path}.pub"]) config.services.openssh.hostKeys
+    ++ [
+      "/var/lib/tailscale"
+      "/var/lib/bluetooth"
+      "/var/lib/NetworkManager"
+      "/etc/NetworkManager/system-connections"
+      "/var/lib/gaze"
+    ];
 
   # rustic with the repository and password pre-wired.
   #
