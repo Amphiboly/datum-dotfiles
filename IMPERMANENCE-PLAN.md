@@ -3,7 +3,7 @@ author:
 - Claude
 - Rik Kabel
 title: Impermanence on datum, a plan
-date: 2026-11-08
+date: 2026-11-09
 lang: en-US
 whitespace: medium
 layout: |
@@ -42,11 +42,13 @@ check` as it lands.
   again. But deleting an old root has to be recursive, or `btrfs subvolume
   delete` refuses.
 - **sops reads keys during activation, before stage-2 mounts exist.**
-  `sops.age.keyFile` is `/var/lib/sops/age/keys.txt`. And because openssh
-  is enabled, sops-nix's default `age.sshKeyPaths` probably includes the
-  ed25519 host key (to check with `nix eval`). Activation also decrypts
-  `rik-password-hash` for the users script. Preservation entries without
-  `inInitrd` aren't mounted yet at that point.
+  `sops.age.keyFile` is `/var/lib/sops/age/keys.txt`. Activation also
+  decrypts `rik-password-hash` for the users script. Preservation entries
+  without `inInitrd` aren't mounted yet at that point. With openssh
+  enabled, sops-nix also defaulted to the ssh host keys as decryption keys
+  (ed25519 for age, RSA for gnupg). They were never recipients in
+  `.sops.yaml`, so commit d310054 cleared both `sshKeyPaths`. The age key
+  file is now the only early dependency.
 - **`/root` can be ephemeral.** The nix-daemon's ssh to nostrum uses the
   system-wide `/etc/ssh/ssh_known_hosts` (`programs.ssh.knownHosts`) and a
   sops key (`remote-builder.nix`), so nothing in `/root/.ssh` is needed.
@@ -92,13 +94,13 @@ Built from `systemStatePaths` in `modules/nixos/backups.nix` plus what
 | `/var/lib/nixos` | bindmount | users/groups script reads the uid/gid map |
 | `/var/lib/systemd/random-seed` | symlink, `configureParent` | read before local-fs |
 
-**sops**, whichever of these turns out simpler (see the decision list):
-
-- (a) Persist `/var/lib/sops` with `inInitrd = true`.
-- (b) Set `sops.age.keyFile = "/persist/var/lib/sops/age/keys.txt"` and
-  `sops.age.sshKeyPaths = [ ]`, which makes the timing irrelevant. With
-  `fileSystems."/persist".neededForBoot = true`, `/persist` is mounted in
-  the initrd anyway.
+**sops** (decided 2026-11-09): persist `/var/lib/sops` with `inInitrd =
+true`, mode 0700. `secrets.nix` keeps naming `/var/lib/sops/age/keys.txt`.
+The rule behind it is that only `impermanence.nix` knows about `/persist`,
+and every other module uses the standard paths. A bind mount isn't a copy:
+the live system writes through it straight to `/persist` either way, so the
+only thing in question was which path the config names. The rejected
+alternative was pointing `age.keyFile` at `/persist/...` directly.
 
 **Stage 2 (defaults)**:
 
@@ -257,9 +259,9 @@ without the wipe.
 
 # Decisions for Rik
 
-1. sops: (a) persist `/var/lib/sops` in the initrd, or (b) point
-   `age.keyFile` at `/persist` and drop `sshKeyPaths`? I'd pick (b): it
-   removes a timing dependency rather than satisfying it.
+1. ~~sops~~: decided 2026-11-09. Persist `/var/lib/sops` in the initrd
+   and keep standard paths everywhere else; `sshKeyPaths` cleared in
+   d310054. See the preserve list.
 2. Old-root retention: 14 days suggested. Each one is cheap, since only
    files that changed take space.
 3. `/var/log`: keep the whole thing (journal history across boots) or only
