@@ -386,7 +386,7 @@ Last reviewed: 2026-11-08.
   charge, so it comes out again until the BTI pack arrives (ships
   2026-11-21). Shut down before unplugging.
 
-### BTI YB06XL pack: acceptance test (return window to 2026-12-07)
+### BTI YB06XL pack: accepted 2026-11-08 (return window to 2026-12-07)
 - **Arrived 2026-11-07**, two weeks ahead of the quoted ship date, so the
   30-day window runs to about **2026-12-07**.
 - **Label:** BTI YB06XL, regulatory model HSTNN-DB8H, 11.55 V, 84.08 Wh
@@ -441,7 +441,7 @@ Last reviewed: 2026-11-08.
 - **Discharge test 1 (2026-11-07 19:46 → 2026-11-08 02:13):**
   `~/Projects/datum/battery-2026-11-07-1946.log`, 2305 samples, no read
   errors. The percentage fell one point at a time from 100 to 9. It ran
-  6 h 27 min at about 15 W on average, with heavy-load spells around
+  6 h 27 min at about 11 W on average, with heavy-load spells around
   2.6 A, and delivered about 73 Wh (87% of the 84 Wh label).
 
   | Charge | Voltage | Per cell | Load |
@@ -465,19 +465,51 @@ Last reviewed: 2026-11-08.
     has now measured 7072.
   - **Not the failed pack's fault pattern:** no garbled readings at all,
     and the cut came at the true bottom of the charge, not at 30–80%.
-  - **Open question:** the voltage ran low the whole way down. The
-    average was about 10.3 V against 11.55 V nominal; 3.64 V a cell at
-    50% under a light load is low. One weak cell is one explanation, but
-    Linux can't see per-cell voltages.
+  - ~~**Open question:** the voltage ran low the whole way down. The
+    average was about 10.3 V against 11.55 V nominal.~~ That average was
+    wrong. Summed from the log (voltage over every discharging sample) it
+    is 11.09 V, normal for a 11.55 V pack under load. Withdrawn.
+    3.64 V a cell at 50% is on the low side but within range.
 - **Response:** upower now warns at 8% and shuts down at 5%
   (`modules/nixos/power-management.nix`, 2026-11-08), so a clean
   shutdown comes before the pack's cut-off even if the gauge reads a few
   points high.
-- **Next: discharge test 2,** from a full charge, with the corrected
-  gauge and the new 5% action. It passes if the 5% shutdown fires cleanly
-  with no garbled readings. Note the voltage at 5–10% against the table
-  above. If it cuts out hard again, or the voltage curve is lower still,
-  write to BTI/ProVantage with both logs before 2026-12-07.
+- **Discharge test 2 (2026-11-08 15:03 → 19:39): passed.**
+  `~/Projects/datum/battery-2026-11-08-1502.log`, 1647 samples, no read
+  errors, the percentage fell one point at a time from 100 to 5. On
+  the HP brick until unplugged at full. It ran 4 h 36 min at about 16 W
+  on average (a `nh os switch` build ran part of the way), delivered
+  73 Wh again (the same as test 1), and averaged 11.31 V.
+
+  | Charge | Test 1 | Test 2 | Test 2 load |
+  |---|---|---|---|
+  | 90% | 12.37 V | 12.24 V | 2.5 A |
+  | 50% | 10.93 V | 10.72 V | 3.2 A |
+  | 30% | 10.62 V | 10.61 V | 1.2 A |
+  | 10% | 9.75 V | 10.09 V | 1.8 A |
+  | 6% | 9.36 V | 9.67 V | 1.4 A |
+  | 5% | | 9.50 V | 1.4 A |
+
+  - **Clean shutdown at 5%:** capacity first read 5 at 19:39:03, and at
+    19:39:38 logind logged `poweroff requested from client ... ('upowerd')`.
+    The journal runs through to `Journal stopped` at 19:39:44; no hard
+    cut. The lowest voltage seen was 9.34 V, in a brief load spike at 5%,
+    well above test 1's 8.96 V at the cut.
+  - **Why 35 s after 5% first showed:** upower polls the battery about
+    every 30 s. It uses the kernel's integer `capacity`, not
+    charge_now/charge_full: after the reboot it showed `percentage: 5%`
+    while its energy figures gave 4.07/80.94 Wh = 5.02%. So the action
+    fires when the gauge first reports 5, not when the charge reaches
+    5.00%.
+  - The bottom of the curve sat 0.3 V higher than in test 1 at the same
+    percentage: the gauge, now calibrated (full 7008 mAh after this
+    cycle), no longer reads high near empty.
+- **Verdict (2026-11-08): pack accepted.** It charges on the brick and on
+  both USB-C ports, gives about 73 Wh on each of two cycles, never
+  garbles a reading, and with the 5% action shuts down cleanly. Test 1's
+  hard cut was a first-cycle gauge reading high plus a 2% action. If a
+  hard cut ever comes back above 5%, write to BTI/ProVantage with both
+  logs (the return window runs to 2026-12-07).
 
 #### Discharge test
 
