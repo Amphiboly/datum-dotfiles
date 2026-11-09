@@ -57,10 +57,13 @@ check` as it lands.
   `/etc/passwd`, `/etc/shadow` and `/etc/group` mutable state. On a wiped
   root, accounts are recreated at every boot from config: rik's password
   from `hashedPasswordFile` (sops), so password changes made with `passwd`
-  don't survive. Bind-mounting `/etc/shadow` is fragile, because NixOS's
-  user-update script replaces it with a rename, and a rename can't replace
-  a bind-mounted file. The usual answer is `mutableUsers = false`. See
-  the decision list. Check guest's password setup (`users/guest.nix`).
+  don't survive. **Resolved 2026-11-09: `mutableUsers = false`**, done
+  ahead of stage 1. /etc/shadow can't be carried across: pam_unix
+  (`passverify.c`) and shadow-utils (`commonio.c`) both replace it with
+  rename(), which fails with EBUSY on a bind mount and silently replaces a
+  symlink (so userborn's `passwordFilesLocation` would lose `passwd`
+  changes too). rik's and root's passwords are now sops hashes applied at
+  every activation, and guest's is a fixed known one.
 - **`/var/log` is 600 MB.** That's fine: it is copied with
   `--reflink`, which is instant on the same filesystem.
 - **`/var/lib/cosmic-greeter`** is a leftover from before 2026-11-03.
@@ -262,14 +265,12 @@ without the wipe.
 1. ~~sops~~: decided 2026-11-09. Persist `/var/lib/sops` in the initrd
    and keep standard paths everywhere else; `sshKeyPaths` cleared in
    d310054. See the preserve list.
-2. Old-root retention: 14 days suggested. Each one is cheap, since only
-   files that changed take space.
-3. `/var/log`: keep the whole thing (journal history across boots) or only
-   `/var/log/journal`?
-4. Users: switch to `mutableUsers = false` (passwords fully declarative,
-   guest needs a `hashedPasswordFile` too), or keep it `true` and accept
-   that accounts are rebuilt from config each boot. Either way it has to be
-   settled before stage 3.
-5. Whether to try it first in a VM (`vmWithDisko`). lanzaboote and the TPM
-   make the VM unlike datum, so I'd skip it and rely on stage 2's no-wipe
-   rehearsal plus the rescue path.
+2. ~~Old-root retention~~: decided 2026-11-09, 14 days.
+3. ~~`/var/log`~~: decided 2026-11-09, all of it, for debugging.
+4. ~~Users~~: decided and done 2026-11-09, `mutableUsers = false`, with
+   root's password a sops hash (`root-password-hash`) so that root stays a
+   second way in. See the survey section.
+5. ~~VM~~: decided 2026-11-09, no VM. Rely on stage 2's no-wipe rehearsal
+   and the rescue path.
+
+All decisions are settled. Next is stage 0 (the sudo inventory).
