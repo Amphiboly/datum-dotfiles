@@ -11,9 +11,13 @@
 #   TPM2+PIN keyslot bound to PCR 7 (Secure Boot state); the PIN is in
 #   1Password too. The initrd asks for the PIN first and falls back to the
 #   passphrase (see crypttabExtraOpts below).
-# - Inside it, btrfs labelled "main" with @, @home, @nix and @dropbox.
-#   /mnt/btrfs-root (by-label/main in filesystems.nix) and btrbk depend on
-#   the label and the subvolume names.
+# - Inside it, btrfs labelled "main" with @, @home, @nix, @dropbox and
+#   @persist. /mnt/btrfs-root (by-label/main in filesystems.nix) and btrbk
+#   depend on the label and the subvolume names. @persist (added
+#   2026-11-09, IMPERMANENCE-PLAN.md) will hold the system state that
+#   survives once @ is wiped at every boot. It was created on the running
+#   system with `btrfs subvolume create /mnt/btrfs-root/@persist`; disko
+#   only creates subvolumes when it formats.
 #
 # Only run disko against this file to reinstall: its destroy/format modes
 # wipe the disk. Keyslots change without a reformat: the TPM2 slot was
@@ -86,6 +90,10 @@
                     mountpoint = "/home/rik/Dropbox";
                     mountOptions = ["noatime"];
                   };
+                  "@persist" = {
+                    mountpoint = "/persist";
+                    mountOptions = ["compress=zstd:1" "noatime"];
+                  };
                 };
               };
             };
@@ -94,4 +102,10 @@
       };
     };
   };
+
+  # Mounted in the initrd, next to /, because preservation's inInitrd
+  # entries (machine-id, /var/lib/nixos, /var/lib/sops) are set up there,
+  # before activation reads them. disko has no option for this, so it's set
+  # on the fileSystems entry disko generates.
+  fileSystems."/persist".neededForBoot = true;
 }
