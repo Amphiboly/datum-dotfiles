@@ -97,6 +97,17 @@
       "/var/lib/gaze"
     ];
 
+  # rustic's local cache of the repository's index, snapshot list and pack
+  # headers (encrypted, like the repo). Its default is $HOME/.cache/rustic,
+  # i.e. /root/.cache for everything here. Kept under /var/cache instead
+  # (since 2026-11-09) so that /root holds nothing worth keeping: with
+  # impermanence (IMPERMANENCE-PLAN.md) /root is wiped at every boot, and
+  # this cache is persisted. Losing it is harmless, only slow: the next run
+  # rebuilds it from the repo over CIFS. All three entry points below (the
+  # service, backup-rustic, backup-ssd-sync) set it; the cache is keyed by
+  # repository id, so the SSD copy shares it.
+  rusticCacheDir = "/var/cache/rustic";
+
   # rustic with the repository and password pre-wired.
   #
   # Plain `rustic` cannot work here and never will: the repo path lives only
@@ -124,6 +135,7 @@
 
       export RUSTIC_REPOSITORY=${interactiveRepo}
       export RUSTIC_NON_INTERACTIVE=true
+      export RUSTIC_CACHE_DIR=${rusticCacheDir}
       exec rustic "$@"
     '';
   };
@@ -188,6 +200,7 @@
 
       export RUSTIC_REPOSITORY="$DST"
       export RUSTIC_NON_INTERACTIVE=true
+      export RUSTIC_CACHE_DIR=${rusticCacheDir}
 
       if rustic check --read-data; then
         echo "Verified: SSD repository copy is healthy."
@@ -367,6 +380,7 @@ in {
       Environment = [
         "RUSTIC_REPOSITORY=${serviceRepo}"
         "RUSTIC_NON_INTERACTIVE=true"
+        "RUSTIC_CACHE_DIR=${rusticCacheDir}"
       ];
 
       # SECURE ROADMAP: Feeds rustic your secret file path strictly at runtime execution,
