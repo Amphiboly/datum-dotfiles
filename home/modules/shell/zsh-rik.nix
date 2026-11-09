@@ -66,7 +66,7 @@
       # 2. Fastfetch environment detection logo engine
       fastfetch_dynamic() {
          export FF_LOGO="${../../../assets/NixOS.png}"
-         command fastfetch --logo "$FF_LOGO" --logo-type kitty --logo-width 24 --logo-height 12 "$@"
+         command fastfetch --logo "$FF_LOGO" --logo-type kitty --logo-width 27 --logo-height 12 "$@"
       }
 
       if [[ -o interactive ]]; then
