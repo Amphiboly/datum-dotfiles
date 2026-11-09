@@ -182,6 +182,18 @@ machine-id uses the docs' *simple* variant:
    rebuild.
 3. `nh os switch .` and check that `/persist` is mounted.
 
+**Lesson from 2026-11-09.** The first attempt switched before `@persist`
+existed. nh's first step is `switch-to-configuration test`, which started
+the new `persist.mount`. It failed (`fsconfig() failed: No such file or
+directory`), and because `local-fs.target` requires every local mount and
+has `OnFailure=emergency.target`, the *running* system went into emergency
+mode. The session ended, and pipewire and syncthing went down with it.
+The failed test activation also meant nh never registered a generation or
+updated the boot menu, so nothing persisted; booting the previous entry
+recovered fully. The rule: a change that adds a mount must have its device
+or subvolume in place before any `switch`. For anything riskier, `nh os
+boot` and a reboot fail more gently than a switch.
+
 # Stage 2: preservation, wipe still off (commits 2–3)
 
 1. Flake input `preservation` (github:nix-community/preservation), with no
@@ -193,7 +205,10 @@ machine-id uses the docs' *simple* variant:
    and the option makes stage 3's revert a one-line change.
 3. **Use `nh os boot .`, not `switch`.** A switch would bind-mount empty
    or freshly copied directories over paths that running services have
-   open.
+   open. And if any new mount fails during a switch, the running system
+   drops into emergency mode (see stage 1's note). With `boot`, a failing
+   mount only shows up at the reboot, where the previous generation is
+   one menu entry away.
 4. Right after building and before rebooting, copy the state:
 
         for p in <each preserved path>; do
