@@ -4,6 +4,15 @@ _: {
     defaultSopsFile = ../../secrets.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/var/lib/sops/age/keys.txt";
+    # No ssh host keys as decryption keys. With openssh enabled, sops-nix
+    # defaults these to the ed25519 (age) and RSA (gnupg) host keys, but
+    # .sops.yaml has only the admin age key above as a recipient, so the
+    # host keys can't decrypt anything here. Clearing them leaves keyFile
+    # as the only key sops needs at activation, which matters for the
+    # impermanence plan (IMPERMANENCE-PLAN.md): the host keys can then be
+    # restored later in boot, like any other state.
+    age.sshKeyPaths = [];
+    gnupg.sshKeyPaths = [];
     secrets = {
       # System & Admin Keys
       "rik-password-hash" = {neededForUsers = true;};
