@@ -745,13 +745,14 @@ Permanent, documented caveats; nothing to fix. Here so they're in one place.
   `hosts/datum/disko-config.nix:18`
 - **`/var/lib/sbctl` is not backed up.** Recovery: turn Secure Boot off,
   create new keys, re-enroll. `modules/nixos/secure-boot.nix:23`
-- **`mutableUsers`: declared passwords only apply when an account is
-  created.** If rik ends up locked, the repair is in
-  `modules/nixos/users/rik.nix:22`. Root has no declared password, so on a
-  reinstall run `nixos-install` without `--no-root-passwd`
-  (`modules/nixos/users/root.nix:3`).
-- **UIDs/GIDs are pinned** (rik 1000, guest 1001/993). Changing them doesn't
-  renumber existing accounts. `modules/nixos/users/rik.nix:13`
+- **Passwords are immutable (`mutableUsers = false`, since 2026-11-09).**
+  `passwd` appears to work but is undone at the next switch or boot.
+  Change rik's or root's password through sops and rebuild; the procedure
+  is in `modules/nixos/users/default.nix`. If sops can't decrypt at
+  activation, both accounts are locked until it can.
+- **UIDs/GIDs are pinned** (rik 1000, guest 1001/993). Changing them
+  renumbers the account but leaves its files with the old owner; that takes
+  a manual chown. `modules/nixos/users/rik.nix:13`
 - **`gaze doctor` reports `pam_gaze.so` missing**, a false positive on
   NixOS. `CLAUDE.md`
 - **statix W20 in `backups.nix`** is accepted on purpose.

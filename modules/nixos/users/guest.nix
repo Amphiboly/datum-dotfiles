@@ -8,8 +8,9 @@
     # Essential desktop groups without administrative access:
     extraGroups = ["networkmanager" "video" "audio"];
     # A known password on purpose: this is the account anyone at the
-    # keyboard may use. It only applies when the account is created
-    # (mutableUsers), and SSH takes keys only (ssh.nix), so it's good at the
+    # keyboard may use. With immutable users (users/default.nix) it's
+    # reset to this at every activation, so a guest can't change it for
+    # the next one. SSH takes keys only (ssh.nix), so it's good at the
     # console and nowhere else.
     initialPassword = "guest";
     shell = pkgs.zsh;

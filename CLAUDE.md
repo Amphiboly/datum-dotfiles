@@ -99,7 +99,9 @@ can load it` as an error. This is a FALSE POSITIVE — it probes FHS paths like
 - Multi-user: keep system-level privileges separate from user-level Home
   Manager ones. Users must be able to change their own config without full
   system rebuild access — see the standalone `homeConfigurations` in
-  `flake.nix`, which apply without sudo.
+  `flake.nix`, which apply without sudo. Passwords are the exception:
+  `users.mutableUsers = false` (since 2026-11-09), so they are
+  admin-managed sops hashes; see `modules/nixos/users/default.nix`.
 - Decoupling: Home Manager modules should remain extractable and usable
   independently of `nixosConfigurations`.
 

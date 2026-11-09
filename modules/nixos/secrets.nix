@@ -16,6 +16,7 @@ _: {
     secrets = {
       # System & Admin Keys
       "rik-password-hash" = {neededForUsers = true;};
+      "root-password-hash" = {neededForUsers = true;};
       # The attribute name sets the output path (/run/secrets/<name>); `key`
       # only picks the YAML key. Naming this "w11-cifs-password" published it
       # at /run/secrets/w11-cifs-password while filesystems.nix mounts with

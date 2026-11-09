@@ -1,10 +1,14 @@
 # modules/nixos/users/root.nix
 #
-# No password is set here. This repo is public, so anything in it is a known
-# password; until 2026-10-13 this file set `initialPassword = "nix"`.
-# With mutableUsers (users/default.nix), removing it changes nothing on a
-# running system: root keeps whatever `passwd` last set. On a reinstall, run
-# nixos-install WITHOUT --no-root-passwd and it prompts for root's password;
-# otherwise root starts locked, which leaves sudo from rik as the only way
-# in, and no root login in the emergency shell.
-_: {}
+# root's password is a sops hash (secrets.nix), not a literal: this repo is
+# public, so anything written here is a known password. (Until 2026-10-13
+# this file set `initialPassword = "nix"`.) It gives a second way in that
+# doesn't depend on rik: root at a console, and in stage 2's emergency
+# shell. The initrd's emergency shell is locked regardless.
+#
+# Applied at every activation (immutable users, users/default.nix, which
+# has the procedure for changing it; use root-password-hash). On a
+# reinstall, run nixos-install with --no-root-passwd: the sops hash sets it.
+{config, ...}: {
+  users.users.root.hashedPasswordFile = config.sops.secrets."root-password-hash".path;
+}

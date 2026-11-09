@@ -13,17 +13,16 @@
     # Pinned: unpinned, NixOS allocates UIDs in creation order, and the
     # 2026-10-13 reinstall gave guest 1000 and rik 1001. Old rustic and
     # btrbk snapshots, and filesystems.nix's uid=1000 on the backup share,
-    # all assume rik is 1000. With mutableUsers, changing this does not
-    # renumber an existing account; that takes usermod (laptop-swap.md).
+    # all assume rik is 1000. Changing it would renumber the account but
+    # not chown its files; that takes a manual chown (laptop-swap.md).
     uid = 1000;
     group = "rik";
     description = "Rik";
     extraGroups = ["wheel" "networkmanager" "video" "input" "audio" "render"];
-    # Read once, when the account is created (mutableUsers, users/default.nix).
-    # If sops can't decrypt it then (2026-10-12: an empty age keys.txt at
-    # install), rik is created locked and later activations never fix it.
-    # Repair as root:
-    #   usermod -p "$(cat /run/secrets-for-users/rik-password-hash)" rik
+    # Applied at every activation (immutable users, users/default.nix,
+    # which also has the procedure for changing it). If sops can't decrypt
+    # it (2026-10-12: an empty age keys.txt at install), rik is locked
+    # until an activation where it can; fix the key and switch again.
     hashedPasswordFile = config.sops.secrets."rik-password-hash".path;
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [

@@ -121,8 +121,8 @@
     #     That mounts the new system at /mnt.
     #  3. Age key: paste it from 1Password into
     #     /mnt/var/lib/sops/age/keys.txt (root, 0600). Without it the first
-    #     activation can't decrypt rik-password-hash and creates rik locked
-    #     (users/rik.nix).
+    #     activation can't decrypt rik-password-hash or root-password-hash,
+    #     and both accounts are locked (users/rik.nix, users/root.nix).
     #  4. System state from the nightly backup (backups.nix, tag "system"):
     #     at least /var/lib/sbctl, BEFORE installing: lanzaboote signs the
     #     boot files during nixos-install and fails without the keys.
@@ -137,8 +137,9 @@
     #     its place under /mnt.
     #     No backup? `sbctl create-keys` into /mnt/var/lib/sbctl instead,
     #     and enroll them after step 6 (secure-boot.nix, steps 1-3).
-    #  5. nixos-install --flake .#datum, and set root's password when it
-    #     asks (not --no-root-passwd; see users/root.nix).
+    #  5. nixos-install --flake .#datum --no-root-passwd. root's password
+    #     comes from sops (users/root.nix); a password typed at the prompt
+    #     would be replaced at the next activation anyway.
     #  6. Reboot, then Secure Boot on in the firmware. It boots, because the
     #     restored keys signed everything. `sudo sbctl verify` to check.
     #  7. TPM2 + PIN: the LUKS header is new, so enroll again, with Secure
