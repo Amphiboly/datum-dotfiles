@@ -1,0 +1,273 @@
+---
+author:
+- Claude
+- Rik Kabel
+title: Impermanence on datum, a plan
+date: 2026-11-08
+lang: en-US
+whitespace: medium
+layout: |
+  width=middle,backspace=1.5in,cutspace=1.5in, |
+  height=middle,topspace=0.75in,bottomspace=0.75in
+mainfont: libertinus sans
+linesize: 13.5pt
+fontsize: 11pt
+pagenumbering: location=margin
+...
+
+# Goal
+
+Make `@` (mounted at `/`) start empty on every boot. Everything that has to
+survive lives on a new `@persist` subvolume and is bind-mounted or symlinked
+back into place by nix-community/preservation. `@nix`, `@home` and
+`@dropbox` are untouched.
+
+The work goes in four stages, each a separate commit or group of commits.
+Stages 1 and 2 change nothing visible. Stage 3 turns on the wipe and is the
+only one that needs a rescue plan. Stage 4 is cleanup and backups.
+
+Status of the facts below: the preservation option names, the examples
+quoted, and the flake outputs (`nixosModules.default` and
+`nixosModules.preservation`, last modified 2026-10-25) were checked against
+upstream on 2026-11-08. The Nix snippets themselves are **sketches and have
+not been evaluated**. Each is to be validated with `nix eval` / `nix flake
+check` as it lands.
+
+# Things found while surveying datum
+
+- **Nested subvolumes inside `@`.** `/var/lib/machines`,
+  `/var/lib/portables`, `/var/tmp` and `/srv` are btrfs subvolumes (inode
+  256). systemd's tmpfiles creates them with `v`/`q` lines. They move along
+  with `@` when it is renamed, and on the fresh root tmpfiles creates them
+  again. But deleting an old root has to be recursive, or `btrfs subvolume
+  delete` refuses.
+- **sops reads keys during activation, before stage-2 mounts exist.**
+  `sops.age.keyFile` is `/var/lib/sops/age/keys.txt`. And because openssh
+  is enabled, sops-nix's default `age.sshKeyPaths` probably includes the
+  ed25519 host key (to check with `nix eval`). Activation also decrypts
+  `rik-password-hash` for the users script. Preservation entries without
+  `inInitrd` aren't mounted yet at that point.
+- **`/root` can be ephemeral.** The nix-daemon's ssh to nostrum uses the
+  system-wide `/etc/ssh/ssh_known_hosts` (`programs.ssh.knownHosts`) and a
+  sops key (`remote-builder.nix`), so nothing in `/root/.ssh` is needed.
+  Still check `/root` with sudo before stage 3.
+- **`users.mutableUsers = true` (`users/default.nix`).** That makes
+  `/etc/passwd`, `/etc/shadow` and `/etc/group` mutable state. On a wiped
+  root, accounts are recreated at every boot from config: rik's password
+  from `hashedPasswordFile` (sops), so password changes made with `passwd`
+  don't survive. Bind-mounting `/etc/shadow` is fragile, because NixOS's
+  user-update script replaces it with a rename, and a rename can't replace
+  a bind-mounted file. The usual answer is `mutableUsers = false`. See
+  the decision list. Check guest's password setup (`users/guest.nix`).
+- **`/var/log` is 600 MB.** That's fine: it is copied with
+  `--reflink`, which is instant on the same filesystem.
+- **`/var/lib/cosmic-greeter`** is a leftover from before 2026-11-03.
+  Don't persist it.
+- **`/var/lib/private`** (DynamicUser state) and `/var/lib/gaze` weren't
+  readable without root. Inventory them with sudo in stage 0.
+
+# Stage 0: inventory (no changes)
+
+Run with sudo:
+
+    ls -la /root /var/lib/private /var/lib/gaze /var/cache/gaze
+    # Files on @ changed in the last 2 weeks. -xdev stays on @,
+    # because each btrfs subvolume has its own st_dev.
+    find / -xdev -type f -mtime -14 2>/dev/null \
+      | grep -vE '^/(proc|sys|run|tmp|boot)/' | sort > /tmp/at-churn.txt
+
+Anything in `at-churn.txt` that isn't on the list below is a candidate, or
+a deliberate "let it be wiped".
+
+# The preserve list
+
+Built from `systemStatePaths` in `modules/nixos/backups.nix` plus what
+`/var/lib` shows.
+
+**In the initrd (`inInitrd = true`)**, needed by activation or early boot:
+
+| Path | How | Why early |
+|---|---|---|
+| `/etc/machine-id` | bindmount | the docs' own special case |
+| `/var/lib/nixos` | bindmount | users/groups script reads the uid/gid map |
+| `/var/lib/systemd/random-seed` | symlink, `configureParent` | read before local-fs |
+
+**sops**, whichever of these turns out simpler (see the decision list):
+
+- (a) Persist `/var/lib/sops` with `inInitrd = true`.
+- (b) Set `sops.age.keyFile = "/persist/var/lib/sops/age/keys.txt"` and
+  `sops.age.sshKeyPaths = [ ]`, which makes the timing irrelevant. With
+  `fileSystems."/persist".neededForBoot = true`, `/persist` is mounted in
+  the initrd anyway.
+
+**Stage 2 (defaults)**:
+
+- Directories: `/var/lib/sbctl` (lanzaboote `pkiBundle`), `/var/lib/tailscale`,
+  `/var/lib/bluetooth`, `/var/lib/NetworkManager`,
+  `/etc/NetworkManager/system-connections` (mode 0700), `/var/lib/gaze`,
+  `/var/cache/gaze`, `/var/lib/systemd/timers`, `/var/lib/systemd/backlight`,
+  `/var/lib/systemd/coredump`, `/var/lib/systemd/linger`, `/var/log`,
+  `/var/lib/upower`, `/var/lib/tlp`, `/var/lib/fwupd`, `/var/lib/cups`,
+  `/var/lib/AccountsService`, `/var/lib/udisks2`,
+  `/var/lib/noctalia-greeter`.
+- Files: the six ssh host key files, as `how = "symlink";
+  configureParent = true;`, which is what upstream's migration page
+  recommends. `/var/lib/systemd/tpm2-srk-public-key.{pem,tpm2b_public}`
+  are probably regenerated if missing (to check).
+- Deliberately not persisted: `/root`, `/var/lib/machines`,
+  `/var/lib/portables`, `/var/tmp`, `/var/lib/btrbk` (lockfile only),
+  `/var/lib/lastlog`, `/var/lib/cosmic-greeter`, `/var/cache/{cups,fwupd,tuigreet}`.
+
+machine-id uses the docs' *simple* variant:
+`systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];`.
+
+# Stage 1: the `@persist` subvolume (commit 1)
+
+1. `sudo btrfs subvolume create /mnt/btrfs-root/@persist`
+2. Add it to `hosts/datum/disko-config.nix`, so a reinstall gets it:
+
+        "@persist" = {
+          mountpoint = "/persist";
+          mountOptions = ["compress=zstd:1" "noatime"];
+        };
+
+   and, since disko has no knob for it,
+   `fileSystems."/persist".neededForBoot = true;`.
+   On a running system this only adds a mount. disko doesn't reformat on
+   rebuild.
+3. `nh os switch .` and check that `/persist` is mounted.
+
+# Stage 2: preservation, wipe still off (commits 2–3)
+
+1. Flake input `preservation` (github:nix-community/preservation), with no
+   `nixpkgs` to follow (it has no inputs that need it). Import
+   `inputs.preservation.nixosModules.default` in `hosts/datum/default.nix`.
+2. New `modules/nixos/impermanence.nix` holding the preserve list, the sops
+   change, and a `datum.impermanence.wipe` option (default `false`) that
+   stage 3 flips. That follows CLAUDE.md's `options`/`config` structure,
+   and the option makes stage 3's revert a one-line change.
+3. **Use `nh os boot .`, not `switch`.** A switch would bind-mount empty
+   or freshly copied directories over paths that running services have
+   open.
+4. Right after building and before rebooting, copy the state:
+
+        for p in <each preserved path>; do
+          sudo mkdir -p "/persist$(dirname "$p")"
+          sudo cp -a --reflink=always "$p" "/persist$p"
+        done
+
+   Then reboot immediately so the copies don't go stale.
+5. Check after the reboot: `findmnt -R / | grep persist` shows every
+   mount. `tailscale status` shows the same node. Wi-Fi and Bluetooth
+   pairings are intact. Face login works. `sops` secrets are present in
+   `/run/secrets`. `sbctl status` works. And a test `nh os switch .`
+   succeeds, which proves lanzaboote can still sign.
+
+At this point nothing is wiped. `@` still holds the old copies underneath
+the mounts, so a forgotten path just keeps working from `@`.
+
+# Stage 3: the wipe (commit 4)
+
+The initrd unit, enabled by `datum.impermanence.wipe`. It is ordered after
+the LUKS unlock and before `/sysroot` is mounted:
+
+    boot.initrd.systemd.services.rollback-root = {
+      description = "Move the old root aside and create an empty @";
+      wantedBy = ["initrd.target"];
+      requires = ["dev-mapper-crypted.device"];
+      after = ["dev-mapper-crypted.device"];
+      before = ["sysroot.mount"];
+      unitConfig.DefaultDependencies = "no";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        mkdir -p /btrfs_tmp
+        mount -t btrfs -o subvolid=5 /dev/mapper/crypted /btrfs_tmp
+        if [ -e /btrfs_tmp/@ ]; then
+          mkdir -p /btrfs_tmp/old_roots
+          mv /btrfs_tmp/@ "/btrfs_tmp/old_roots/@-$(date +%Y%m%d-%H%M%S)"
+        fi
+        btrfs subvolume create /btrfs_tmp/@
+        umount /btrfs_tmp
+      '';
+    };
+
+To check while building it: that `mount`, `date`, `mv` and `btrfs` are all
+in the systemd initrd. btrfs-progs is there because root is btrfs. The rest
+may need `boot.initrd.systemd.extraBin` or `storePaths`.
+
+And in stage 2 a daily cleanup service: delete `old_roots/@-*` older than 14
+days, parsing the date **from the name**. The directory's mtime is the old
+root's `/` mtime, which hardly ever changes. It also needs
+`btrfs subvolume delete --recursive` (or listing the nested subvolumes
+first) because of the nested subvolumes above. Check that the btrfs-progs
+in nixpkgs has `--recursive`.
+
+Rollout:
+
+1. `nh os boot .`, reboot. Repeat stage 2's checks.
+2. Look at what the previous boot wrote into the volatile root:
+
+        sudo find /mnt/btrfs-root/old_roots/@-<newest> -xdev -type f \
+          -newermt '<boot time>'
+
+   Anything there that should have survived goes on the list.
+3. Repeat for a few days of normal use, including a nightly upgrade, a
+   rustic run and a suspend cycle.
+
+**Rescue.** Booting an older generation does not undo the wipe. The wipe
+changes the disk before any generation loads, so every generation starts
+from whatever `@` the last wiped boot left. What matters is whether that
+generation has preservation:
+
+- **Any generation from stage 2 on** (preservation enabled, wipe on or
+  off) gets its state from `/persist` and works normally. This is the
+  first fallback, and once stage 2 is in, every later generation qualifies.
+- **A generation from before stage 2** boots, but without any state: no
+  Wi-Fi, a new machine-id, no Tailscale identity, no face templates. And
+  sops can't find its age key, so `rik-password-hash` can't be decrypted
+  and **rik is locked**. Don't use one of these as a fallback.
+  `nh clean` (`--keep-since 4d --keep 3`) plus the nightly upgrades removes
+  them within days of stage 2 anyway.
+
+If no preserving generation boots, put the old root back from the
+installer USB (Secure Boot off for the installer, as always; unlock with
+the passphrase):
+
+    mount -o subvolid=5 /dev/mapper/crypted /mnt/x
+    mv /mnt/x/@ /mnt/x/@-broken
+    mv /mnt/x/old_roots/@-<newest> /mnt/x/@
+
+then boot a generation without the wipe. The initrd emergency shell is
+locked, so don't count on it.
+
+Revert: set `datum.impermanence.wipe = false`. Preservation keeps working
+without the wipe.
+
+# Stage 4: backups and cleanup (commits 5+)
+
+- `systemStatePaths` becomes the preserve list, or simply `/persist`. One
+  list instead of two that can drift. Consider making `backups.nix` read it
+  from `config.preservation` so it's defined once.
+- Add `@persist` to btrbk. That gives system state atomic snapshots too,
+  which it never had (`backups.nix:77`).
+- Update the reinstall sequence in `flake.nix`: restore into
+  `/mnt/persist/...`, not `/mnt/var/lib/...`.
+- CLAUDE.md: a line on impermanence under Hardware Context, and KNOWN-ISSUES
+  if anything is deferred.
+
+# Decisions for Rik
+
+1. sops: (a) persist `/var/lib/sops` in the initrd, or (b) point
+   `age.keyFile` at `/persist` and drop `sshKeyPaths`? I'd pick (b): it
+   removes a timing dependency rather than satisfying it.
+2. Old-root retention: 14 days suggested. Each one is cheap, since only
+   files that changed take space.
+3. `/var/log`: keep the whole thing (journal history across boots) or only
+   `/var/log/journal`?
+4. Users: switch to `mutableUsers = false` (passwords fully declarative,
+   guest needs a `hashedPasswordFile` too), or keep it `true` and accept
+   that accounts are rebuilt from config each boot. Either way it has to be
+   settled before stage 3.
+5. Whether to try it first in a VM (`vmWithDisko`). lanzaboote and the TPM
+   make the VM unlike datum, so I'd skip it and rely on stage 2's no-wipe
+   rehearsal plus the rescue path.
