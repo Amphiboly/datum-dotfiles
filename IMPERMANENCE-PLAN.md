@@ -194,37 +194,52 @@ recovered fully. The rule: a change that adds a mount must have its device
 or subvolume in place before any `switch`. For anything riskier, `nh os
 boot` and a reboot fail more gently than a switch.
 
-# Stage 2: preservation, wipe still off (commits 2–3)
+# Stage 2: preservation, wipe still off (done 2026-11-09)
 
-1. Flake input `preservation` (github:nix-community/preservation), with no
-   `nixpkgs` to follow (it has no inputs that need it). Import
-   `inputs.preservation.nixosModules.default` in `hosts/datum/default.nix`.
-2. New `modules/nixos/impermanence.nix` holding the preserve list, the sops
-   change, and a `datum.impermanence.wipe` option (default `false`) that
-   stage 3 flips. That follows CLAUDE.md's `options`/`config` structure,
-   and the option makes stage 3's revert a one-line change.
-3. **Use `nh os boot .`, not `switch`.** A switch would bind-mount empty
-   or freshly copied directories over paths that running services have
-   open. And if any new mount fails during a switch, the running system
-   drops into emergency mode (see stage 1's note). With `boot`, a failing
-   mount only shows up at the reboot, where the previous generation is
-   one menu entry away.
-4. Right after building and before rebooting, copy the state:
+What was done:
 
-        for p in <each preserved path>; do
-          sudo mkdir -p "/persist$(dirname "$p")"
-          sudo cp -a --reflink=always "$p" "/persist$p"
-        done
+1. Flake input `preservation` (github:nix-community/preservation, no
+   inputs of its own), imported in `hosts/datum/default.nix`.
+2. `modules/nixos/impermanence.nix` with the preserve list and a
+   `datum.impermanence.enable` option, set in the host file. The
+   `wipe` option comes with stage 3, where it has something to switch.
+3. rustic's cache moved to `/var/cache/rustic` first (backups.nix,
+   24c2640), so `/root` holds nothing to preserve. Persisting
+   `/root/.cache/rustic` in place would have been a trap: root has
+   `createHome = false`, so on a fresh root systemd would create `/root`
+   for the bind mount's parents as 0755.
+4. `nh os boot .`, then a one-off root script copied the state into
+   `/persist` and turned the symlinked entries (ssh host keys,
+   random-seed) into links, after checking that the copies matched. Then
+   an immediate reboot. The path lists in the script came from `nix eval`
+   of the preservation config, not typed by hand.
+5. Checked after the reboot: all 26 `@persist` mounts up (`/persist`, 22
+   directories, 3 files, 3 of them from the initrd), no failed units, the
+   same machine-id and Tailscale node, the journal's earlier boots still
+   listed, sops decrypted at boot, sshd running on the linked keys.
+   Still to check by hand: face login, Wi-Fi, Bluetooth, `sbctl status`,
+   and one `nh os switch .`, which proves lanzaboote can still sign with
+   the keys under the mount.
 
-   Then reboot immediately so the copies don't go stale.
-5. Check after the reboot: `findmnt -R / | grep persist` shows every
-   mount. `tailscale status` shows the same node. Wi-Fi and Bluetooth
-   pairings are intact. Face login works. `sops` secrets are present in
-   `/run/secrets`. `sbctl status` works. And a test `nh os switch .`
-   succeeds, which proves lanzaboote can still sign.
+What reading preservation's `lib.nix` showed, and what went wrong:
 
-At this point nothing is wiped. `@` still holds the old copies underneath
-the mounts, so a forgotten path just keeps working from `@`.
+- **Modes are enforced.** A bindmount directory gets tmpfiles `d` rules
+  on both sides, which reset mode and owner of an existing directory. The
+  module therefore states every directory's current mode and owner; the
+  defaults (0755 root) would have loosened `/var/lib/tailscale`,
+  `/var/lib/gaze` and others. The generated rules were checked against
+  `stat` before building.
+- **Symlinks don't replace files.** Symlinked entries get an `L` rule,
+  which skips an existing file. Without the wipe they'd never take effect,
+  which is why the migration made the links itself.
+- **No-CoW files can't be reflinked.** The first migration run stopped at
+  `/var/log`: journald marks its files `+C` on btrfs, and btrfs refuses to
+  reflink between No-CoW and CoW files (`EINVAL`). The fix was
+  `cp --reflink=auto` (plain copy where reflink fails), after removing the
+  partial `/persist/var/log`. No reboot happened in between.
+
+Nothing is wiped yet. `@` still holds the old copies underneath the
+mounts, so a forgotten path keeps working from `@`.
 
 # Stage 3: the wipe (commit 4)
 
@@ -331,4 +346,4 @@ without the wipe.
 6. ~~`/root/.bash_history`~~: decided 2026-11-09, let it go with the
    rest of `/root`.
 
-Stage 0 is done. Next is stage 1 (the `@persist` subvolume).
+Stages 0 to 2 are done. Next is stage 3 (the wipe).
