@@ -38,7 +38,14 @@ fi
 # 2. Dry-Run Environment Mapping
 # =========================================================================
 echo "Generating dry-run system environment preview mapping..."
-nh os build
+# --keep-going: when one derivation fails, still build everything that
+# doesn't depend on it, so those land in the store and the next run only
+# redoes the broken part. The system itself still can't be built until the
+# failure is fixed, so set -e stops the script here either way.
+# -o ./result: nh 4.4.2 does write ./result by default, but its --help says
+# the default is a temp dir; spell it out, since nvd below and the rm after
+# the switch both depend on this exact path.
+nh os build --keep-going -o ./result
 
 if command -v nvd &> /dev/null; then
     echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
