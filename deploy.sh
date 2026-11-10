@@ -26,7 +26,14 @@ echo "=================================================="
 # 1. Update Flake Inputs
 # =========================================================================
 read -rp "Check for upstream package updates? (y/N): " check_updates </dev/tty
+# Set only when we update: a copy of flake.lock as it was before, so a failed
+# dry run can put it back (step 2). Copying rather than `git checkout` keeps
+# any lock change that was already in the working tree.
+lock_backup=""
 if [[ "$check_updates" =~ ^[Yy]$ ]]; then
+    lock_backup=$(mktemp)
+    trap 'rm -f "$lock_backup"' EXIT
+    cp flake.lock "$lock_backup"
     echo "Refreshing upstream flake input hashes..."
     # nh 4.x dropped the standalone `flake` subcommand — input updates are now
     # a flag on `nh os build/switch` (-u/--update) rather than a separate
@@ -41,11 +48,22 @@ echo "Generating dry-run system environment preview mapping..."
 # --keep-going: when one derivation fails, still build everything that
 # doesn't depend on it, so those land in the store and the next run only
 # redoes the broken part. The system itself still can't be built until the
-# failure is fixed, so set -e stops the script here either way.
+# failure is fixed, so the script stops here either way.
 # -o ./result: nh 4.4.2 does write ./result by default, but its --help says
 # the default is a temp dir; spell it out, since nvd below and the rm after
 # the switch both depend on this exact path.
-nh os build --keep-going -o ./result
+#
+# If it fails after an update, restore flake.lock, as the nightly upgrade
+# does: otherwise the next deploy rebuilds the same broken inputs even when
+# you answer "no" to updating. The update's successful builds stay in the
+# store, so retrying the update later costs little.
+if ! nh os build --keep-going -o ./result; then
+    if [[ -n "$lock_backup" ]]; then
+        cp "$lock_backup" flake.lock
+        echo "Dry run failed; flake.lock restored to its pre-update state."
+    fi
+    exit 1
+fi
 
 if command -v nvd &> /dev/null; then
     echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
