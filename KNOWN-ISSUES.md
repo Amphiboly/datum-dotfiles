@@ -690,6 +690,21 @@ recent history.
   journal: 2026-10-14 03:00 and 2026-11-07 17:43, each logging
   "SKIPPED: datum is on battery" and exiting cleanly.
 
+### MX150 power state on battery not checked
+- **Where:** nothing in the repo yet. There is no NVIDIA config, so the
+  MX150 (`0000:01:00.0`) gets `nouveau` and the kernel's runtime-PM
+  defaults.
+- **What:** open since the 2026-10-16 laptop-swap follow-ups (from session
+  notes on nostrum). Spot check 2026-11-10 on AC: `nouveau` bound,
+  `power/runtime_status` = `suspended`, `power/control` = `auto`,
+  `d3cold_allowed` = 1, but `power_state` = **D3hot**, not D3cold. Not
+  yet looked at on battery, which is where it matters for runtime.
+- **Next:** on battery, read
+  `/sys/bus/pci/devices/0000:01:00.0/power_state` and compare discharge
+  rate (upower) against a run with the dGPU forced off. If it never
+  reaches D3cold, the parent root port's ACPI power resources are the
+  place to look.
+
 ### Syncthing GUI has no credentials
 - **Where:** `home/modules/productivity/syncthing.nix:7`
 - **What:** deliberate, because it binds to loopback only. The comment says
