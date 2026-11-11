@@ -3,6 +3,7 @@
   config,
   lib,
   pkgs,
+  inputs,
   ...
 }: let
   # Where the backup service mounts the share for its own use. Deliberately
@@ -284,6 +285,17 @@
     '';
   };
 in {
+  # TEMPORARY: rustic from the pinned nixpkgs-rustic input (see flake.nix
+  # and KNOWN-ISSUES.md), so nixpkgs updates no longer fail on it. An
+  # overlay rather than a local binding because pkgs.rustic is also used
+  # outside this file (nightly-upgrade, ntfy-alerts, impermanence, ...);
+  # this swaps every use at once. Delete with the input.
+  nixpkgs.overlays = [
+    (_: prev: {
+      inherit (inputs.nixpkgs-rustic.legacyPackages.${prev.stdenv.hostPlatform.system}) rustic;
+    })
+  ];
+
   # ======================================================================
   # 0. OPERATOR TOOLING
   # These live here rather than in their own file so they can share the

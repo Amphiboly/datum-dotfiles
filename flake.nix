@@ -13,6 +13,17 @@
     # move it. Drop this input (and the reference in claude-code.nix) once
     # NixOS/nixpkgs#563493 (fastmcp -> 4.x) reaches nixos-unstable.
     nixpkgs-mcp.url = "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1097682.02c087f3fe67/nixexprs.tar.zst";
+    # TEMPORARY: rustic only (modules/nixos/backups.nix overlays pkgs.rustic
+    # from here). nixpkgs after this release builds every Rust crate with
+    # AWS_LC_SYS_USE_SYSTEM=1, and rustic 0.11.4's package doesn't supply
+    # aws-lc, so it fails to build (KNOWN-ISSUES.md). The rustic version
+    # is the same on both sides; what this pins is the nixpkgs build
+    # environment. It's the release datum ran when the breakage reached the
+    # channel, so the rustic it yields is the binary already installed and
+    # nothing rebuilds. A releases.nixos.org URL is fixed, so `nix flake
+    # update` won't move it. Drop this input and the overlay once
+    # NixOS/nixpkgs#585155 reaches nixos-unstable.
+    nixpkgs-rustic.url = "https://releases.nixos.org/nixos/unstable/nixos-26.11pre1108983.f9a75f41be3a/nixexprs.tar.zst";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     disko = {
       url = "github:nix-community/disko";
