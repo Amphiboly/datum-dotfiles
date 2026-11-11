@@ -65,6 +65,19 @@ in {
     lib.mkEnableOption "preserving system state from /persist (IMPERMANENCE-PLAN.md)";
 
   config = lib.mkIf cfg.enable {
+    # Coredumps age out after 2 weeks, as systemd's own tmpfiles rule
+    # (systemd.conf: `d /var/lib/systemd/coredump 0755 root root 2w`)
+    # intends. preservation writes its own `d` line for every preserved
+    # directory, with no age; when two tmpfiles.d files name the same path,
+    # systemd-tmpfiles uses the first ("preservation.conf" sorts before
+    # "systemd.conf") and logs "Duplicate line ... ignoring" for the other.
+    # So from stage 2 (2026-11-09) dumps stopped expiring and piled up in
+    # /persist; this puts the age on preservation's line instead. The bind
+    # mount means cleaning /var/lib/systemd/coredump cleans the /persist
+    # copy. The other duplicates logged at boot (/var/log, /var/lib/lastlog)
+    # have no age on either side, so nothing is lost there.
+    systemd.tmpfiles.settings.preservation."/var/lib/systemd/coredump".d.age = "2w";
+
     preservation = {
       enable = true;
       preserveAt."/persist" = {
