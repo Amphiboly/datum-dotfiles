@@ -346,7 +346,20 @@ locked, so don't count on it.
 Revert: set `datum.impermanence.wipe = false`. Preservation keeps working
 without the wipe.
 
-# Stage 4: backups and cleanup (commits 5+)
+# Stage 4: backups and cleanup (done 2026-11-11)
+
+**Result.** btrbk snapshots @persist hourly into `.snapshots/persist`
+(c7a8d8a). The rustic "system" backup binds the newest of those and
+stores it as `/persist`, without `/var/log`, `/var/cache` and coredumps
+(f69042b): atomic, and derived from what is preserved instead of a
+second list. Hosts without impermanence still back up
+`systemStatePaths` live. The reinstall sequence in `flake.nix` restores
+into `/mnt/persist` and copies sops, sbctl and nixos to their live paths
+for `nixos-install`, whose chroot has no preservation mounts; CLAUDE.md
+describes impermanence (e5c2897). Test run on 2026-11-11: snapshot
+`@persist.20261111T1944`, rustic snapshot 977e2acb, 155 files, 3.9 MiB.
+
+## The original sketch
 
 - `systemStatePaths` becomes the preserve list, or simply `/persist`. One
   list instead of two that can drift. Consider making `backups.nix` read it
@@ -374,4 +387,4 @@ without the wipe.
 6. ~~`/root/.bash_history`~~: decided 2026-11-09, let it go with the
    rest of `/root`.
 
-Stages 0 to 3 are done. Next is stage 4 (backups and cleanup).
+All four stages are done (2026-11-11). This file is now the record of how and why; `modules/nixos/impermanence.nix` and CLAUDE.md are the current reference.
