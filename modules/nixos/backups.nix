@@ -57,11 +57,20 @@
     config.fileSystems."/mnt/5CDbackup".options
   );
 
-  # Machine state on @ that a reinstall from this flake can't recreate.
-  # Generations cover everything in /nix, and btrbk/rustic cover @home;
-  # these are the small, rarely changing files neither reaches. The
-  # restore order matters for two of them; see the reinstall sequence in
-  # flake.nix.
+  # The "system" backup: machine state a reinstall from this flake can't
+  # recreate. Generations cover /nix, and the user backups cover @home.
+  #
+  # With impermanence (datum since 2026-11-11), that state is exactly what
+  # /persist holds, so the backup takes the newest btrbk snapshot of
+  # @persist: atomic, like /home's, and it can't drift from the preserve
+  # list in impermanence.nix. Logs and caches are left out (see the
+  # pipeline below). Snapshots before 2026-11-11 hold the same files at
+  # their live paths (/var/lib/...); from then on, under /persist/.
+  #
+  # Without impermanence, this list is backed up instead, read live (no
+  # subvolume to snapshot). What each entry is and why it matters applies
+  # to the /persist copies too. The restore order matters for two of
+  # them; see the reinstall sequence in flake.nix.
   #   sbctl:        Secure Boot signing keys. Restored, they spare a new
   #                 firmware enrollment (secure-boot.nix).
   #   sops:         the age key. Also in 1Password, which is the copy a
@@ -81,8 +90,6 @@
   #   gaze:         face templates. Their key is sealed to this machine's
   #                 TPM (facial-auth.nix), so they're only good on the same
   #                 board with an uncleared TPM; anywhere else, re-enroll.
-  # Read live, not from a snapshot: @ isn't snapshotted, and these change
-  # too rarely for that to matter.
   systemStatePaths =
     [
       "/var/lib/sbctl"
@@ -543,19 +550,48 @@ in {
             /run/restic-atomic-home/guest
         fi
 
-        # System state pipeline (systemStatePaths above). Only paths that
-        # exist are passed, so a host without, say, an RSA host key doesn't
-        # fail the whole run.
-        echo "Syncing system state..."
-        state_paths=()
-        for p in ${lib.escapeShellArgs systemStatePaths}; do
-          if [ -e "$p" ]; then
-            state_paths+=("$p")
-          else
-            echo "  (skipping missing $p)"
-          fi
-        done
-        rustic backup --tag="system" "''${state_paths[@]}"
+        # System state pipeline (see systemStatePaths above).
+        ${
+          if config.datum.impermanence.enable
+          then ''
+            # The newest @persist snapshot, found and bound the same way
+            # as @home's (including the `|| true` against btrbk's prune
+            # race). btrbk runs hourly at :00, so it's at most ~15 minutes
+            # old. Stored as /persist. Left out: /var/log (the journal,
+            # ~2 GB and churning; it's for debugging, not for restoring),
+            # /var/cache (gaze's models download again, rustic's cache is
+            # this repo's own) and coredumps.
+            LATEST_PERSIST=$(find /mnt/btrfs-root/.snapshots/persist/ -maxdepth 1 -type d -name "@persist.*" | sort -r | head -n 1) || true
+            if [ -z "$LATEST_PERSIST" ]; then
+              echo "Error: No @persist snapshots discovered. Aborting system state pass."
+              exit 1
+            fi
+            echo "Syncing system state from $LATEST_PERSIST..."
+            mkdir -p /run/restic-atomic-persist
+            mount --bind "$LATEST_PERSIST" /run/restic-atomic-persist
+            rustic backup \
+              --as-path=/persist \
+              --tag="system" \
+              --glob="!/run/restic-atomic-persist/var/log" \
+              --glob="!/run/restic-atomic-persist/var/cache" \
+              --glob="!/run/restic-atomic-persist/var/lib/systemd/coredump" \
+              /run/restic-atomic-persist
+          ''
+          else ''
+            # Only paths that exist are passed, so a host without, say, an
+            # RSA host key doesn't fail the whole run.
+            echo "Syncing system state..."
+            state_paths=()
+            for p in ${lib.escapeShellArgs systemStatePaths}; do
+              if [ -e "$p" ]; then
+                state_paths+=("$p")
+              else
+                echo "  (skipping missing $p)"
+              fi
+            done
+            rustic backup --tag="system" "''${state_paths[@]}"
+          ''
+        }
 
         echo "Backup stream transmission completed successfully."
       '';
@@ -569,6 +605,10 @@ in {
           umount /run/restic-atomic-home
         fi
         rmdir /run/restic-atomic-home || true
+        if mountpoint -q /run/restic-atomic-persist; then
+          umount /run/restic-atomic-persist
+        fi
+        rmdir /run/restic-atomic-persist 2>/dev/null || true
 
         # Drop the share too, so a stale or half-open CIFS mount cannot be
         # inherited by the next run and mistaken for a healthy one.
