@@ -3,7 +3,7 @@ author:
 - Claude
 - Rik Kabel
 title: Impermanence on datum, a plan
-date: 2026-11-09
+date: 2026-11-11
 lang: en-US
 whitespace: medium
 layout: |
@@ -241,7 +241,35 @@ What reading preservation's `lib.nix` showed, and what went wrong:
 Nothing is wiped yet. `@` still holds the old copies underneath the
 mounts, so a forgotten path keeps working from `@`.
 
-# Stage 3: the wipe (commit 4)
+# Stage 3: the wipe (done 2026-11-11)
+
+**Result.** Deployed with `nh os boot` and a reboot. The initrd unit
+`impermanence-wipe-root` moved @ to `old_roots/@-20261112T002920Z` and
+created an empty @ in 0.3 s. All 26 @persist mounts came up, no unit
+failed, machine-id and Tailscale node unchanged, sops decrypted at boot,
+`/root` recreated 0700 by activation, ssh host keys linked into /persist by
+preservation's own rules, journal history intact. The code differs from the
+sketch below in a few ways; `modules/nixos/impermanence.nix` is the
+reference:
+
+- The option is `datum.impermanence.wipe`, set in `hosts/datum/default.nix`.
+- The unit names its old roots in UTC (`@-YYYYmmddTHHMMSSZ`) and fails
+  safe: nothing requires it, and if creating the new @ fails it moves the
+  old one back, so a failed wipe boots the old root.
+- `impermanence-old-roots-cleanup` (daily, persistent timer) deletes old
+  roots after 14 days by the time in their name, recursively, and always
+  keeps the three newest. Its logic was dry-run on dummy names first.
+
+**The old-vs-new comparison** (a read-only root script diffing the raw
+subvolumes, so the mounts hid nothing) found nothing lost but backups,
+locks, caches (cups, fwupd, root's nix cache) and the decided-on `/root`
+contents, with one exception: `/var/db/sudo/lectured/`, sudo's record of
+having shown each user its lecture. Fixed by `Defaults lecture = never`
+(`modules/nixos/sudo.nix`) rather than by preserving it. Everything this
+boot wrote to the volatile root was regenerated `/etc`, systemd's catalog
+and caches, which is what the next wipe should throw away.
+
+## The original sketch
 
 The initrd unit, enabled by `datum.impermanence.wipe`. It is ordered after
 the LUKS unlock and before `/sysroot` is mounted:
@@ -346,4 +374,4 @@ without the wipe.
 6. ~~`/root/.bash_history`~~: decided 2026-11-09, let it go with the
    rest of `/root`.
 
-Stages 0 to 2 are done. Next is stage 3 (the wipe).
+Stages 0 to 3 are done. Next is stage 4 (backups and cleanup).
