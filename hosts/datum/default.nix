@@ -33,6 +33,7 @@
 
     # Core system modules
     ../../modules/nixos/secrets.nix
+    ../../modules/nixos/sudo.nix
     ../../modules/nixos/boot.nix
     ../../modules/nixos/secure-boot.nix
     ../../modules/nixos/firmware.nix
@@ -79,8 +80,13 @@
     inputs.home-manager.nixosModules.home-manager
   ];
 
-  # Stage 2 of IMPERMANENCE-PLAN.md: preserved, not yet wiped.
-  datum.impermanence.enable = true;
+  # IMPERMANENCE-PLAN.md: state preserved from /persist (stage 2, since
+  # 2026-11-09), and / wiped at every boot (stage 3, since 2026-11-11).
+  # Setting wipe to false stops the wiping and keeps the preservation.
+  datum.impermanence = {
+    enable = true;
+    wipe = true;
+  };
 
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
