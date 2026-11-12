@@ -333,10 +333,18 @@ in {
         # gives us /var/lib/btrbk, owned btrbk:btrbk.
         lockfile = "/var/lib/btrbk/btrbk.lock";
 
-        volume."/mnt/btrfs-root" = {
-          subvolume = "@home";
-          snapshot_dir = ".snapshots/home";
-        };
+        # @persist (since 2026-11-11) is the system state that survives
+        # the root wipe (impermanence.nix). Its snapshots are what the
+        # rustic "system" backup reads, so that backup is atomic like
+        # /home's. Same schedule and retention; it changes every hour
+        # (the journal), so it gets a snapshot every hour.
+        volume."/mnt/btrfs-root".subvolume =
+          {
+            "@home".snapshot_dir = ".snapshots/home";
+          }
+          // lib.optionalAttrs config.datum.impermanence.enable {
+            "@persist".snapshot_dir = ".snapshots/persist";
+          };
       };
     };
   };

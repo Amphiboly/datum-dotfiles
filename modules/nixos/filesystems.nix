@@ -58,5 +58,8 @@ _: {
     # Automatically ensures /mnt/btrfs-root/.snapshots/home exists with
     # secure root-only permissions (0700) on every single boot sequence [a].
     "d /mnt/btrfs-root/.snapshots/home 0700 root root - -"
+    # The same for @persist's snapshots (btrbk in backups.nix). Created
+    # whether or not impermanence is on; empty and harmless without it.
+    "d /mnt/btrfs-root/.snapshots/persist 0700 root root - -"
   ];
 }
