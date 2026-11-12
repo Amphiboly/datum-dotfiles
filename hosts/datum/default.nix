@@ -34,6 +34,7 @@
     # Core system modules
     ../../modules/nixos/secrets.nix
     ../../modules/nixos/sudo.nix
+    ../../modules/nixos/journald.nix
     ../../modules/nixos/boot.nix
     ../../modules/nixos/secure-boot.nix
     ../../modules/nixos/firmware.nix
