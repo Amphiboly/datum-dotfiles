@@ -134,23 +134,36 @@
     #         hosts/datum/disko-config.nix
     #     That mounts the new system at /mnt.
     #  3. Age key: paste it from 1Password into
-    #     /mnt/var/lib/sops/age/keys.txt (root, 0600). Without it the first
-    #     activation can't decrypt rik-password-hash or root-password-hash,
-    #     and both accounts are locked (users/rik.nix, users/root.nix).
-    #  4. System state from the nightly backup (backups.nix, tag "system"):
-    #     at least /var/lib/sbctl, BEFORE installing: lanzaboote signs the
-    #     boot files during nixos-install and fails without the keys.
-    #     Decrypt what's needed with
-    #       SOPS_AGE_KEY_FILE=/mnt/var/lib/sops/age/keys.txt \
+    #     /mnt/persist/var/lib/sops/age/keys.txt (root, 0600). Without it
+    #     no boot can decrypt rik-password-hash or root-password-hash, and
+    #     both accounts are locked (users/rik.nix, users/root.nix).
+    #  4. System state from the nightly backup (backups.nix, tag "system")
+    #     into /mnt/persist (impermanence.nix): everything that survives
+    #     the root wipe. Decrypt what's needed with
+    #       SOPS_AGE_KEY_FILE=/mnt/persist/var/lib/sops/age/keys.txt \
     #         nix shell nixpkgs#sops -c sops -d secrets.yaml
     #     mount //5cd-rack.local/n/datum with the CIFS credentials, then
     #       nix shell nixpkgs#rustic -c rustic -r <share>/restic-repo \
     #         snapshots --filter-tags system
-    #       ... restore <id>:/var/lib/sbctl /mnt/var/lib/sbctl
-    #     and the same for the other paths in systemStatePaths, each to
-    #     its place under /mnt.
-    #     No backup? `sbctl create-keys` into /mnt/var/lib/sbctl instead,
-    #     and enroll them after step 6 (secure-boot.nix, steps 1-3).
+    #       ... restore <id>:/persist /mnt/persist
+    #     Snapshots from before 2026-11-11 hold the same files at their
+    #     live paths instead (restore <id>:/var/lib/sbctl
+    #     /mnt/persist/var/lib/sbctl, and so on for each path in
+    #     systemStatePaths). Then, BEFORE installing, copy three of them to
+    #     their live paths as well:
+    #       for d in sops sbctl nixos; do
+    #         mkdir -p /mnt/var/lib && cp -a /mnt/persist/var/lib/$d /mnt/var/lib/
+    #       done
+    #     nixos-install runs activation in a chroot without preservation's
+    #     mounts: sops reads the age key, the users script the uid/gid map,
+    #     and lanzaboote signs the boot files with the sbctl keys, failing
+    #     without them. These copies are on @, so the first boot's wipe
+    #     moves them to old_roots/; from then on /persist serves them.
+    #     No backup? `sbctl create-keys` into /mnt/persist/var/lib/sbctl
+    #     (and the copy above), and enroll them after step 6
+    #     (secure-boot.nix, steps 1-3). Also create a machine-id, or every
+    #     boot gets a new one:
+    #       systemd-machine-id-setup --root=/mnt/persist
     #  5. nixos-install --flake .#datum --no-root-passwd. root's password
     #     comes from sops (users/root.nix); a password typed at the prompt
     #     would be replaced at the next activation anyway.

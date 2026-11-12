@@ -17,6 +17,19 @@
   `tries=0` matters, see the comment there. After a BIOS or dbx update the
   PIN may stop working: use the passphrase once, then re-enroll (command in
   the disko header).
+- Impermanence (since 2026-11-11): the root subvolume `@` is wiped at
+  every boot. An initrd unit moves it to `/mnt/btrfs-root/old_roots/`
+  (kept 14 days) and creates an empty one. What survives is in
+  `/persist` (`@persist`), bind-mounted or symlinked back into place by
+  nix-community/preservation, configured in `modules/nixos/impermanence.nix`;
+  that is the only module that knows about `/persist`. `/nix`, `/home`
+  and `~/Dropbox` are separate subvolumes and untouched. So: state written
+  anywhere else on `/` (a key from `ssh-keygen`, a file under `/var/lib`,
+  root's dotfiles) is gone after the next reboot. Make it declarative, put
+  secrets in sops, or add the path to `impermanence.nix`. A switch that
+  adds a mount whose device or subvolume doesn't exist yet drops the
+  running system into emergency mode; for anything like that, use
+  `nh os boot .` and a reboot. History and rationale: `IMPERMANENCE-PLAN.md`.
 - Boot: Secure Boot ON, via lanzaboote (`modules/nixos/secure-boot.nix`)
   with our own sbctl keys in `/var/lib/sbctl` plus Microsoft's. Lanzaboote
   replaces systemd-boot (`boot.loader.systemd-boot.enable` is mkForced
