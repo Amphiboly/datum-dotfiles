@@ -462,10 +462,15 @@ default_maximize_to_edges = true
 [[window_rule]]
 match.layout = "stacking"
 title_bar = "on"
+
+# Size new kitty windows when in a stacking layout.
+# No match.layout here: opening rules (default_*) are evaluated before the
+# window has a workspace, and a window without one never matches a layout
+# selector (docs/user/window-rules.md). Stacking opens windows floating, so
+# the size takes effect there; in tiled layouts kitty still tiles, and the
+# size is only remembered for the first time it is floated.
 [[window_rule]]
 match.app_id = "^kitty$"
-match.layout = "stacking"
-default_floating = true
 default_floating_size_px = { width = 860, height = 840 }
 
 # Keep compositor shortcuts available while a virtual machine window is focused.
