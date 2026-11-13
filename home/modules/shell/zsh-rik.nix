@@ -63,7 +63,22 @@
          fi
       }
 
-      # 2. Fastfetch environment detection logo engine
+      # 2. Workspace Project Aware Helix launch: with no arguments, open
+      #    helix's file picker at the git root (or the nearest flake.nix
+      #    below here); with arguments, plain hx.
+      hx() {
+          local project_root
+          project_root=$(git rev-parse --show-toplevel 2>/dev/null || \
+                         find . -maxdepth 5 -name "flake.nix" -exec dirname {} \; 2>/dev/null | head -n 1)
+
+          if [ -n "$project_root" ] && [ $# -eq 0 ]; then
+              (cd "$project_root" && command hx .)
+          else
+              command hx "$@"
+          fi
+      }
+
+      # 3. Fastfetch environment detection logo engine
       fastfetch_dynamic() {
          export FF_LOGO="${../../../assets/NixOS.png}"
          command fastfetch --logo "$FF_LOGO" --logo-type kitty --logo-width 27 --logo-height 12 "$@"

@@ -21,6 +21,8 @@
     ./home/modules/terminal/kitty-dev-session.nix
     ./home/modules/editors/vim.nix
     ./home/modules/editors/vim-rik.nix
+    ./home/modules/editors/helix.nix
+    ./home/modules/editors/helix-rik.nix
     ./home/modules/browsers/firefox.nix
     ./home/modules/browsers/firefox-rik.nix
     ./home/modules/browsers/zen.nix
