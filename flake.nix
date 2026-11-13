@@ -211,6 +211,9 @@
       # `nix build .#context-lmtx` -- see pkgs/context-lmtx for what this is
       # and how to update its pin when upstream ships a new ConTeXt.
       context-lmtx = pkgs.callPackage ./pkgs/context-lmtx {};
+      # `nix build .#pandoc-bin` -- upstream's static pandoc release, newer
+      # than nixpkgs'; see pkgs/pandoc-bin.
+      pandoc-bin = pkgs.callPackage ./pkgs/pandoc-bin {};
     };
 
     # `nix fmt` / `nix fmt -- --check .` -- reformats the whole tree with

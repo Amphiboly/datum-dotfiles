@@ -7,7 +7,9 @@
     lilypond-unstable-with-fonts
     mdbook
     naps2
-    pandoc
+    # Upstream's static release; nixpkgs' pandoc lags (Stackage pin) and
+    # the typst writer fix wanted here landed in 3.12. See ../../../pkgs/pandoc-bin.
+    (pkgs.callPackage ../../../pkgs/pandoc-bin {})
     # Real ConTeXt LMTX, fetched from upstream at build time -- see
     # ../../../pkgs/context-lmtx for why this replaces texlive.context
     # (frozen to TeX Live's yearly release) and how to update it.
