@@ -465,6 +465,7 @@ title_bar = "on"
 [[window_rule]]
 match.app_id = "^kitty$"
 match.layout = "stacking"
+default_floating = true
 default_floating_size_px = { width = 860, height = 840 }
 
 # Keep compositor shortcuts available while a virtual machine window is focused.
