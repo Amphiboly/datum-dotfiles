@@ -74,7 +74,8 @@
     ../../modules/nixos/desktop/noctalia-greeter.nix
     ../../modules/nixos/desktop/umbriel.nix
     ../../modules/nixos/desktop/shared-services.nix
-    ../../modules/nixos/desktop/thunar.nix
+    # File manager: Strata on trial since 2026-11-14; thunar.nix before.
+    ../../modules/nixos/desktop/strata.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
     # For rebuild-free per-user switches, see flake.nix's homeConfigurations.
