@@ -20,7 +20,7 @@ order = [ "default" ]
     radius = 4
     scale = 1.0000000074505806
     shadow = false
-    start = [ "launcher", "group:g3", "spacer_5", "workspaces", "taskbar", "spacer_4", "group:g2", "group:g1" ]
+    start = [ "launcher", "group:g3", "spacer_5", "workspaces", "taskbar", "spacer_4", "group:g2", "group:g1", "screenshot" ]
     thickness = 25
 
         [bar.default.dead_zone]
@@ -291,6 +291,7 @@ enabled = [
 
 [shell]
 corner_radius_scale = 0.25
+font_family = "Lilex Nerd Font Medium"
 polkit_agent = true
 settings_show_advanced = true
 settings_window_translucent = true
@@ -321,12 +322,15 @@ telemetry_enabled = true
     enabled = true
     size = 4
 
+[system.monitor]
+disk_free_activity_threshold = 79
+
 [theme]
 builtin = "Catppuccin"
 community_palette = "Noctalia legacy"
 mode = "light"
 source = "wallpaper"
-wallpaper_scheme = "vibrant"
+wallpaper_scheme = "m3-monochrome"
 
     [theme.templates]
     builtin_ids = [ "btop", "helix", "kcolorscheme", "kitty", "qt", "starship", "umbriel" ]
@@ -345,15 +349,16 @@ wallpaper_scheme = "vibrant"
 
 [wallpaper]
 directory = "/home/rik/Pictures/wallpapers"
+fill_mode = "stretch"
 
     [wallpaper.default]
-    path = "/home/rik/Pictures/wallpapers/cities-05.jpg"
+    path = "/home/rik/Pictures/wallpapers/stars-as-minimal.jpg"
 
     [wallpaper.last]
-    path = "/home/rik/Pictures/wallpapers/cities-05.jpg"
+    path = "/home/rik/Pictures/wallpapers/stars-as-minimal.jpg"
 
     [wallpaper.monitors.eDP-1]
-    path = "/home/rik/Pictures/wallpapers/cities-05.jpg"
+    path = "/home/rik/Pictures/wallpapers/stars-as-minimal.jpg"
 
 [weather]
 unit = "imperial"
