@@ -1,8 +1,8 @@
 # home/modules/unix-tools/ziggity.nix
 #
 # ziggity (github:simoarpe/ziggity): a lazygit-style terminal UI for git,
-# written in Zig, on trial as gitui's replacement (gitui.nix stays until
-# that is decided). Over gitui it adds interactive rebase, the commit graph,
+# written in Zig. It replaced gitui (trial 2026-11-15, gitui removed
+# 2026-11-16). Over gitui it adds interactive rebase, the commit graph,
 # range selection, custom patches, undo via the reflog, worktrees, and an
 # optional AI hook for commit messages. It drives the `git` on PATH (no
 # libgit2), so ssh goes through SSH_AUTH_SOCK, here 1Password's agent. Not
@@ -14,7 +14,7 @@
 # the next login. Every setting, key and colour: docs/configuration.md
 # upstream.
 #
-# Colours are terminal palette indices, so like gitui it already follows
+# Colours are terminal palette indices, so it already follows
 # kitty's palette, i.e. Noctalia's. Keys are vi-style out of the box
 # (hjkl, ? for help), so nothing is remapped.
 {

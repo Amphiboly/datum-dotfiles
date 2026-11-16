@@ -4,7 +4,6 @@
     ./home/modules/theme/fonts.nix
     ./home/modules/unix-tools/git.nix
     ./home/modules/unix-tools/git-identity-rik.nix
-    ./home/modules/unix-tools/gitui.nix
     ./home/modules/unix-tools/ziggity.nix
     ./home/modules/unix-tools/cli-utils.nix
     ./home/modules/unix-tools/fastfetch-rik.nix
