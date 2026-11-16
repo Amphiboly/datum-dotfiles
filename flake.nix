@@ -222,6 +222,8 @@
       # `nix build .#pandoc-bin` -- upstream's static pandoc release, newer
       # than nixpkgs'; see pkgs/pandoc-bin.
       pandoc-bin = pkgs.callPackage ./pkgs/pandoc-bin {};
+      # `nix build .#ziggity` -- git TUI built from source; see pkgs/ziggity.
+      ziggity = pkgs.callPackage ./pkgs/ziggity {};
     };
 
     # `nix fmt` / `nix fmt -- --check .` -- reformats the whole tree with
