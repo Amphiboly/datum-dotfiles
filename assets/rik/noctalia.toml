@@ -12,32 +12,19 @@ order = [ "default" ]
     capsule_fill = "on_primary"
     capsule_foreground = "secondary"
     capsule_radius = 4
-    center = [ "clock_2", "weather" ]
+    center = [ "clock", "weather" ]
     contact_shadow = true
-    end = [ "group:g5", "spacer_7", "media", "tray", "group:g4", "spacer_6", "session" ]
+    end = [ "bar_2", "group:g5", "screenshot", "taskbar", "tray", "group:g4", "group:g1", "spacer_6", "session" ]
     margin_edge = 6
     margin_ends = 10
     radius = 4
     scale = 1.0000000074505806
     shadow = false
-    start = [ "launcher", "group:g3", "spacer_5", "workspaces", "taskbar", "spacer_4", "group:g2", "group:g1", "screenshot" ]
+    start = [ "launcher", "group:g3", "spacer_5", "workspaces", "spacer_4", "bar", "spacer_8", "menubar" ]
     thickness = 25
 
         [bar.default.dead_zone]
         click_through = true
-
-        [[bar.default.capsule_group]]
-        accordion = false
-        accordion_direction = "end"
-        border = "tertiary"
-        border_width = 0.5
-        enabled = true
-        fill = "on_primary"
-        foreground = "secondary"
-        id = "g2"
-        members = [ "nix_monitor_3", "status_3" ]
-        opacity = 1.0
-        padding = 6.0
 
         [[bar.default.capsule_group]]
         accordion = false
@@ -73,10 +60,11 @@ order = [ "default" ]
         enabled = true
         fill = "on_primary"
         foreground = "secondary"
-        id = "g1"
-        members = [ "bar_2", "bar" ]
+        id = "g5"
+        members = [ "notes" ]
         opacity = 1.0
         padding = 6.0
+        radius = 4.0
 
         [[bar.default.capsule_group]]
         accordion = false
@@ -86,8 +74,8 @@ order = [ "default" ]
         enabled = true
         fill = "on_primary"
         foreground = "secondary"
-        id = "g5"
-        members = [ "notes" ]
+        id = "g1"
+        members = [ "nix_monitor_3", "status_3" ]
         opacity = 1.0
         padding = 6.0
         radius = 4.0
@@ -286,7 +274,8 @@ enabled = [
     "noctalia/umbriel-companion",
     "pulser/hover-widgets",
     "tordex/xwayland",
-    "noctalia/notes"
+    "noctalia/notes",
+    "amancode22/global-menu"
 ]
 
 [shell]
@@ -367,16 +356,26 @@ unit = "imperial"
 type = "noctalia/umbriel-companion:bar"
 
 [widget.bar_2]
-hide_on_wayland = false
+hide_on_wayland = true
 indicate_focused_only = false
 type = "tordex/xwayland:bar"
 
+[widget.battery]
+show_label = false
+
+[widget.brightness]
+show_label = false
+
 [widget.clock]
+format = "{:%Y/%m/%d %H:%M}"
 scale = 1.1500000000000001
 
 [widget.clock_2]
-scale = 1.1500000000000001
+scale = 1.1499999999999999
 type = "pulser/hover-widgets:clock"
+
+[widget.menubar]
+type = "amancode22/global-menu:menubar"
 
 [widget.network]
 show_label = false
@@ -388,6 +387,7 @@ type = "avivbintangaringga/nix-monitor:nix-monitor"
 type = "avivbintangaringga/nix-monitor:nix-monitor"
 
 [widget.nix_monitor_3]
+show_text = false
 type = "avivbintangaringga/nix-monitor:nix-monitor"
 
 [widget.notes]
@@ -411,6 +411,9 @@ type = "spacer"
 [widget.spacer_7]
 type = "spacer"
 
+[widget.spacer_8]
+type = "spacer"
+
 [widget.status]
 type = "mindnbytes/nix-status:status"
 
@@ -422,3 +425,9 @@ type = "mindnbytes/nix-status:status"
 
 [widget.taskbar]
 icon_scale = 1.1000000000000001
+
+[widget.volume]
+show_label = false
+
+[widget.weather]
+show_condition = false
