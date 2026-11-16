@@ -157,6 +157,26 @@
         "type": "github"
       }
     },
+    "luciole": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794867717,
+        "narHash": "sha256-B11DW5QctDApM3+iCyY0NGENFqiI6JwiBVN/h7pNR9I=",
+        "owner": "noctalia-dev",
+        "repo": "luciole",
+        "rev": "734959fe40b3d21a640714af5da1b5f2261e9dbb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "noctalia-dev",
+        "repo": "luciole",
+        "type": "github"
+      }
+    },
     "nix-index-database": {
       "inputs": {
         "nixpkgs": [
@@ -356,6 +376,7 @@
         "gaze": "gaze",
         "home-manager": "home-manager",
         "lanzaboote": "lanzaboote",
+        "luciole": "luciole",
         "nix-index-database": "nix-index-database",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",

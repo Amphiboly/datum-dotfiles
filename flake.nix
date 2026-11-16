@@ -74,6 +74,13 @@
       url = "github:lgse/strata";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # Luciole, Noctalia's own file manager, on trial alongside Strata since
+    # 2026-11-16 (modules/nixos/desktop/luciole.nix). Not in nixpkgs and no
+    # binary cache either, so the same reasoning as strata: follow ours.
+    luciole = {
+      url = "github:noctalia-dev/luciole";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Impermanence (IMPERMANENCE-PLAN.md, modules/nixos/impermanence.nix):
     # bind mounts and symlinks from /persist. It has no inputs to follow.
     preservation.url = "github:nix-community/preservation";

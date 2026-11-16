@@ -76,6 +76,8 @@
     ../../modules/nixos/desktop/shared-services.nix
     # File manager: Strata on trial since 2026-11-14; thunar.nix before.
     ../../modules/nixos/desktop/strata.nix
+    # Luciole (Noctalia's file manager) on trial alongside since 2026-11-16.
+    ../../modules/nixos/desktop/luciole.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
     # For rebuild-free per-user switches, see flake.nix's homeConfigurations.
