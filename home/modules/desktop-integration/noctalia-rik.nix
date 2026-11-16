@@ -76,9 +76,21 @@
   # which aren't on the user PATH the service inherits, so the service
   # starts noctalia with them prepended. Hooks run as children of noctalia
   # and inherit its PATH.
+  #
+  # Plugin daemons are children too. The Global Menu community plugin
+  # (amancode22/global-menu) runs a bare `python3 globalmenu_daemon.py`
+  # that imports dbus, gi and treelib, so the python here carries them;
+  # without them the daemon dies at import and noctalia respawns it every
+  # ~24 s with no widget ever showing. wtype is its optional keystroke
+  # backend for shortcut menus. Umbriel provides the
+  # wlr-foreign-toplevel protocol it tracks windows with.
   systemd.user.services.noctalia.Service.ExecStart = lib.mkForce (
     toString (pkgs.writeShellScript "noctalia-with-hook-tools" ''
-      export PATH=${lib.makeBinPath [pkgs.python3 pkgs.zip]}''${PATH:+:$PATH}
+      export PATH=${lib.makeBinPath [
+        (pkgs.python3.withPackages (ps: [ps.dbus-python ps.pygobject3 ps.treelib]))
+        pkgs.zip
+        pkgs.wtype
+      ]}''${PATH:+:$PATH}
       exec ${lib.getExe config.programs.noctalia.package} "$@"
     '')
   );
