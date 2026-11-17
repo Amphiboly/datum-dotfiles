@@ -20,12 +20,18 @@
 # - "Show in folder" (org.freedesktop.FileManager1, what browsers and GTK
 #   apps call): its dev.noctalia.luciole.FileManager1.service. Nothing
 #   else here claims the name since Strata went.
-# - Open/Save dialogs: not yet. It ships a FileChooser portal backend,
-#   and xdg-desktop-portal-umbriel's packaged umbriel-portals.conf would
-#   select it, but shared-services.nix sets xdg.portal.config.umbriel,
-#   which generates our own umbriel-portals.conf in its place, and that
-#   sends FileChooser to gtk. To switch, add
-#   "org.freedesktop.impl.portal.FileChooser" = ["luciole" "gtk"] there.
+# - Open/Save dialogs (since 2026-11-16): its FileChooser portal
+#   backend, set below. xdg-desktop-portal-umbriel's packaged
+#   umbriel-portals.conf would select it by itself, but shared-services.nix
+#   sets xdg.portal.config.umbriel, which generates our own
+#   umbriel-portals.conf in its place, so the choice has to be made here
+#   too. It merges with shared-services.nix's Secret entry. gtk stays
+#   listed as the fallback if luciole.portal is missing; per upstream, an
+#   installed backend that fails does not fall back. No extraPortals
+#   entry needed: nixpkgs links every package's share/xdg-desktop-portal
+#   into system-path, so luciole.portal is found from systemPackages.
+#   The portal frontend reads both at startup: after a switch that changes
+#   them, `systemctl --user restart xdg-desktop-portal` (or log in again).
 #
 # Thumbnails: Luciole decodes them itself in sandboxed helpers, not
 # through tumbler, so the tumbler Excludes for ~/DropboxCloud
@@ -42,4 +48,9 @@
   imports = [inputs.luciole.nixosModules.default];
 
   programs.luciole.enable = true;
+
+  xdg.portal.config.umbriel."org.freedesktop.impl.portal.FileChooser" = [
+    "luciole"
+    "gtk"
+  ];
 }
