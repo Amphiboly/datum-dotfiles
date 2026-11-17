@@ -12,10 +12,10 @@ _: {
         # menus, NoDisplay). Firefox second, for "Open With". Until now
         # PDFs fell through to LibreOffice Draw.
         "application/pdf" = ["org.pwmt.zathura-pdf-mupdf.desktop" "firefox.desktop"];
-        # Strata (modules/nixos/desktop/strata.nix), on trial since
-        # 2026-11-14; thunar.desktop before. Without an entry, folders go
+        # Luciole (modules/nixos/desktop/luciole.nix) since 2026-11-16;
+        # Strata and thunar.desktop before. Without an entry, folders go
         # to kitty-open.desktop, which claims inode/directory itself.
-        "inode/directory" = ["io.github.lgse.Strata.desktop"];
+        "inode/directory" = ["dev.noctalia.luciole.desktop"];
       };
     };
     terminal-exec = {

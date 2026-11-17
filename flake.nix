@@ -66,17 +66,10 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # Strata, the GUI file manager on trial since 2026-11-14
-    # (modules/nixos/desktop/strata.nix). Not in nixpkgs and no binary
-    # cache, so it builds here whatever it follows; following ours spares
-    # a second nixpkgs. Rust edition 2024, like gaze: fine on unstable.
-    strata = {
-      url = "github:lgse/strata";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # Luciole, Noctalia's own file manager, on trial alongside Strata since
+    # Luciole, Noctalia's own file manager, the GUI file manager since
     # 2026-11-16 (modules/nixos/desktop/luciole.nix). Not in nixpkgs and no
-    # binary cache either, so the same reasoning as strata: follow ours.
+    # binary cache, so it builds here whatever it follows; following ours
+    # spares a second nixpkgs.
     luciole = {
       url = "github:noctalia-dev/luciole";
       inputs.nixpkgs.follows = "nixpkgs";

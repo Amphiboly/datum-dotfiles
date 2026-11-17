@@ -386,7 +386,6 @@
         "nur": "nur",
         "preservation": "preservation",
         "sops-nix": "sops-nix",
-        "strata": "strata",
         "umbriel": "umbriel",
         "zen-browser": "zen-browser"
       }
@@ -429,26 +428,6 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
-        "type": "github"
-      }
-    },
-    "strata": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1794845756,
-        "narHash": "sha256-d6avzOhMLpUdMnq2jYwzRj0uhtf62VAOCzMwUWovgFM=",
-        "owner": "lgse",
-        "repo": "strata",
-        "rev": "d4679c61d31c58bc3c8af3d6241d8514b6d0e9c1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "lgse",
-        "repo": "strata",
         "type": "github"
       }
     },

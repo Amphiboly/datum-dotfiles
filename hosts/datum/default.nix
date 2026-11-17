@@ -74,9 +74,8 @@
     ../../modules/nixos/desktop/noctalia-greeter.nix
     ../../modules/nixos/desktop/umbriel.nix
     ../../modules/nixos/desktop/shared-services.nix
-    # File manager: Strata on trial since 2026-11-14; thunar.nix before.
-    ../../modules/nixos/desktop/strata.nix
-    # Luciole (Noctalia's file manager) on trial alongside since 2026-11-16.
+    # File manager: Luciole (Noctalia's) since 2026-11-16. Strata was on
+    # trial 2026-11-14..16 (git history); thunar.nix before that.
     ../../modules/nixos/desktop/luciole.nix
 
     # Home Manager: system-managed activation (requires a full rebuild).
