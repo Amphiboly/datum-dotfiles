@@ -1,6 +1,7 @@
 # home/modules/editors/helix.nix
 #
-# Enablement only: LSP/formatter wiring so nix/typst/markdown work for anyone.
+# Enablement only: LSP/formatter wiring so nix/typst/markdown and TeX
+# (ConTeXt, LaTeX, BibTeX via digestif) work for anyone.
 # See helix-rik.nix for theme, keybindings and the flake nixd evaluates.
 # Helix is not the default editor; $EDITOR is vim (vim-rik.nix).
 #
@@ -36,6 +37,28 @@
             args = ["--parser" "markdown"];
           };
         }
+        # ConTeXt: Helix has no language for it, so .mkiv/.mkvi/.mkxl/.mklx
+        # had none at all. Highlighting borrows the LaTeX grammar (queries
+        # inherited below); digestif is the server, as in vim.nix, and is
+        # told it's ConTeXt by the language name. .tex stays LaTeX here
+        # (vim instead defaults it to ConTeXt via g:tex_flavor).
+        {
+          name = "context";
+          scope = "source.context";
+          file-types = ["mkiv" "mkvi" "mkxl" "mklx" "mkii"];
+          comment-token = "%";
+          grammar = "latex";
+          language-servers = ["digestif"];
+        }
+        # digestif instead of the default texlab, which isn't installed.
+        {
+          name = "latex";
+          language-servers = ["digestif"];
+        }
+        {
+          name = "bibtex";
+          language-servers = ["digestif"];
+        }
       ];
 
       language-server = {
@@ -48,7 +71,15 @@
           command = lib.getExe pkgs.marksman;
           args = ["server"];
         };
+        digestif.command = "${pkgs.lua54Packages.digestif}/bin/digestif";
       };
     };
   };
+
+  # Queries are looked up by language name, so "context" needs its own,
+  # here just LaTeX's.
+  xdg.configFile = lib.genAttrs [
+    "helix/runtime/queries/context/highlights.scm"
+    "helix/runtime/queries/context/textobjects.scm"
+  ] (_: {text = "; inherits: latex\n";});
 }
