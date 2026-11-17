@@ -19,7 +19,8 @@
 # filesystem::remote, and glib's list of remote types (nfs, nfs4, cifs,
 # smb, smb2, fuse.sshfs) lacks fuse.rclone, although Luciole's own
 # listing code counts all FUSE as remote. No per-path exclude either,
-# unlike tumbler. To be reported upstream; back to "local" once fixed.
+# unlike tumbler. Reported as noctalia-dev/luciole#18; back to "local"
+# once fixed.
 {pkgs, ...}: {
   xdg.configFile."luciole/config.toml".source =
     (pkgs.formats.toml {}).generate "luciole-config.toml" {
