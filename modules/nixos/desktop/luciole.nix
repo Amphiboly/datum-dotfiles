@@ -35,10 +35,10 @@
 #
 # Thumbnails: Luciole decodes them itself in sandboxed helpers, not
 # through tumbler, so the tumbler Excludes for ~/DropboxCloud
-# (rclone-dropbox.nix) don't apply, and its "local" thumbnail policy
-# takes the rclone FUSE mount for local (it asks GIO, whose remote list
-# lacks fuse.rclone). rik's config therefore turns thumbnails off:
-# home/modules/desktop-integration/luciole-rik.nix.
+# (rclone-dropbox.nix) don't apply. Its default "local" policy skips the
+# rclone FUSE mount since noctalia-dev/luciole#18 (fixed 2026-11-17 in
+# 695a6f3: FUSE mounts with no backing disk count as remote). Before
+# that, rik's config turned thumbnails off altogether.
 #
 # Colours: Noctalia has a built-in "luciole" template (renders
 # ~/.config/luciole/colors.toml, which Luciole reloads live), added on
