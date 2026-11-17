@@ -27,12 +27,12 @@
 #   sends FileChooser to gtk. To switch, add
 #   "org.freedesktop.impl.portal.FileChooser" = ["luciole" "gtk"] there.
 #
-# Not yet checked: thumbnails. Luciole decodes them itself in sandboxed
-# helpers, not through tumbler, so the tumbler Excludes for ~/DropboxCloud
-# (rclone-dropbox.nix) don't apply. Its default thumbnail_policy "local"
-# skips mounted network shares; whether it counts the rclone FUSE mount
-# as one is unverified. If browsing the UniFi video folder there pulls
-# files over rclone, that's the setting to look at.
+# Thumbnails: Luciole decodes them itself in sandboxed helpers, not
+# through tumbler, so the tumbler Excludes for ~/DropboxCloud
+# (rclone-dropbox.nix) don't apply, and its "local" thumbnail policy
+# takes the rclone FUSE mount for local (it asks GIO, whose remote list
+# lacks fuse.rclone). rik's config therefore turns thumbnails off:
+# home/modules/desktop-integration/luciole-rik.nix.
 #
 # Colours: Noctalia has a built-in "luciole" template (renders
 # ~/.config/luciole/colors.toml, which Luciole reloads live), added on
