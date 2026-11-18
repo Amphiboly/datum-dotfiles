@@ -170,5 +170,5 @@ fi
 echo -e "\nAll systems fully deployed and verified operational!"
 echo    " Remember to commit and push the changes!"
 if [[ "$PAUSE" -eq 1 ]]; then
-    read -p "Press [Enter] to continue..." </dev/tty
+    read -rp "Press [Enter] to continue..." </dev/tty
 fi
