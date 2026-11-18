@@ -2,7 +2,8 @@
 # File: deploy.sh
 # 2026-11-18: nh 4.5: optional activation preview (dry-activate) with a
 #   switch/boot choice; nvd dropped in favour of nh's own build diff;
-#   "dry-run" step renamed, since it's a real build.
+#   "dry-run" step renamed, since it's a real build. Switch uses ./result
+#   (no second evaluation). Reboot check at the end.
 # 2026-09-22: Removed the nostrum rsync mirror step -- Syncthing now keeps
 #   ~/Projects (this repo included) current on nostrum on its own.
 # 2026-09-12: Added optional fwupd firmware update check/apply step
@@ -109,9 +110,6 @@ fi
 # the system closure, so it's activated here too.
 echo "Activating the new generation ($mode)..."
 nh os "$mode" --diff never ./result
-if [[ "$mode" == boot ]]; then
-    echo "New generation is the boot default; it takes effect after a reboot."
-fi
 
 # ./result is left alone until the switch above has actually succeeded. It's
 # the only GC root for whatever this dry-run just built (freshly-fetched
@@ -169,6 +167,31 @@ read -rp "Purge obsolete configurations? (y/N): " clean_old </dev/tty
 if [[ "$clean_old" =~ ^[Yy]$ ]]; then
     echo "Garbage collecting loose profiles and historical links..."
     nh clean all --keep 5
+fi
+
+# =========================================================================
+# 7. Reboot Check
+# =========================================================================
+# Kernel, initrd and kernel modules only take effect at boot, so a switch
+# can leave them pending. Compare what's booted with the system profile,
+# which is the boot default after either switch or boot. These are the
+# same three paths nixpkgs' system.autoUpgrade compares for allowReboot.
+# It runs last so the note doesn't scroll away under the firmware and
+# cleanup output. Here, an initrd change matters more than usual: the
+# initrd holds the root wipe (impermanence) and the TPM2 unlock.
+if [[ "$mode" == boot ]]; then
+    echo -e "\nREBOOT NEEDED: the new generation is the boot default but isn't active yet."
+else
+    pending=()
+    for f in kernel initrd kernel-modules; do
+        if [[ "$(readlink -f "/run/booted-system/$f")" != \
+              "$(readlink -f "/nix/var/nix/profiles/system/$f")" ]]; then
+            pending+=("$f")
+        fi
+    done
+    if (( ${#pending[@]} )); then
+        echo -e "\nREBOOT PENDING: changed since boot: ${pending[*]}"
+    fi
 fi
 
 echo -e "\nAll systems fully deployed and verified operational!"
