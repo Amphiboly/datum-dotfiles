@@ -102,9 +102,13 @@ fi
 # Deliberately no --continue-on-activation-failure: a failed activation
 # should stop here, not leave a half-activated generation as the boot
 # default.
+# ./result, not `.`: activate the exact store path that was built, diffed
+# and (maybe) previewed above, instead of evaluating the flake again (about
+# 25 s) and picking up any edit made since the build. Edited the config
+# after the build? Rerun the script. rik's Home Manager config is part of
+# the system closure, so it's activated here too.
 echo "Activating the new generation ($mode)..."
-# This single command safely compiles your system and both user profiles simultaneously!
-nh os "$mode" --diff never .
+nh os "$mode" --diff never ./result
 if [[ "$mode" == boot ]]; then
     echo "New generation is the boot default; it takes effect after a reboot."
 fi
