@@ -9,6 +9,7 @@
     fd
     jq
     ripgrep
+    shellcheck
     yazi
 
     # Nix utilities
