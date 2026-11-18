@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # File: deploy.sh
+# 2026-11-18: nh 4.5: optional activation preview (dry-activate) with a
+#   switch/boot choice; nvd dropped in favour of nh's own build diff;
+#   "dry-run" step renamed, since it's a real build.
 # 2026-09-22: Removed the nostrum rsync mirror step -- Syncthing now keeps
 #   ~/Projects (this repo included) current on nostrum on its own.
 # 2026-09-12: Added optional fwupd firmware update check/apply step
@@ -42,16 +45,21 @@ if [[ "$check_updates" =~ ^[Yy]$ ]]; then
 fi
 
 # =========================================================================
-# 2. Dry-Run Environment Mapping
+# 2. Build and Diff
 # =========================================================================
-echo "Generating dry-run system environment preview mapping..."
+echo "Building the new system generation..."
 # --keep-going: when one derivation fails, still build everything that
 # doesn't depend on it, so those land in the store and the next run only
 # redoes the broken part. The system itself still can't be built until the
 # failure is fixed, so the script stops here either way.
-# -o ./result: nh 4.4.2 does write ./result by default, but its --help says
-# the default is a temp dir; spell it out, since nvd below and the rm after
-# the switch both depend on this exact path.
+# -o ./result: nh's default out-link is a temp dir. The preview in step 3
+# and the rm after the switch both need this exact path, and it's the GC
+# root for the build until the switch registers the generation.
+# Not `nh os build --dry`: that only lists what would be built, and nothing
+# after this step would have a ./result to work on.
+#
+# nh prints its package diff against the running system (dix) once the
+# build finishes; the later steps pass --diff never so it isn't repeated.
 #
 # If it fails after an update, restore flake.lock, as the nightly upgrade
 # does: otherwise the next deploy rebuilds the same broken inputs even when
@@ -60,26 +68,46 @@ echo "Generating dry-run system environment preview mapping..."
 if ! nh os build --keep-going -o ./result; then
     if [[ -n "$lock_backup" ]]; then
         cp "$lock_backup" flake.lock
-        echo "Dry run failed; flake.lock restored to its pre-update state."
+        echo "Build failed; flake.lock restored to its pre-update state."
     fi
     exit 1
 fi
 
-if command -v nvd &> /dev/null; then
-    echo -e "\n📋 TEXT-BASED UPGRADE PROFILE DIFF BREAKDOWN:"
-    echo "--------------------------------------------------"
-    nvd diff /run/current-system ./result
-    echo -e "--------------------------------------------------\n"
-else
-    echo "⚠️ Warning: 'nvd' package not found in paths. Skipping diff tables."
+# =========================================================================
+# 3. Preview Activation (optional)
+# =========================================================================
+# dry-activate runs switch-to-configuration in dry-activate mode on the
+# ./result just built (no re-evaluation): it lists the units a switch would
+# stop, restart, reload and start, and changes nothing. Worth a look when a
+# change touches mounts or filesystems. Under impermanence, switching to a
+# config with a new .mount whose device or subvolume doesn't exist yet drops
+# the running system into emergency mode (see CLAUDE.md); dry-activate won't
+# check the device, but the new .mount shows up under "would start", and
+# then boot is the safe choice.
+mode=switch
+read -rp "Preview activation before switching? (y/N): " preview </dev/tty
+if [[ "$preview" =~ ^[Yy]$ ]]; then
+    nh os dry-activate --diff never ./result
+    read -rp "[s]witch now, [b]oot (activate at next reboot), or [a]bort? (S/b/a): " choice </dev/tty
+    case "$choice" in
+        [Bb]*) mode=boot ;;
+        [Aa]*) echo "Aborted; nothing activated. ./result is kept as a GC root."
+               exit 0 ;;
+    esac
 fi
 
 # =========================================================================
-# 3. Switch Live System Generations Natively via nh
+# 4. Switch (or Stage for Boot) via nh
 # =========================================================================
-echo "Switching live system tracks to new generation..."
+# Deliberately no --continue-on-activation-failure: a failed activation
+# should stop here, not leave a half-activated generation as the boot
+# default.
+echo "Activating the new generation ($mode)..."
 # This single command safely compiles your system and both user profiles simultaneously!
-nh os switch .
+nh os "$mode" --diff never .
+if [[ "$mode" == boot ]]; then
+    echo "New generation is the boot default; it takes effect after a reboot."
+fi
 
 # ./result is left alone until the switch above has actually succeeded. It's
 # the only GC root for whatever this dry-run just built (freshly-fetched
@@ -93,7 +121,7 @@ nh os switch .
 rm -f ./result
 
 # =========================================================================
-# 4. Firmware Update Check (fwupd/LVFS)
+# 5. Firmware Update Check (fwupd/LVFS)
 # =========================================================================
 echo -e "\nFIRMWARE UPDATE CHECK"
 echo "--------------------------------------------------"
@@ -129,7 +157,7 @@ else
 fi
 
 # =========================================================================
-# 5. Storage Profile Management
+# 6. Storage Profile Management
 # =========================================================================
 echo -e "\nSTORAGE CLEANUP SUITE"
 echo "--------------------------------------------------"
