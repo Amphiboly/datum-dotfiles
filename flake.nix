@@ -224,6 +224,9 @@
       pandoc-bin = pkgs.callPackage ./pkgs/pandoc-bin {};
       # `nix build .#ziggity` -- git TUI built from source; see pkgs/ziggity.
       ziggity = pkgs.callPackage ./pkgs/ziggity {};
+      # `nix build .#luciole-scripts` -- Luciole's extra right-click
+      # actions; see pkgs/luciole-scripts.
+      luciole-scripts = pkgs.callPackage ./pkgs/luciole-scripts {};
     };
 
     # `nix fmt` / `nix fmt -- --check .` -- reformats the whole tree with

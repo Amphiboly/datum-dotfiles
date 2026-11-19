@@ -39,6 +39,7 @@
     ./home/modules/productivity/syncthing.nix
     ./home/modules/productivity/syncthing-rik.nix
     ./home/modules/desktop-integration/xdg.nix
+    ./home/modules/desktop-integration/luciole-scripts.nix
     ./home/modules/desktop-integration/onepassword.nix
     ./home/modules/desktop-integration/compose-key.nix
     ./home/modules/desktop-integration/wallpapers.nix
