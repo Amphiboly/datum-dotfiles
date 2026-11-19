@@ -78,10 +78,6 @@ mode and dies looking for `<nixos-config>`.
   starts (Microsoft camera XU, unit 7, selector 6, already in mode 2), so Gaze
   needs no emitter profile and `emitter_enabled` stays off. Details and
   measurements are in `modules/nixos/facial-auth.nix`.
-- History, for this file's older commits: the previous datum hardware (the
-  13-ac, until 2026-10-12) had a built-in camera with broken firmware and ran
-  face auth off an external AVerMedia CAM 313 (`usb:07ca:313a`) with no IR.
-  None of that applies now; see commit c2c5199 if it ever matters.
 
 # Technical Constraints & Guidelines
 
@@ -122,7 +118,6 @@ can load it` as an error. This is a FALSE POSITIVE — it probes FHS paths like
 
 - Avoid multi-file global rewrites in a single command.
 - Validate incrementally with `nix eval` or `nix flake check` before rebuilding.
-- Follow idiomatic module structure using `options`, `config`, and `imports`.
 - Statix and deadnix are installed and should be used. For shell scripts
   (`deploy.sh` and the like), so is shellcheck.
   - Known, accepted statix warning: W20 (repeated `systemd` key) in
