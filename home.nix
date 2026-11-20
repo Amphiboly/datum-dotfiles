@@ -33,6 +33,8 @@
     ./home/modules/productivity/office.nix
     ./home/modules/productivity/document-fonts.nix
     ./home/modules/productivity/thunderbird.nix
+    ./home/modules/chat/iamb.nix
+    ./home/modules/chat/fractal.nix
     ./home/modules/productivity/maestral-service.nix
     ./home/modules/productivity/maestral-service-rik.nix
     ./home/modules/productivity/rclone-dropbox.nix
