@@ -23,8 +23,29 @@ in {
   programs.zen-browser.setAsDefaultBrowser = true;
 
   programs.zen-browser.profiles.default = {
+    # The @import has to stay first. Below it, the interface font: Lilex
+    # at Medium weight like Noctalia (assets/rik/noctalia.toml), but as
+    # the whole family with weight 500 rather than the "Lilex Nerd Font
+    # Medium" face, so bold text gets Lilex's real Bold instead of a
+    # faked one. The weight is inherited from :root, so Zen's own bold
+    # rules still win; menus, panels and form controls take the system
+    # font instead of inheriting, so they get it again, without
+    # !important so a bold default menu item stays bold. Same rules as
+    # Thunderbird's userChrome.css, which is not managed here.
     userChrome = ''
       @import "${noctaliaCss}/zen-userChrome.css";
+
+      * {
+        font-family: "Lilex Nerd Font", sans-serif !important;
+      }
+      :root {
+        font-size: 11pt !important;
+        font-weight: 500 !important;
+      }
+      menupopup, panel, tooltip, menu, menuitem, menulist,
+      button, input, select, textarea {
+        font-weight: 500;
+      }
     '';
     userContent = ''
       @import "${noctaliaCss}/zen-userContent.css";
