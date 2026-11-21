@@ -26,6 +26,16 @@ _: {
     X-GNOME-Autostart-enabled=true
   '';
 
+  # Which keys the SSH agent offers. Without this file it offers only keys in
+  # the Personal/Private vault; the keys were moved to the "1Password" vault
+  # (account "Our Family") on 2026-11-21, and the agent went silently empty
+  # ("The agent has no identities"). The file replaces the default rather than
+  # adding to it, so any vault that holds SSH keys must be listed here.
+  xdg.configFile."1Password/ssh/agent.toml".text = ''
+    [[ssh-keys]]
+    vault = "1Password"
+  '';
+
   # With gcr-ssh-agent switched off system-side, nothing else sets this, so
   # tools that consult SSH_AUTH_SOCK instead of parsing ssh_config find the
   # right agent. `ssh` does not depend on this — IdentityAgent in
