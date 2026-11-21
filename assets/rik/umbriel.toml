@@ -424,6 +424,13 @@ default_position = { x = 20, y = 20, anchor = "bottom_right" }
 # centred. The title is matched exactly: the main window is
 # "<vault> — All Items — 1Password", or "Lock Screen — 1Password" when
 # locked; only the panel is a bare "1Password" (2026-11-08).
+# Known leak (2026-11-21): the main window also opens as a bare "1Password"
+# (Electron sets the vault title once the page loads), so it matches at open
+# and gets pinned and centred too. umbriel applies default_* once and never
+# takes them back, and pinning has no setting that updates while the window
+# is open, so the later title change doesn't undo it. The panel names no
+# parent, so match.is_dialog can't tell the two apart either. Accepted:
+# Mod+P unpins the main window (Mod+T to tile it).
 [[window_rule]]
 match.app_id = "^com[.]onepassword[.]OnePassword$"
 match.title = "^1Password$"
