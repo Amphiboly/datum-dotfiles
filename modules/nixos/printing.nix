@@ -8,6 +8,15 @@
       brlaser # Supports Brother MFC and HL layout frameworks natively
       hplipWithPlugin # Supports HP Color LaserJet print pipelines via proprietary hooks
     ];
+
+    # No cups-browsed (2026-11-22). It runs as root, parses printer
+    # advertisements from the network, and was the way in for the 2024
+    # CUPS remote-code-execution chain (CVE-2024-47176 and friends). Both
+    # printers here are driverless (IPP Everywhere / AirPrint, seen via
+    # Avahi), and cupsd alone turns those into temporary queues when an
+    # application prints. The queues cups-browsed made (implicitclass://)
+    # go with it.
+    browsed.enable = false;
   };
 
   # LOCAL NETWORK DISCOVERY AGENTS (AVAHI / MDNS CONFIGURATIONS)
