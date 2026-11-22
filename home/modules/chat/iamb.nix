@@ -16,8 +16,8 @@
 # iamb can't register accounts; create one on the homeserver's website.
 #
 # Colours: no [settings.theme] on purpose. iamb's defaults are the
-# terminal's ANSI colours, which kitty takes from Noctalia (same reasoning
-# as cmus.nix).
+# terminal's 16 ANSI colours, and kitty takes those from Noctalia, so iamb
+# follows the palette without a template of its own.
 #
 # Every setting: iamb(5), or https://iamb.chat/configure.html.
 _: {
@@ -39,7 +39,8 @@ _: {
   };
 
   # The package's own iamb.desktop says Terminal=true. This one, with the
-  # same id, shadows it and runs iamb in kitty directly, like cmus.nix.
+  # same id, shadows it and runs iamb in kitty directly, like yazi's in
+  # xdg.nix.
   # %u stays, since iamb is the handler for matrix: URIs in that entry.
   xdg.desktopEntries.iamb = {
     name = "iamb";
