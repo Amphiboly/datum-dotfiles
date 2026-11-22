@@ -8,8 +8,9 @@
 #
 # Split of privileges: everything that touches the repo or evaluates the
 # flake runs as rik (who owns the checkout, so no git "dubious ownership"
-# trouble, and who is a nix trusted user, so builds still go to nostrum via
-# remote-builder.nix). Root only does the final step `nixos-rebuild boot`
+# trouble). Builds still go to nostrum via remote-builder.nix: the daemon
+# dispatches them, so rik needn't be a nix trusted user (and hasn't been
+# since 2026-11-22). Root only does the final step `nixos-rebuild boot`
 # would: register the generation and update the bootloader.
 #
 # Policy (decided 2026-10-01):

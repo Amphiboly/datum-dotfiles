@@ -33,7 +33,14 @@ _: {
       "umbriel.cachix.org-1:JfNq/2yg2S6D6z4Z2dVSZrZlDPQTKtexB6GAVLD98nw="
     ]; # Establish the immutable global public keys needed to verify downloads
 
-    # Secure administrative parameters to ensure smooth transitions
-    trusted-users = ["root" "rik"];
+    # trusted-users is left at the NixOS default, root only (2026-11-22;
+    # rik was trusted until then). A trusted user can import unsigned store
+    # paths and point the daemon at any substituter, which amounts to root
+    # without sudo's password, available to anything running as rik.
+    # Nothing here needs it: remote builds (remote-builder.nix) are
+    # dispatched by the daemon from /etc/nix/machines whoever asks, and the
+    # substituters above apply to every user. If something does need it,
+    # the daemon says so: "ignoring the client-specified setting ...
+    # because it is a restricted setting and you are not a trusted user".
   };
 }
