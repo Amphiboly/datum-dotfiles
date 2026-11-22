@@ -42,6 +42,7 @@
     ../../modules/nixos/bluetooth.nix
     ../../modules/nixos/backups.nix
     ../../modules/nixos/ntfy-alerts.nix
+    ../../modules/nixos/alert-sandbox.nix
     ../../modules/nixos/filesystems.nix
     ../../modules/nixos/printing.nix
     ../../modules/nixos/fonts.nix

@@ -670,7 +670,14 @@ in {
     path = with pkgs; [coreutils systemd msmtp];
     serviceConfig = {
       Type = "oneshot";
-      User = "root"; # Runs as root to read systemd logs securely
+      # Not root (2026-11-22; sandboxing in alert-sandbox.nix): a throwaway
+      # user, in systemd-journal to read the failed unit's log, handed the
+      # SMTP password by systemd (which reads the root-only sops file for
+      # it). /etc/msmtprc's passwordeval points at that sops file, which
+      # this user can't read, so the msmtp call below overrides it.
+      DynamicUser = true;
+      SupplementaryGroups = ["systemd-journal"];
+      LoadCredential = ["smtp-password:${config.sops.secrets."panix-smtp-password".path}"];
       # %i is passed as argv[1], NOT interpolated into the script body.
       # systemd expands specifiers only in the unit file's ExecStart= line;
       # inside the script writeShellScript points at, "%i" stays literal
@@ -701,7 +708,8 @@ in {
 
         # Construct a clean email payload
         # Note: msmtp looks for a blank line after headers to identify the message body
-        cat <<EOF | msmtp --account=default "$TO"
+        cat <<EOF | msmtp --account=default \
+          --passwordeval="cat $CREDENTIALS_DIRECTORY/smtp-password" "$TO"
         From: datum systemd <rik@panix.com>
         To: $TO
         Subject: [SYSTEMD ALERT] $UNIT has FAILED on datum-laptop

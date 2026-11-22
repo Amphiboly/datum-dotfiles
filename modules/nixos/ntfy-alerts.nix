@@ -31,7 +31,12 @@ in {
     path = with pkgs; [coreutils systemd curl];
     serviceConfig = {
       Type = "oneshot";
-      User = "root"; # to read the failed unit's journal and the token
+      # Not root (2026-11-22; sandboxing in alert-sandbox.nix): a throwaway
+      # user, in systemd-journal to read the failed unit's log, handed the
+      # token by systemd (which reads the root-only sops file for it).
+      DynamicUser = true;
+      SupplementaryGroups = ["systemd-journal"];
+      LoadCredential = ["ntfy-token:${tokenFile}"];
       # Same %i-as-argv[1] arrangement as status-email-alert@: specifiers
       # aren't expanded inside the script, and %I would turn the dashes in
       # rustic-atomic-backup.service into slashes.
@@ -56,7 +61,7 @@ in {
         # The header goes in through a process substitution, not -H on the
         # command line, so the token never shows up in /proc/*/cmdline.
         # printf is a bash builtin, so no process sees it either.
-        TOKEN=$(< ${tokenFile})
+        TOKEN=$(< "$CREDENTIALS_DIRECTORY/ntfy-token")
 
         # Short: it has to read on a lock screen. The mail has the long log.
         # --retry alone skips a refused connection, which is what the first
