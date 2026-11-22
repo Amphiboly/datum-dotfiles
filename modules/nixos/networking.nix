@@ -11,28 +11,26 @@ _: {
       enable = true;
       allowPing = true; # Retained safely for local network diagnostics
 
-      allowedTCPPorts = [
-        22 # SSH Remote Login Daemon
-      ];
+      # Services only rik uses are reached over the tailnet, not opened on
+      # whatever network datum is on (2026-11-22). tailscale0 is trusted
+      # (every port open to the tailnet), so nothing needs listing for it:
+      # SSH (ssh.nix) and the node exporter (monitoring.nix) set
+      # openFirewall = false and are reachable there only. What stays open
+      # everywhere is what works on the local network by design: mDNS
+      # (Avahi also opens 5353 itself) and KDE Connect's 1714-1764, which
+      # programs.kdeconnect adds.
       allowedUDPPorts = [
-        41641 # Tailscale wireguard mesh routing
-        5353 # mDNS (Avahi/Bonjour Local Service Device Discovery)
+        41641 # Tailscale WireGuard; lets peers connect directly, not via DERP
+        5353 # mDNS (Avahi/Bonjour local service discovery)
       ];
 
-      # Natively trusts Tailscale's virtual network card adapter interface node
       trustedInterfaces = ["tailscale0"];
 
-      # -------------------------------------------------------------------------
-      # SECURITY LOCAL NETWORK OPTIMIZATION ALTERNATIVE:
-      # -------------------------------------------------------------------------
-      # If you want SSH and mDNS to drop instantly when you connect to public Wi-Fi,
-      # comment out the global ports blocks above, uncomment your local home network
-      # adapter interface string here, and let the system handle the context shift:
-      #
-      # interfaces."wlan0" = {
-      #   allowedTCPPorts = [ 22 ];
-      #   allowedUDPPorts = [ 5353 ];
-      # };
+      # Log refused TCP connections (SYNs only, so it stays quiet) to the
+      # kernel log. Off by default in current nixpkgs. This is how to find
+      # out that something needed a port closed here:
+      #   journalctl -k | grep 'refused connection'
+      logRefusedConnections = true;
     };
   };
 

@@ -7,6 +7,11 @@
 _: {
   services.prometheus.exporters.node = {
     enable = true;
-    openFirewall = true;
+    # Scraped over the tailnet (tailscale0 is trusted in networking.nix),
+    # so 9100 isn't opened on other networks (2026-11-22). If the
+    # Prometheus server ends up scraping over the LAN instead, open 9100
+    # on that interface only (networking.firewall.interfaces.<if>), not
+    # everywhere.
+    openFirewall = false;
   };
 }

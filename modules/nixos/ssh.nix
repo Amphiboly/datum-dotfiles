@@ -2,6 +2,9 @@
 _: {
   services.openssh = {
     enable = true;
+    # Tailnet only (networking.nix trusts tailscale0). The default, true,
+    # would open 22 on every interface, public Wi-Fi included.
+    openFirewall = false;
     settings = {
       # Keys only. PasswordAuthentication alone doesn't do it: NixOS leaves
       # KbdInteractiveAuthentication on, and with UsePAM that still accepts
