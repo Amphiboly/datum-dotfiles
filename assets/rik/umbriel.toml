@@ -1,4 +1,4 @@
-# Umbriel starting configuration based on example config 2026-11-13T09:00EST
+# Umbriel starting configuration based on example config 2026-11-22
 #
 # Copy this file to ~/.config/umbriel/config.toml. Most changes apply when the
 # file is saved. Check edits with `umbriel config validate`.
@@ -201,6 +201,14 @@ follows_mouse = "sloppy" # "off", "sloppy", or "always"; always also refocuses a
 # map_to_output = "eDP-1"
 
 # ==============================================================================
+# Global shortcut overrides use exact application and shortcut IDs.
+# An empty value disables a shortcut; new IDs still require physical approval.
+#
+# [global_shortcuts."org.example.App"]
+# "push-to-talk" = "Mod+Shift+M"
+# "toggle-overlay" = ""
+
+# ==============================================================================
 # Keybinds
 # Defining this table replaces the built-in bind set, so every active bind that
 # should remain available is listed here.
@@ -391,6 +399,17 @@ default_extent_fraction = 0.5
 # Rules combine in order, with later values overriding earlier ones.
 # https://docs.noctalia.dev/umbriel/window-rules/
 
+# Keep the selected border effect on an audio player even without focus.
+# [[window_rule]]
+# match.app_id = "^io[.]github[.]nokse22[.]high-tide$"
+# border_effect_unfocused = true
+# A shown scratchpad hides when you click or focus a window behind it. Turn this off to keep it up instead.
+# modal = false
+# A shown scratchpad hides when you switch workspace. Turn this on to keep it up across workspaces.
+# sticky = true
+# Tile the scratchpad's windows instead of floating them; takes the [[workspace]] layout keys.
+# layout.mode = "dwindle"
+
 # Blur windows over the cached wallpaper blur. Set blur_optimized = false to
 # include overlapping windows behind them, at a GPU cost on every frame that
 # moves anything behind them.
@@ -510,6 +529,12 @@ default_floating_size_px = { width = 860, height = 840 }
 # hide_when_empty = true
 # Preserve each window's current size proportions when moving between monitors.
 # proportional_size = true
+# A shown scratchpad hides when you click or focus a window behind it. Turn this off to keep it up instead.
+# modal = false
+# A shown scratchpad hides when you switch workspace. Turn this on to keep it up across workspaces.
+# sticky = true
+# Tile the scratchpad's windows instead of floating them; takes the [[workspace]] layout keys.
+# layout.mode = "dwindle"
 
 # [[window_rule]]
 # match.app_id = "^spotify$"
