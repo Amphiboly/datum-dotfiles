@@ -61,6 +61,11 @@
   # Rik-specific one-off scripts (not a shared category, so it stays here)
   # =========================================================================
   home.packages = with pkgs; [
-    (writeScriptBin "mksecrets" (builtins.readFile ./mksecrets.sh))
+    # No runtimeInputs: mksecrets fetches sops itself when it's missing.
+    (writeShellApplication {
+      name = "mksecrets";
+      runtimeInputs = [];
+      text = builtins.readFile ./mksecrets.sh;
+    })
   ];
 }

@@ -781,7 +781,7 @@ None of these were documented as issues; they turned up while reading.
 - **Old header paths** (`~/Projects/datum-config/…`, from before the
   `modules/` layout) in `modules/nixos/bluetooth.nix:1`,
   `modules/nixos/backups.nix:1`,
-  `hosts/datum/laptop-configuration.nix:1`, `home.nix:1`, `mksecrets.sh:2`.
+  `hosts/datum/laptop-configuration.nix:1`, `home.nix:1`.
   Also `home/modules/unix-tools/claude-code-rik.nix:1` calls itself
   `claude-rik.nix`.
 - **Noctalia options it no longer recognises** in
