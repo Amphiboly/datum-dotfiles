@@ -4,7 +4,11 @@
 # 15-ch, i7-8550U laptop, since 2026-10-12).
 # Cross-machine-reusable capability lives in ../../modules/nixos/; this file
 # only decides which of those + hardware modules apply to "datum".
-{inputs, ...}: {
+{
+  inputs,
+  config,
+  ...
+}: {
   imports = [
     # Hardware & Platform
     inputs.nixos-hardware.nixosModules.common-cpu-intel
@@ -111,7 +115,16 @@
       {systemd.user.startServices = "sd-switch";}
     ];
     users = {
-      rik = import ../../home.nix;
+      rik = {
+        imports = [../../home.nix];
+        # Host-specific, so it lives here rather than in the HM modules
+        # (which stay usable standalone). HM's syncthing unit copies both
+        # files into ~/.local/state/syncthing at every start (ExecStartPre).
+        services.syncthing = {
+          cert = config.sops.secrets."syncthing-datum-cert".path;
+          key = config.sops.secrets."syncthing-datum-key".path;
+        };
+      };
       guest = import ../../home-guest.nix;
     };
   };
