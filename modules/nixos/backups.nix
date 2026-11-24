@@ -115,6 +115,13 @@
   # repository id, so the SSD copy shares it.
   rusticCacheDir = "/var/cache/rustic";
 
+  # Retention (since 2026-11-24; before that nothing was ever forgotten).
+  # Applied per group, and rustic groups snapshots by host, label and
+  # paths, so rik, guest and system each keep their own set. btrbk's
+  # hourly local snapshots cover the short term. The first dry run on
+  # datum would have dropped 227 snapshots; Rik checked the keeps.
+  retentionArgs = "--keep-daily 14 --keep-weekly 8 --keep-monthly 24 --keep-yearly 5";
+
   # rustic with the repository and password pre-wired.
   #
   # Plain `rustic` cannot work here and never will: the repo path lives only
@@ -582,6 +589,13 @@ in {
         }
 
         echo "Backup stream transmission completed successfully."
+
+        # 3. Retention, for this host's snapshots only. The repository is
+        # meant to be shared with nostrum, and each host should thin only
+        # what it wrote. Cheap: forget removes snapshot entries, not data.
+        # The weekly rustic-prune frees the space.
+        echo "Applying retention to ${config.networking.hostName}'s snapshots..."
+        rustic forget --filter-host ${config.networking.hostName} ${retentionArgs}
       '';
 
       # Post-execution hook, in case rustic fails
@@ -624,6 +638,52 @@ in {
       # past the hour keeps this "nightly, around midnight" while clearing
       # every hourly boundary btrbk can fire on, not just this one.
       OnCalendar = "*-*-* 00:15:00";
+      Persistent = true;
+    };
+  };
+
+  # =========================================================================
+  # 3b. WEEKLY PRUNE
+  # Frees the data that no remaining snapshot uses (forget, above, only
+  # drops the snapshot entries). Heavy on a large repository, so weekly,
+  # and from ONE host only: once nostrum shares the repo this becomes a
+  # per-host option (only one host enabled), not something every host runs.
+  # rustic's default --keep-delete (23h) leaves packs marked for deletion
+  # in place until a later prune, so a backup another host runs at the
+  # same moment can't lose data it's still referencing.
+  #
+  # The repo is reached through the /mnt/5CDbackup automount, like
+  # backup-rustic: no Requires= on a mount unit (see the 08-26 lesson in
+  # section 2). If the share isn't there, rustic fails and the alerts
+  # below fire.
+  # =========================================================================
+  systemd.services.rustic-prune = {
+    description = "Weekly rustic prune of the backup repository";
+    after = ["network-online.target" "tailscaled.service" "rustic-atomic-backup.service"];
+    wants = ["network-online.target"];
+    onFailure = ["status-email-alert@%n.service" "status-ntfy-alert@%n.service"];
+    path = [pkgs.rustic];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+      Environment = [
+        "RUSTIC_REPOSITORY=${interactiveRepo}"
+        "RUSTIC_NON_INTERACTIVE=true"
+        "RUSTIC_CACHE_DIR=${rusticCacheDir}"
+      ];
+      EnvironmentFile = config.sops.secrets."restic-vault-password".path;
+      ExecStart = "${lib.getExe pkgs.rustic} prune";
+      Nice = 10;
+      IOSchedulingClass = "idle";
+    };
+  };
+
+  systemd.timers.rustic-prune = {
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      # Sunday, between the 00:15 backup and the 03:00 nightly update.
+      # Persistent: a missed week runs on the next wake.
+      OnCalendar = "Sun *-*-* 01:30:00";
       Persistent = true;
     };
   };
@@ -684,7 +744,7 @@ in {
         # (datum_advices). Untagged units fall back to the plain address so a
         # new onFailure user still gets through before it's given a tag.
         case "$UNIT" in
-          btrbk-local.service | rustic-atomic-backup.service)
+          btrbk-local.service | rustic-atomic-backup.service | rustic-prune.service)
             TO=datum-backup@rik.users.panix.com ;;
           nixos-nightly-upgrade.service)
             TO=datum-build@rik.users.panix.com ;;

@@ -51,7 +51,7 @@ in {
         # failed nightly build only means no new generation tonight, and
         # the nightly mail covers it, so it stays quiet.
         case "$UNIT" in
-          btrbk-local.service | rustic-atomic-backup.service)
+          btrbk-local.service | rustic-atomic-backup.service | rustic-prune.service)
             PRIORITY=4 TAGS=rotating_light,datum,backup ;;
           nixos-nightly-upgrade.service)
             PRIORITY=3 TAGS=warning,datum,build ;;
