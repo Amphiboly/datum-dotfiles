@@ -29,6 +29,14 @@
 #   diff against the previous boot generation (what tonight added) and,
 #   when datum hasn't been rebooted since an earlier staging, against the
 #   running system too (everything the next reboot brings).
+# - Pinned inputs (added 2026-11-23): `nix flake update` never moves them,
+#   so the report ends with a check. Inputs locked to a release tag (any
+#   `ref` like v1.2.3 in flake.lock, found automatically) are compared
+#   with the repo's latest GitHub release. Temporary nixpkgs pins wait on
+#   a PR, listed in prPins below: the report says when that PR has reached
+#   nixos-unstable, so the pin can go. Either case adds "pinned inputs
+#   need a look" to the subject. A failed GitHub query just says so; this
+#   check never fails the run.
 #
 # Schedule: 03:00, clear of rustic (00:15) and btrbk (hourly, on the hour,
 # done in seconds); nostrum's Kopia run (01:00) is long finished. Only on AC
@@ -38,6 +46,7 @@
 # catch-up build would compete with the day's work.
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
@@ -48,6 +57,14 @@
   # same address. Sender stays rik@panix.com: panix rejects a mismatched one.
   mailTo = "datum-build@rik.users.panix.com";
   mailFrom = "rik@panix.com";
+
+  # Temporary pins that wait on a nixpkgs PR: input name -> PR number.
+  # Keep in step with the TEMPORARY comments in flake.nix; the report
+  # flags an entry whose input is gone.
+  prPins = {
+    nixpkgs-mcp = 563493; # fastmcp -> 4.x
+  };
+  prPinLines = lib.mapAttrsToList (name: pr: "${name} ${toString pr}") prPins;
 
   toplevel = "${repo}#nixosConfigurations.${config.networking.hostName}.config.system.build.toplevel";
 
@@ -145,10 +162,75 @@
       echo "Committed: $(git_ log --oneline -1)"
     fi
 
+    echo "== pinned inputs"
+    # Never fatal: called in an || context, and every query has its own
+    # fallback line. Sets pins_attention=1 when something can be bumped or
+    # dropped.
+    pins_attention=0
+    check_pins() {
+      local lock="$REPO/flake.lock" api=https://api.github.com
+      local name repo ref latest pr pr_json state merged sha status
+      # Release-tag pins: whatever flake.lock locks to a v<digit> ref.
+      while read -r name repo ref; do
+        if latest=$(curl -fsS --max-time 30 "$api/repos/$repo/releases/latest" | jq -er .tag_name); then
+          if [ "$latest" = "$ref" ]; then
+            echo "$name: $ref, the latest release"
+          else
+            echo "$name: $ref; $latest is out: https://github.com/$repo/releases/tag/$latest"
+            pins_attention=1
+          fi
+        else
+          echo "$name: $ref (GitHub query failed)"
+        fi
+      done < <(jq -r '.nodes | to_entries[]
+          | select((.value.original.ref? // "") | test("^v[0-9]"))
+          | "\(.key) \(.value.original.owner)/\(.value.original.repo) \(.value.original.ref)"' "$lock")
+      # PR-gated pins.
+      while read -r name pr; do
+        if ! jq -e --arg n "$name" '.nodes.root.inputs[$n]' "$lock" >/dev/null; then
+          echo "$name: no longer in flake.lock; remove it from prPins in nightly-upgrade.nix"
+          pins_attention=1
+          continue
+        fi
+        if ! pr_json=$(curl -fsS --max-time 30 "$api/repos/NixOS/nixpkgs/pulls/$pr"); then
+          echo "$name: waits on NixOS/nixpkgs#$pr (GitHub query failed)"
+          continue
+        fi
+        state=$(jq -r .state <<<"$pr_json")
+        merged=$(jq -r '.merged_at // empty' <<<"$pr_json")
+        sha=$(jq -r '.merge_commit_sha // empty' <<<"$pr_json")
+        if [ -z "$merged" ]; then
+          if [ "$state" = closed ]; then
+            echo "$name: NixOS/nixpkgs#$pr was closed without merging; find another way out"
+            pins_attention=1
+          else
+            echo "$name: waits on NixOS/nixpkgs#$pr (still open)"
+          fi
+          continue
+        fi
+        if ! status=$(curl -fsS --max-time 30 "$api/repos/NixOS/nixpkgs/compare/$sha...nixos-unstable" | jq -er .status); then
+          echo "$name: NixOS/nixpkgs#$pr merged $merged (channel check failed)"
+          continue
+        fi
+        case $status in
+          ahead | identical)
+            echo "$name: NixOS/nixpkgs#$pr is in nixos-unstable; the pin can go"
+            pins_attention=1
+            ;;
+          *) echo "$name: NixOS/nixpkgs#$pr merged $merged, not in nixos-unstable yet" ;;
+        esac
+      done < <(printf '%s\n' ${lib.escapeShellArgs prPinLines})
+    }
+    check_pins >"$report/pins" 2>&1 || echo "(pin check stopped partway)" >>"$report/pins"
+    cat "$report/pins"
+
     if [ "$prev" = "$out" ]; then
       subject="nightly update: nothing new"
     else
       subject="nightly update staged for next boot"
+    fi
+    if [ "$pins_attention" = 1 ]; then
+      subject="$subject; pinned inputs need a look"
     fi
     {
       echo "Nightly flake update on datum, $(date '+%F %R')."
@@ -182,12 +264,15 @@
         echo "== Changes vs running system (not rebooted since an earlier staging)"
         cat "$report/vs-running"
       fi
+      echo
+      echo "== Pinned inputs"
+      cat "$report/pins"
     } | send_mail "$subject"
   '';
 in {
   systemd.services.nixos-nightly-upgrade = {
     description = "Nightly flake update, build, and stage for next boot";
-    path = [config.nix.package config.systemd.package pkgs.git pkgs.nvd pkgs.coreutils pkgs.util-linux pkgs.msmtp pkgs.gnugrep pkgs.gnused];
+    path = [config.nix.package config.systemd.package pkgs.git pkgs.nvd pkgs.coreutils pkgs.util-linux pkgs.msmtp pkgs.gnugrep pkgs.gnused pkgs.curl pkgs.jq];
     wants = ["network-online.target"];
     after = ["network-online.target"];
     onFailure = ["status-email-alert@%n.service" "status-ntfy-alert@%n.service"];
