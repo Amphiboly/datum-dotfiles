@@ -28,8 +28,11 @@ _: {
   #       hash=$(mkpasswd -m yescrypt)
   #       SOPS_AGE_KEY_FILE=<(sudo cat /var/lib/sops/age/keys.txt) \
   #         nix shell nixpkgs#sops -c \
-  #         sops set secrets.yaml '["rik-password-hash"]' "\"$hash\""
-  #     then commit secrets.yaml.
+  #         sops set secrets/datum.yaml '["rik-password-hash"]' "\"$hash\""
+  #     then commit secrets/datum.yaml, and put the same hash in the
+  #     plaintext staging copy (../secrets.dec/datum.yaml), or the next
+  #     mksecrets run puts the old one back. Each host has its own
+  #     password, in secrets/<host>.yaml.
   #  2. `nh os switch .`. The new password is live everywhere a password
   #     is asked for (greeter, lock screen, sudo).
   # Unaffected: the LUKS passphrase and the TPM PIN (disko-config.nix),

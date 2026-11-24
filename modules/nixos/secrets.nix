@@ -1,7 +1,12 @@
 # modules/nixos/secrets.nix
+#
+# Secrets every host uses. They live in secrets/common.yaml, the default
+# sopsFile. Host-only secrets go in hosts/<host>/secrets.nix, each with
+# its own `sopsFile = ../../secrets/<host>.yaml`. Recipients per file are
+# in .sops.yaml.
 _: {
   sops = {
-    defaultSopsFile = ../../secrets.yaml;
+    defaultSopsFile = ../../secrets/common.yaml;
     defaultSopsFormat = "yaml";
     age.keyFile = "/var/lib/sops/age/keys.txt";
     # No ssh host keys as decryption keys. With openssh enabled, sops-nix
@@ -13,10 +18,10 @@ _: {
     # restored later in boot, like any other state.
     age.sshKeyPaths = [];
     gnupg.sshKeyPaths = [];
+    # Every host also declares rik-password-hash and root-password-hash in
+    # its own file (users/rik.nix and users/root.nix read them): each
+    # host has its own passwords.
     secrets = {
-      # System & Admin Keys
-      "rik-password-hash" = {neededForUsers = true;};
-      "root-password-hash" = {neededForUsers = true;};
       # The attribute name sets the output path (/run/secrets/<name>); `key`
       # only picks the YAML key. Naming this "w11-cifs-password" published it
       # at /run/secrets/w11-cifs-password while filesystems.nix mounts with
@@ -26,9 +31,6 @@ _: {
       "w11-cifs-credentials" = {owner = "root";};
       "restic-vault-password" = {owner = "root";};
       "panix-smtp-password" = {owner = "root";};
-      # Private half of the key remote-builder.nix uses to reach nostrum.
-      # Root-owned because the nix-daemon (root) opens the SSH connection.
-      "nostrum-builder-ssh-key" = {owner = "root";};
       # ntfy publish token (1Password); ntfy-alerts.nix sends it as Bearer.
       "ntfy-publish-token" = {owner = "root";};
 
@@ -37,13 +39,6 @@ _: {
       "gmail-amphiboly-password" = {owner = "rik";};
       "gmail-amphibolybackup-password" = {owner = "rik";};
       "gmail-cornwall-password" = {owner = "rik";};
-
-      # Syncthing identity (1Password "Syncthing - datum"). The device ID is
-      # derived from the cert, so pinning it keeps datum's ID across a
-      # reinstall. Host-named so nostrum's pair can share this file later.
-      # Wired into Home Manager in hosts/datum/default.nix.
-      "syncthing-datum-cert" = {owner = "rik";};
-      "syncthing-datum-key" = {owner = "rik";};
     };
   };
 }

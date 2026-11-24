@@ -21,8 +21,9 @@
     inputs.disko.nixosModules.disko
     ./disko-config.nix
 
-    # Sops Secrets
+    # Sops Secrets (shared ones: modules/nixos/secrets.nix)
     inputs.sops-nix.nixosModules.sops
+    ./secrets.nix
 
     # Secure Boot: lanzaboote replaces systemd-boot (see secure-boot.nix)
     inputs.lanzaboote.nixosModules.lanzaboote

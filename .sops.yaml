@@ -1,9 +1,26 @@
 # .sops.yaml
+#
+# One encrypted file per host plus a shared one (split 2026-11-23):
+#   secrets/common.yaml   secrets every host uses (modules/nixos/secrets.nix)
+#   secrets/datum.yaml    datum only (hosts/datum/secrets.nix)
+# The plaintext is staged outside the repo, in ../secrets.dec/<name>.yaml;
+# mksecrets encrypts each into secrets/<name>.yaml under the rule below.
+#
+# For now admin_key is the only recipient, and it is also datum's host
+# key (sops-nix reads it from /var/lib/sops/age/keys.txt). When nostrum
+# joins: add a separate admin key plus one key per host. common.yaml then
+# gets admin and every host; each host file gets admin and its own host,
+# so no host can decrypt another's file. Then run `sops updatekeys` on
+# each file.
 keys:
     - &admin_key age18tvsxgvkj7xjh0davtx6y6qf8kt3vrmp79wexz4jcg77300xvuds5yqv8e
 
 creation_rules:
-  - path_regex: secrets\.yaml$
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age:
+        - *admin_key
+  - path_regex: secrets/datum\.yaml$
     key_groups:
       - age:
         - *admin_key

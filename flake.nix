@@ -126,8 +126,8 @@
     #
     # Needed from 1Password: the sops age key, the LUKS passphrase (disko
     # asks for it) and the TPM PIN. Everything else comes from the age key:
-    # it decrypts secrets.yaml, which holds the CIFS credentials and the
-    # rustic password.
+    # it decrypts secrets/common.yaml and secrets/datum.yaml, which hold
+    # the CIFS credentials, the rustic password and the rest.
     #
     #  1. Firmware: Secure Boot off (the NixOS installer isn't signed with
     #     anything this machine trusts). Leave the keys alone; never "Clear
@@ -144,7 +144,7 @@
     #     into /mnt/persist (impermanence.nix): everything that survives
     #     the root wipe. Decrypt what's needed with
     #       SOPS_AGE_KEY_FILE=/mnt/persist/var/lib/sops/age/keys.txt \
-    #         nix shell nixpkgs#sops -c sops -d secrets.yaml
+    #         nix shell nixpkgs#sops -c sops -d secrets/common.yaml
     #     mount //5cd-rack.local/n/datum with the CIFS credentials, then
     #       nix shell nixpkgs#rustic -c rustic -r <share>/restic-repo \
     #         snapshots --filter-tags system

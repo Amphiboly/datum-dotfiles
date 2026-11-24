@@ -11,7 +11,8 @@
 # How the pieces fit:
 # - The nix-daemon (root) opens the SSH connection, so it can't use rik's
 #   1Password agent. It uses a dedicated passphrase-less key, kept in
-#   secrets.yaml as `nostrum-builder-ssh-key` (see secrets.nix).
+#   secrets/datum.yaml as `nostrum-builder-ssh-key` (see
+#   hosts/datum/secrets.nix).
 # - On nostrum the key sits in ~rik/.ssh/authorized_keys with
 #   `restrict,command="/usr/bin/nix-daemon --stdio"`, so all it can do is
 #   speak the Nix daemon protocol -- no shell, no forwarding. rik is in
