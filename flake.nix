@@ -49,9 +49,15 @@
     };
     # Facial authentication. `follows` is safe here only because the nixpkgs
     # above is unstable: gaze is Rust edition 2024, and a stable channel's
-    # older rustc breaks partway through its dependency tree.
+    # older rustc breaks partway through its dependency tree. Keep it: it
+    # also builds pam_gaze.so against the same glibc as the processes that
+    # load it (greetd, login).
+    # Pinned to a release tag; bump the tag by hand. The default branch
+    # takes several Renovate commits a day (lock-file maintenance, deps
+    # bumps), and with no binary cache each one meant a full Rust build.
+    # Releases are roughly weekly. nixpkgs bumps still rebuild it.
     gaze = {
-      url = "github:GunduLabs/gaze";
+      url = "github:GunduLabs/gaze/v0.5.2";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Prebuilt nix-index database, regenerated weekly upstream, for comma
