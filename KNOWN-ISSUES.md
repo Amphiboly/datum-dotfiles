@@ -603,36 +603,6 @@ recent history.
   nixos-unstable and `pkgs.zotero` evaluates without an insecure-package
   exception. Then uncomment it and drop the comment.
 
-### rustic pinned to an older nixpkgs: it fails to build (aws-lc-sys)
-- **Where:** the `nixpkgs-rustic` input in `flake.nix`, and the overlay
-  at the top of `modules/nixos/backups.nix`'s config, which takes
-  `pkgs.rustic` from it for every module.
-- **What:** since NixOS/nixpkgs commit `44cddf92c4` ("cargoSetupHook:
-  Force system libs", 2026-10-12), every Rust build gets
-  `AWS_LC_SYS_USE_SYSTEM=1`. rustic 0.11.4's package doesn't list
-  `aws-lc` as an input, so `aws-lc-sys` 0.44 panics ("requires a
-  system-installed AWS-LC, but none was found"), and Hydra has no
-  binary. Seen 2026-11-08 updating to nixpkgs 20261107.f4a03c0; the
-  update was discarded (`git restore flake.lock`), so the running
-  system is unaffected and backups still work. Many Rust packages broke
-  the same way: tracking issue NixOS/nixpkgs#570938.
-- **Meanwhile (since 2026-11-11):** until then, every nixpkgs update
-  (nightly and deploy.sh) failed on rustic and was rolled back, which
-  held the whole system at nixpkgs 20261105.f9a75f4. Now rustic alone
-  stays there: `nixpkgs-rustic` is that exact release, so it yields the
-  rustic binary that was already installed and tested, with nothing to
-  build, and the rest of the system updates normally. The rustic
-  version is 0.11.4 on both sides (still the latest release); only the
-  build environment differs. The pin swaps in the package from the old
-  nixpkgs; it doesn't patch the build.
-- **Fix upstream:** NixOS/nixpkgs#585155, "rustic: use native aws-lc,
-  zstd" (adds `aws-lc`, `zstd`, `pkg-config`), open since 2026-11-08.
-- **Remove when:** https://nixpk.gs/pr-tracker.html?pr=585155 shows it
-  in nixos-unstable. Then delete the `nixpkgs-rustic` input, the
-  overlay and the `inputs` argument it added to backups.nix, run
-  `nix flake lock`, check that `nix build --dry-run` builds rustic
-  from the main nixpkgs, and delete this entry.
-
 ### Gaze: RGB camera given as `/dev/video0` instead of `usb:`
 - **Where:** `modules/nixos/facial-auth.nix:54`
 - **What:** Gaze 0.3.9's `usb:` resolver filters to `video/x-raw`, and the
