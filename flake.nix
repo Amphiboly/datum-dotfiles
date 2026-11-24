@@ -145,7 +145,7 @@
     #     the root wipe. Decrypt what's needed with
     #       SOPS_AGE_KEY_FILE=/mnt/persist/var/lib/sops/age/keys.txt \
     #         nix shell nixpkgs#sops -c sops -d secrets/common.yaml
-    #     mount //5cd-rack.local/n/datum with the CIFS credentials, then
+    #     mount //5cd-rack.local/n/riksNixBackups with the CIFS credentials, then
     #       nix shell nixpkgs#rustic -c rustic -r <share>/restic-repo \
     #         snapshots --filter-tags system
     #       ... restore <id>:/persist /mnt/persist

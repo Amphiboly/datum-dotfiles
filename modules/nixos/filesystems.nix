@@ -4,7 +4,10 @@ _: {
     # 5CD-RACK TAILSCALE SMB/CIFS NETWORK SHARES MATRIX
     "/mnt/5CDbackup" = {
       # Natively links to your static, secure Tailscale network rack share endpoint
-      device = "//100.76.108.83/n/datum";
+      # The folder holds the rustic repository datum (and later nostrum)
+      # back up to; it was n/datum until 2026-11-24. Keep in step with
+      # sharePath in backups.nix.
+      device = "//100.76.108.83/n/riksNixBackups";
       fsType = "cifs";
       options = [
         # --- Core Automation & Network Startup Syncing Hooks ---

@@ -11,7 +11,10 @@
   # Keeping them separate leaves /mnt/5CDbackup untouched for interactive
   # browsing while the service manages its own mount lifecycle.
   shareMnt = "/run/backup-share";
-  sharePath = "n/datum";
+  # Named for what's in it: the rustic repository of Rik's NixOS hosts
+  # (n/datum until 2026-11-24). Same folder as /mnt/5CDbackup's device in
+  # filesystems.nix; keep the two in step.
+  sharePath = "n/riksNixBackups";
 
   # Two paths, ONE repository. The service mounts the share itself and
   # unmounts it on the way out, so shareMnt does not exist between runs --
