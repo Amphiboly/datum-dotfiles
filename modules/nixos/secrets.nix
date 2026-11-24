@@ -37,6 +37,13 @@ _: {
       "gmail-amphiboly-password" = {owner = "rik";};
       "gmail-amphibolybackup-password" = {owner = "rik";};
       "gmail-cornwall-password" = {owner = "rik";};
+
+      # Syncthing identity (1Password "Syncthing - datum"). The device ID is
+      # derived from the cert, so pinning it keeps datum's ID across a
+      # reinstall. Host-named so nostrum's pair can share this file later.
+      # Wired into Home Manager in hosts/datum/default.nix.
+      "syncthing-datum-cert" = {owner = "rik";};
+      "syncthing-datum-key" = {owner = "rik";};
     };
   };
 }
