@@ -669,22 +669,20 @@ recent history.
   journal: 2026-10-14 03:00 and 2026-11-07 17:43, each logging
   "SKIPPED: datum is on battery" and exiting cleanly.
 
-### MX150 power state on battery not checked
-- **Where:** `modules/nixos/dgpu.nix`. Since 2026-11-26 `nouveau` is
-  blacklisted there (its probe oopsed on every boot from 11-24 and hung
-  reboot and suspend; details in the module). So the MX150
-  (`0000:01:00.0`) now has no driver at all, and the spot check below,
-  taken with `nouveau` bound, no longer describes it.
-- **What:** open since the 2026-10-16 laptop-swap follow-ups (from session
-  notes on nostrum). Spot check 2026-11-10 on AC: `nouveau` bound,
-  `power/runtime_status` = `suspended`, `power/control` = `auto`,
-  `d3cold_allowed` = 1, but `power_state` = **D3hot**, not D3cold. Not
-  yet looked at on battery, which is where it matters for runtime.
-- **Next:** on battery, read
-  `/sys/bus/pci/devices/0000:01:00.0/power_state` and compare discharge
-  rate (upower) against a run with the dGPU forced off. If it never
-  reaches D3cold, the parent root port's ACPI power resources are the
-  place to look.
+### MX150: nouveau blacklisted, card powered off
+- **Where:** `modules/nixos/dgpu.nix`.
+- **What:** since 2026-11-24 nouveau's probe oopsed on every boot
+  (`gp102_acr_wpr_patch`) and the stuck device lock hung reboot and
+  suspend; it had already reported `fb: 0 MiB` since 11-20 (2048 MiB on
+  11-19). Since 2026-11-26 nouveau is blacklisted and udev sets
+  `power/control = auto` on the GPU and its root port (00:1c.0), which
+  puts both in **D3cold** (checked on AC 2026-11-26; with nouveau it only
+  ever reached D3hot). This also closes the old "power state on battery"
+  item from the 2026-10-16 laptop-swap follow-ups.
+- **Next:** optional, a discharge-rate reading on battery (upower) for
+  the record. Open question: nouveau regression in 7.3.5 or a failing
+  card. To test, drop the blacklist and check `journalctl -k -b` for the
+  fb size and an oops; expect a hard power-off if it still crashes.
 
 ### Syncthing GUI has no credentials
 - **Where:** `home/modules/productivity/syncthing.nix:7`
