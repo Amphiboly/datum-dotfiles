@@ -29,6 +29,7 @@
     ./home/modules/browsers/zen.nix
     ./home/modules/browsers/zen-rik.nix
     ./home/modules/media/mpv.nix
+    ./home/modules/media/tera.nix
     ./home/modules/productivity/office.nix
     ./home/modules/productivity/document-fonts.nix
     ./home/modules/productivity/thunderbird.nix

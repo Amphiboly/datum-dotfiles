@@ -219,6 +219,8 @@
       pandoc-bin = pkgs.callPackage ./pkgs/pandoc-bin {};
       # `nix build .#ziggity` -- git TUI built from source; see pkgs/ziggity.
       ziggity = pkgs.callPackage ./pkgs/ziggity {};
+      # `nix build .#tera` -- internet radio TUI (mpv); see pkgs/tera.
+      tera = pkgs.callPackage ./pkgs/tera {};
       # `nix build .#luciole-scripts` -- Luciole's extra right-click
       # actions; see pkgs/luciole-scripts.
       luciole-scripts = pkgs.callPackage ./pkgs/luciole-scripts {};
