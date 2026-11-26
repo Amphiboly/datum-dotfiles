@@ -100,11 +100,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795534022,
-        "narHash": "sha256-xkRZ+PcPWaAyf9YrEBszYD5w2S6/Ac2tIfsufzd4dEQ=",
+        "lastModified": 1795618997,
+        "narHash": "sha256-d9Osol//t6hqeo1xlspsYMbhTJK507h6t0EmPyF5Db0=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "b56bcd042b5e69ad188eca20d9bec1bfbf3dd453",
+        "rev": "6a13737c0ed27c7c285f59e3be423ed972aa605f",
         "type": "github"
       },
       "original": {
@@ -165,11 +165,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795612125,
-        "narHash": "sha256-pu9dTYpi4YQy0lQCpoWPcOl+Rx0bIfmBqksEdD1EErk=",
+        "lastModified": 1795673274,
+        "narHash": "sha256-B3M7oDjYBBOe6BgWLe7a4qYDVW3Aq400l1IvrslaVZU=",
         "owner": "noctalia-dev",
         "repo": "luciole",
-        "rev": "ef46ab50862309367278cf2bf33d78e1ee607a04",
+        "rev": "cb6375a5e046ae9ce3eaba7d12ba53a85e2c769a",
         "type": "github"
       },
       "original": {
@@ -286,11 +286,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1795566013,
-        "narHash": "sha256-M9xrFysHI5O/1mkjOxxoqYqh2CiCHT6T/LkK7zhUFUg=",
+        "lastModified": 1795653189,
+        "narHash": "sha256-TuoYmAiNWFg5morOREQ1AO/xXMpgqrK4Ibs2pOpO4sA=",
         "owner": "noctalia-dev",
         "repo": "noctalia",
-        "rev": "9ef3714b2daabc415640ed711eb4400a7b86674d",
+        "rev": "b7e90676fed15a8930c2ae74c497689dc14c4e73",
         "type": "github"
       },
       "original": {
@@ -308,11 +308,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795613473,
-        "narHash": "sha256-YUe0e2MmQbASGgC4kD9gVAJVOCVz9stAL1iGEfxQkJM=",
+        "lastModified": 1795678232,
+        "narHash": "sha256-PXMI/0fGxKb7P+cxldvWBBt1rSdNCEMvTGm3ppglPOY=",
         "owner": "nix-community",
         "repo": "NUR",
-        "rev": "cc13e7e21cbaf4689d5e7783e95ca72d6e340efb",
+        "rev": "401c57141939b4db2fa9795eff3a321af9f4cb09",
         "type": "github"
       },
       "original": {
@@ -424,11 +424,11 @@
         "xdg-desktop-portal-umbriel": "xdg-desktop-portal-umbriel"
       },
       "locked": {
-        "lastModified": 1795609760,
-        "narHash": "sha256-Kzp7Tq0qZkYebTm20gqZKNxOQzZ8F7Ns47z/2lIhSL0=",
+        "lastModified": 1795641084,
+        "narHash": "sha256-GjZPuCryDDvJyEhVaQ5Oy7vew+OfB3vALI7iBIMGQ9Y=",
         "owner": "noctalia-dev",
         "repo": "umbriel",
-        "rev": "ce2d8eed0f8b01a43a163f90f819a930c8c62e8c",
+        "rev": "6a7ee9587c521799712e809b571b7d01b2372cdb",
         "type": "github"
       },
       "original": {
@@ -466,11 +466,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1795577370,
-        "narHash": "sha256-kbm3rhM5/EX5AJEPV9Svkcdk9f1RTqfX+YWQvROKX8w=",
+        "lastModified": 1795668840,
+        "narHash": "sha256-hZTHT7oXTrxXi36tKUN4G0lElMgnHQ1nVEV02qxXRZ0=",
         "owner": "0xc000022070",
         "repo": "zen-browser-flake",
-        "rev": "6c4d107744ba0760c5176a3993115b9842c19249",
+        "rev": "abbd61739b1d73fe0c2c4413143efb9ccafea59e",
         "type": "github"
       },
       "original": {
