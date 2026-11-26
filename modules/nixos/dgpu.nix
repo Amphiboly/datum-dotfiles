@@ -29,27 +29,32 @@ _: {
   # Removing it: drop this line, boot, and check
   # `journalctl -k -b | rg 'nouveau|BUG:'` shows a non-zero fb size and no
   # oops.
-  #
   boot.blacklistedKernelModules = ["nouveau"];
 
   # Power the card off completely (D3cold). Without a driver the kernel
   # leaves it at full power: `power/control` defaults to `on`, so runtime
-  # PM never runs, and the card sat in D0 (with nouveau it only reached
-  # D3hot). Two devices need `auto`:
+  # PM never runs, and the card sat in D0. Two devices need `auto`:
   #   - the GPU (01:00.0), so it counts as idle. With no driver, PCI
   #     runtime suspend only marks it "suspended" and doesn't change its
   #     power state, but that lets the parent sleep;
   #   - its PCIe root port (00:1c.0), which has ACPI power resources for
   #     D3hot (_PR3). When the port suspends, the firmware switches those
   #     off and the GPU behind it loses power: both report D3cold.
+  #
+  # TLP (power-management.nix) owns runtime PM here, so this is a TLP
+  # setting, not a udev rule. Each time TLP applies a profile it writes
+  # RUNTIME_PM_ON_AC (default `on`) to every PCI device, in performance,
+  # i.e. always here; udev rules setting `auto` (tried 2026-11-26) lose
+  # to it at boot. Devices with a driver on RUNTIME_PM_DRIVER_DENYLIST are
+  # skipped, and nouveau is on it: that's why, with nouveau, the GPU got to
+  # D3hot but the root port, forced `on`, never let it reach D3cold.
+  # RUNTIME_PM_ENABLE takes precedence over all of that, in every
+  # profile.
+  #
   # Verified by hand 2026-11-26 (sysfs writes, then power_state and the
   # port's firmware_node/power_resources_D3hot/*/resource_in_use = 0).
   # Check after boot:
   #   cat /sys/bus/pci/devices/0000:0{0:1c,1:00}.0/power_state
-  # Matched by PCI address, which is fixed on this board; if the
-  # hardware changes, these rules simply match nothing.
-  services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="pci", KERNEL=="0000:01:00.0", ATTR{power/control}="auto"
-    ACTION=="add", SUBSYSTEM=="pci", KERNEL=="0000:00:1c.0", ATTR{power/control}="auto"
-  '';
+  # or `sudo tlp-stat -e`. Addresses are fixed on this board.
+  services.tlp.settings.RUNTIME_PM_ENABLE = "00:1c.0 01:00.0";
 }

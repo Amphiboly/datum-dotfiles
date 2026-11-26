@@ -674,11 +674,12 @@ recent history.
 - **What:** since 2026-11-24 nouveau's probe oopsed on every boot
   (`gp102_acr_wpr_patch`) and the stuck device lock hung reboot and
   suspend; it had already reported `fb: 0 MiB` since 11-20 (2048 MiB on
-  11-19). Since 2026-11-26 nouveau is blacklisted and udev sets
-  `power/control = auto` on the GPU and its root port (00:1c.0), which
-  puts both in **D3cold** (checked on AC 2026-11-26; with nouveau it only
-  ever reached D3hot). This also closes the old "power state on battery"
-  item from the 2026-10-16 laptop-swap follow-ups.
+  11-19). Since 2026-11-26 nouveau is blacklisted and TLP's
+  `RUNTIME_PM_ENABLE` sets `power/control = auto` on the GPU and its
+  root port (00:1c.0), which puts both in **D3cold** (checked on AC
+  2026-11-26; with nouveau it only ever reached D3hot). This also closes
+  the old "power state on battery" item from the 2026-10-16 laptop-swap
+  follow-ups.
 - **Next:** optional, a discharge-rate reading on battery (upower) for
   the record. Open question: nouveau regression in 7.3.5 or a failing
   card. To test, drop the blacklist and check `journalctl -k -b` for the
