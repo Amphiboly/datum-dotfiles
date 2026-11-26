@@ -44,6 +44,7 @@
     ../../modules/nixos/boot.nix
     ../../modules/nixos/secure-boot.nix
     ../../modules/nixos/firmware.nix
+    ../../modules/nixos/dgpu.nix
     ../../modules/nixos/networking.nix
     ../../modules/nixos/bluetooth.nix
     ../../modules/nixos/backups.nix

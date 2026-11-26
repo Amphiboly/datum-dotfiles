@@ -670,9 +670,11 @@ recent history.
   "SKIPPED: datum is on battery" and exiting cleanly.
 
 ### MX150 power state on battery not checked
-- **Where:** nothing in the repo yet. There is no NVIDIA config, so the
-  MX150 (`0000:01:00.0`) gets `nouveau` and the kernel's runtime-PM
-  defaults.
+- **Where:** `modules/nixos/dgpu.nix`. Since 2026-11-26 `nouveau` is
+  blacklisted there (its probe oopsed on every boot from 11-24 and hung
+  reboot and suspend; details in the module). So the MX150
+  (`0000:01:00.0`) now has no driver at all, and the spot check below,
+  taken with `nouveau` bound, no longer describes it.
 - **What:** open since the 2026-10-16 laptop-swap follow-ups (from session
   notes on nostrum). Spot check 2026-11-10 on AC: `nouveau` bound,
   `power/runtime_status` = `suspended`, `power/control` = `auto`,
