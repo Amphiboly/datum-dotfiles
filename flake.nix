@@ -46,7 +46,7 @@
     # bumps), and with no binary cache each one meant a full Rust build.
     # Releases are roughly weekly. nixpkgs bumps still rebuild it.
     gaze = {
-      url = "github:GunduLabs/gaze/v0.5.2";
+      url = "github:GunduLabs/gaze/v0.5.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Prebuilt nix-index database, regenerated weekly upstream, for comma
