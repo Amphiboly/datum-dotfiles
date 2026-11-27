@@ -14,7 +14,7 @@ order = [ "default" ]
     capsule_radius = 4
     center = [ "clock", "weather" ]
     contact_shadow = true
-    end = [ "bar_2", "group:g5", "screenshot", "taskbar", "tray", "group:g4", "group:g1", "spacer_6", "session" ]
+    end = [ "media", "bar_2", "group:g5", "screenshot", "taskbar", "tray", "group:g4", "group:g1", "spacer_6", "session" ]
     margin_edge = 6
     margin_ends = 10
     radius = 4
@@ -373,6 +373,9 @@ scale = 1.1500000000000001
 [widget.clock_2]
 scale = 1.1499999999999999
 type = "pulser/hover-widgets:clock"
+
+[widget.media]
+peek = true
 
 [widget.menubar]
 type = "amancode22/global-menu:menubar"
