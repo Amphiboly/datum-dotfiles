@@ -10,7 +10,11 @@
 # fixed only in the newer series (vulnix, 2026-11-22). mpv uses the
 # current ffmpeg. The library is folders under ~/Dropbox/Music, opened
 # from Luciole or yazi.
-{lib, ...}: let
+{
+  lib,
+  pkgs,
+  ...
+}: let
   # Every video/* type mpv's own desktop entry declares (mpv 0.41). Types
   # it doesn't list stay with whatever claims them.
   videoTypes = [
@@ -129,6 +133,17 @@ in {
     # folder: a track plays on through the album, an episode on to the
     # next. Without it mpv plays just the file it was given.
     config.autocreate-playlist = "same";
+
+    # MPRIS, so the Noctalia media widget (and anything else on the
+    # session bus) sees what mpv plays and can pause/skip it. mpv has no
+    # MPRIS of its own. Home Manager loads scripts by wrapping the mpv
+    # binary with --script=..., not through mpv.conf, so this also covers
+    # the mpv that tera (tera.nix) starts. For a radio stream the title is
+    # the stream's ICY "Artist - Song" when the station sends it; there's
+    # no art. Pausing from the widget pauses mpv behind tera's back, so
+    # tera's own display can disagree until you act in it. Added
+    # 2026-11-27.
+    scripts = [pkgs.mpvScripts.mpris];
   };
 
   xdg.mimeApps.defaultApplications = lib.genAttrs (videoTypes ++ audioTypes) (_: ["mpv.desktop"]);
